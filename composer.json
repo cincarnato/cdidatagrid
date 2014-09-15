@@ -25,12 +25,11 @@
 
     "require": {
         "php": ">=5.3.3",
-        
         "zendframework/zend-mvc": "~2.2",
         "zendframework/zend-modulemanager": "~2.2",
         "zendframework/zend-view": "~2.2",
         "zendframework/zend-http": "~2.2",
-        "zendframework/zend-paginator": "~2.2",
+        "zendframework/zend-paginator": "~2.2"
     },
     
     "require-dev": {
@@ -39,12 +38,12 @@
     },
     
     "suggest" : {
-        "doctrine/doctrine-orm-module": ">=0.8",
+        "doctrine/doctrine-orm-module": ">=0.8"
     },
     
     "autoload": {
         "psr-0": {
-            "CdiDataGrid\\": "src/",
+            "CdiDataGrid\\": "src/"
         }
     }
 }

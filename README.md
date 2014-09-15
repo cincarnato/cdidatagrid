@@ -17,3 +17,5 @@ Caracteristicas / Funcionalidades / features:
 - Mostrar otro nombre de columna, respecto al nombre original en la DB/Entidad
 - Agregar html extra a las filas por columna. Ejemplo "<span style="color:red">elemento</span>"
 - Agregar html extra a las filas de forma condicional. Si es > mayor que...
+- Generador de Zend Form para agregar y editar registros.
+- Render por Zend Helper. Formato bootstrap.
