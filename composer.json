@@ -1,0 +1,50 @@
+{
+    "name":        "cdi/cdidatagrid",
+    "description": "Zend Framework 2 Module that provides a datagrid",
+    "type":        "library",
+    "license":     "WTFPL",
+    "keywords": [
+        "ZfcDatagrid",
+        "Datagrid",
+        "Datatable",
+        "module",
+        "zf2",
+        "Zend Framework"
+    ],
+    
+    "authors": [{
+        "name": "Cristian Incarnato",
+        "email": "cristian.cdi@gmail.com"
+    }],
+    
+    "minimum-stability": "dev",
+    
+    "config": {
+    	"process-timeout": 5000
+    },
+
+    "require": {
+        "php": ">=5.3.3",
+        
+        "zendframework/zend-mvc": "~2.2",
+        "zendframework/zend-modulemanager": "~2.2",
+        "zendframework/zend-view": "~2.2",
+        "zendframework/zend-http": "~2.2",
+        "zendframework/zend-paginator": "~2.2",
+    },
+    
+    "require-dev": {
+        "zendframework/zendframework": "~2.2",
+        "doctrine/doctrine-orm-module": ">=0.8"
+    },
+    
+    "suggest" : {
+        "doctrine/doctrine-orm-module": ">=0.8",
+    },
+    
+    "autoload": {
+        "psr-0": {
+            "CdiDataGrid\\": "src/",
+        }
+    }
+}
