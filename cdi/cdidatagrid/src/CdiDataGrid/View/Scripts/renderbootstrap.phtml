@@ -1,0 +1,94 @@
+<style>
+    .table .tauto td , .table .tauto th, .table .tauto{
+        width: auto !important;
+    }
+    input[type='text']{
+        width: 95% !important;
+    }
+
+</style>
+
+
+<?php
+$form = $this->grid->getFormFilters();
+$form->prepare();
+
+$submit = $form->get("submit");
+$submit->setAttribute('class', 'btn btn-success');
+?>
+
+<div class="table">
+    <?php echo $this->gview->form()->openTag($form); ?>
+    <?php echo $this->gview->formElement($form->get("page")) ?>
+    <table class="table table-bordered table-striped tauto">
+        <tr>
+            <td  colspan="<?php echo count($this->grid->getColumnCollection()) ?>">
+                <div><?php echo $this->gview->formElement($submit) ?></div>
+            </td>
+        </tr>
+        <tr>
+            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                <?php if (!$column->getHidden()): ?>
+                    <th style="text-align: center; font-size: 14px;"><a data-toggle="tooltip" title="<?php echo $column->getTooltip(); ?>" style="cursor: help"><?php echo $column; ?></a></th>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+
+        </tr>
+
+        <tr>
+
+            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                <?php if (!$column->getHidden()): ?>
+                    <td> <?php
+                        if ($column->getFilterActive()) {
+                            echo $this->gview->formElement($form->get("f_" . $column->getName()));
+                        }
+                        ?></td>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+
+        </tr>
+
+        <?php if (count($this->grid->getRow())): ?>
+            <?php foreach ($this->grid->getRow() as $data): ?>
+                <tr>
+                    <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                        <?php if (!$column->getHidden()): ?>
+                            <td >
+                                <?php echo $column->getHtmlBegin(); ?>
+
+                                <?php if ($column->getType() == "text"): ?>
+                                    <?php echo nl2br($data[$column->getName()]); ?>
+                                <?php endif; ?>
+
+                                <?php if ($column->getType() == "boolean"): ?>
+                                    <?php echo nl2br($this->gview->ColumnBoolean($column, $data[$column->getName()])); ?>
+                                <?php endif; ?>
+
+                                <?php if ($column->getType() == "datetime"): ?>
+                                    <?php if (is_a($data[$column->getName()], "\datetime")): ?>
+                                        <?php echo $data[$column->getName()]->format($column->getFormatDatetime()); ?>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+
+                                <?php echo $column->getHtmlEnd(); ?>
+
+                            </td>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </table>
+    <?php echo $this->gview->form()->closeTag($form); ?>
+</div>
+
+
+<?php
+echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', 'pagination', array("gview" => $this->gview,
+    "routeParams" => $this->routeParams,
+    'route' => $this->route));
+?>
+    
+
