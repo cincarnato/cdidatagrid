@@ -14,10 +14,13 @@ class Doctrine extends AbstractSource {
     protected $filters;
     protected $order;
 
-    public function __construct($entityManager, $entity) {
+    public function __construct($entityManager, $entity, $query = null) {
         $this->setEntityManager($entityManager);
         $this->setEntity($entity);
         $this->setRepository($this->getEntityManager()->getRepository($this->getEntity()));
+        if($query){
+            $this->setQuery($query);
+        }
     }
 
     public function query() {
@@ -31,11 +34,15 @@ class Doctrine extends AbstractSource {
     }
 
     public function queryBuldier() {
+        if(!$this->query){
         $query = $this->getEntityManager()->createQueryBuilder('u');
         $query->select('u')->from($this->getEntity(), 'u');
 
         $this->setQuery($query);
-        return $query;
+        return $this->query;
+        }else{
+            return $this->query;
+        }
     }
 
     public function getColumns() {
