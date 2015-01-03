@@ -2,13 +2,27 @@
     .table .tauto td , .table .tauto th, .table .tauto{
         width: auto !important;
     }
-    .table .tauto input[type='text']{
-        width: 95% !important;
+    .table .tauto input[type='text'], .table .tauto select{
+        width: 90% !important;
     }
 
 </style>
 
+<br>
+<div class="row">
+    <div class="col-xs-12">
+        <?php if ($this->grid->getCsvCommaOn()): ?>
+            <a class="btn btn-info" href="<?php echo $this->gview->url($this->route, array(), array('query' => array('cdiExportCommaCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (,)</a> 
 
+        <?php endif; ?>
+        <?php if ($this->grid->getCsvSemicolonOn()): ?>
+            <a class="btn btn-info" href="<?php echo $this->gview->url($this->route, array(), array('query' => array('cdiExportSemiColonCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (;)</a> 
+
+        <?php endif; ?>
+
+    </div>
+</div>
+<br>
 <?php
 $form = $this->grid->getFormFilters();
 $form->prepare();
@@ -29,9 +43,28 @@ $submit->setAttribute('class', 'btn btn-success');
         <tr>
             <?php foreach ($this->grid->getColumnCollection() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
-                    <th style="text-align: center; font-size: 14px;"><a data-toggle="tooltip" title="<?php echo $column->getTooltip(); ?>" style="cursor: help"><?php echo $column; ?></a></th>
-                    <?php endif; ?>
-                <?php endforeach; ?>
+                    <th style="text-align: center; font-size: 14px;">
+                        <?php $name = $column->getName(); ?>
+                <table>
+                    <tr>
+                    <td class="col-md-11"> <a  data-toggle="tooltip" title="<?php echo $column->getTooltip(); ?>" style="cursor: help">
+
+                            <?php echo $column; ?>
+                        </a></td>
+                    <td class="col-md-1  padding2">
+                        <div >  <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-up"></i></a> </div>
+
+                        <div > <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-down"></i></a></div>
+                    </td>
+                    </tr>
+                </table>
+
+
+
+
+                </th>
+            <?php endif; ?>
+        <?php endforeach; ?>
 
         </tr>
 
@@ -39,7 +72,7 @@ $submit->setAttribute('class', 'btn btn-success');
 
             <?php foreach ($this->grid->getColumnCollection() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
-                    <td> <?php
+                    <td class="text-center"> <?php
                         if ($column->getFilterActive()) {
                             echo $this->gview->formElement($form->get("f_" . $column->getName()));
                         }

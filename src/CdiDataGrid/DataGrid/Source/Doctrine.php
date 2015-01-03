@@ -12,13 +12,14 @@ class Doctrine extends AbstractSource {
     protected $repository;
     protected $query;
     protected $filters;
-    protected $order;
+    protected $orderBy;
+    protected $orderDirection;
 
     public function __construct($entityManager, $entity, $query = null) {
         $this->setEntityManager($entityManager);
         $this->setEntity($entity);
         $this->setRepository($this->getEntityManager()->getRepository($this->getEntity()));
-        if($query){
+        if ($query) {
             $this->setQuery($query);
         }
     }
@@ -34,13 +35,13 @@ class Doctrine extends AbstractSource {
     }
 
     public function queryBuldier() {
-        if(!$this->query){
-        $query = $this->getEntityManager()->createQueryBuilder('u');
-        $query->select('u')->from($this->getEntity(), 'u');
+        if (!$this->query) {
+            $query = $this->getEntityManager()->createQueryBuilder('u');
+            $query->select('u')->from($this->getEntity(), 'u');
 
-        $this->setQuery($query);
-        return $this->query;
-        }else{
+            $this->setQuery($query);
+            return $this->query;
+        } else {
             return $this->query;
         }
     }
@@ -55,27 +56,24 @@ class Doctrine extends AbstractSource {
     }
 
     public function queryFilters() {
-        $where= "";
-        foreach($this->filters as $filter){
-            
-            if($filter["type"] == "like"){
-                $value = "%".$filter['value']."%";
-            $this->query->andWhere($this->query->expr()->like("u.".$filter["key"],$this->query->expr()->literal($value) ) );
-            }
-             if($filter["type"] == "eq"){
-                $value = $filter['value'];
-            $this->query->andWhere($this->query->expr()->eq("u.".$filter["key"],$this->query->expr()->literal($value) ) );
-            }
-            
-         // echo $this->query->getDQL();
-        //$where .= "u.".$filter["key"]." ".$filter["type"].$filter["value"];
-        //$this->query->andWhere($where );
-        }
+        $where = "";
+        foreach ($this->filters as $filter) {
 
+            if ($filter["type"] == "like") {
+                $value = "%" . $filter['value'] . "%";
+                $this->query->andWhere($this->query->expr()->like("u." . $filter["key"], $this->query->expr()->literal($value)));
+            }
+            if ($filter["type"] == "eq") {
+                $value = $filter['value'];
+                $this->query->andWhere($this->query->expr()->eq("u." . $filter["key"], $this->query->expr()->literal($value)));
+            }
+        }
     }
 
     public function queryOrder() {
-        
+        if($this->orderBy && ($this->orderDirection == "DESC" || $this->orderDirection == "ASC") ){
+             $this->query->orderBy("u.$this->orderBy", $this->orderDirection);
+        }
     }
 
     public function getEntityManager() {
@@ -125,8 +123,9 @@ class Doctrine extends AbstractSource {
         $this->filters = $filters;
     }
 
-    public function setOrder($orderBy) {
-        $this->order = $orderBy;
+    public function setOrder($orderBy, $direction) {
+        $this->orderBy = $orderBy;
+          $this->orderDirection = $direction;
     }
 
 }

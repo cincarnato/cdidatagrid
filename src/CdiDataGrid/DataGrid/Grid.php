@@ -8,6 +8,8 @@ use Zend\Form\Form;
 use Zend\Form\Element;
 use CdiDataGrid\DataGrid\Column\Column;
 use CdiDataGrid\DataGrid\Column\ExtraColumn;
+use Zend\Http\Response\Stream as ResponseStream;
+use Zend\Http\Headers;
 
 /*
  * To change this template, choose Tools | Templates
@@ -32,9 +34,10 @@ class Grid {
     protected $unprocessedData;
     protected $row;
     protected $filters;
-    protected $order;
+    protected $orderBy;
     protected $columnsName = array();
     protected $columnCollection = array();
+    protected $OrderColumnCollection = array();
     protected $extraColumnCollection = array();
     protected $selectFilterCollection = array();
     protected $renameColumnCollection = array();
@@ -49,6 +52,10 @@ class Grid {
     protected $mvcEvent;
     protected $expRegData = "/\{\{\w*\}\}/";
     protected $formFilters;
+    protected $csvCommaOn = false;
+    protected $csvSemicolonOn = false;
+    
+    protected $massAction = false;
 
     CONST DEFAULT_RENDER = "shtml";
 
@@ -59,8 +66,9 @@ class Grid {
     public function prepare() {
         $this->extractColumns();
         $this->prepareFilters();
+        $this->prepareOrder();
         $this->getSource()->setFilters($this->filters);
-        $this->getSource()->setOrder($this->order);
+        $this->getSource()->setOrder($this->orderBy, $this->orderDirection);
         $this->paginatorAdapter = $this->getSource()->query();
 
         $this->paginator = new Paginator($this->paginatorAdapter);
@@ -79,6 +87,25 @@ class Grid {
         $this->processBooleanColumns();
         $this->processDatetimeColumns();
         $this->processAditionalHtmlColumns();
+        $this->processOrderColumn();
+
+        $export = $this->exportCsv();
+        return $this->export;
+    }
+
+    protected function exportCsv() {
+        $query = $this->getQuery();
+        if ($query["cdiExportCommaCsv"] == "yes") {
+            $csv = new \CdiDataGrid\DataGrid\Renderer\Rcsv();
+            $this->export = $csv->deploy($this, ",");
+            return $this->export;
+        }
+        if ($query["cdiExportSemiColonCsv"] == "yes") {
+            $csv = new \CdiDataGrid\DataGrid\Renderer\Rcsv();
+            $this->export = $csv->deploy($this, ";");
+            return $this->export;
+        }
+        return false;
     }
 
     protected function mergeExtraColumn() {
@@ -99,6 +126,10 @@ class Grid {
         return $this->getMvcEvent()->getRequest()->getQuery();
     }
 
+    public function getPost() {
+        return $this->getMvcEvent()->getRequest()->getPost();
+    }
+
     public function getQueryArray() {
         $query = $this->getQuery();
         $return = array();
@@ -106,6 +137,16 @@ class Grid {
             $return[$key] = $value;
         }
         return $return;
+    }
+
+    public function prepareOrder() {
+        $query = $this->getQuery();
+        $order = $query["orderBy"];
+        $orderDirection = $query["orderDirection"];
+        if ($order && $orderDirection) {
+            $this->orderBy = $order;
+            $this->orderDirection = $orderDirection;
+        }
     }
 
     public function prepareFilters() {
@@ -184,6 +225,7 @@ class Grid {
                     $this->formFilters->add($this->selectFilterCollection[$name]);
                 } else {
                     $element = new Element\Text($name);
+       
                     $this->formFilters->add($element);
                 }
             }
@@ -274,6 +316,28 @@ class Grid {
         }
     }
 
+    public function setOrderColumn($column, $order) {
+
+
+        $this->OrderColumnCollection[$column] = $order;
+    }
+
+    public function processOrderColumn() {
+
+            asort($this->OrderColumnCollection);
+$newOrder = array();
+        foreach ($this->OrderColumnCollection as $key => $order) {
+
+            foreach ($this->columnCollection as $keyColumn => $objColumn) {
+                if ($key == $objColumn->getName()) {
+                    $newOrder[$order] = $objColumn;
+                    unset($this->columnCollection[$keyColumn]);
+                }
+            }
+        }
+        $this->columnCollection = array_merge($newOrder, $this->columnCollection);
+    }
+
     public function addExtraColumn($name, $originalValue, $side = "left", $filter = false) {
         $column = new ExtraColumn($name, $side);
 
@@ -322,12 +386,12 @@ class Grid {
                 $column->setHidden(true);
         }
     }
-    
-     protected function processDatetimeColumns() {
+
+    protected function processDatetimeColumns() {
         foreach ($this->columnCollection as &$column) {
             if (key_exists($column->getName(), $this->datetimeColumnCollection))
                 $column->setType("datetime");
-                $column->setFormatDatetime($this->datetimeColumnCollection[$column->getName()]);
+            $column->setFormatDatetime($this->datetimeColumnCollection[$column->getName()]);
         }
     }
 
@@ -447,6 +511,22 @@ class Grid {
 
     public function getRow() {
         return $this->row;
+    }
+
+    public function getCsvCommaOn() {
+        return $this->csvCommaOn;
+    }
+
+    public function setCsvCommaOn($csvCommaOn) {
+        $this->csvCommaOn = $csvCommaOn;
+    }
+
+    public function getCsvSemicolonOn() {
+        return $this->csvSemicolonOn;
+    }
+
+    public function setCsvSemicolonOn($csvSemicolonOn) {
+        $this->csvSemicolonOn = $csvSemicolonOn;
     }
 
 }

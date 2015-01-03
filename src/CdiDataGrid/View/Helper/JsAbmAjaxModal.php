@@ -76,11 +76,6 @@ class JsAbmAjaxModal extends AbstractHelper implements ServiceLocatorAwareInterf
                 .done(function(data) {
             $('#cdiAjaxContent').html(data);
 
-            var patt = /Error/;
-
-            if (!patt.test(data)) {
-                setTimeout('refrescar()', 1000);
-            }
         });
     }
     

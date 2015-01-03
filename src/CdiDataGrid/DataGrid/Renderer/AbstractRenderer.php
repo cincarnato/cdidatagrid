@@ -1,5 +1,5 @@
 <?php
-namespace CdiDataGrid\Renderer;
+namespace CdiDataGrid\DataGrid\Renderer;
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -12,7 +12,7 @@ namespace CdiDataGrid\Renderer;
 class AbstractRenderer implements RendererInterface {
     //put your code here
     
-    public function deploy(){
+    public function deploy($row){
         
     }
 }
