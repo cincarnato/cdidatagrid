@@ -54,5 +54,8 @@ return array(
     'view_manager' => array(
         'display_not_found_reason' => true,
         'display_exceptions'       => true,
+         'template_map' => array(
+             'widget/csvForm' => __DIR__ . '/../view/widget/csv-form.phtml',
+        ), 
     ),
 );

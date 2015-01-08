@@ -2,6 +2,9 @@
 <?php if ($this->pageCount): ?>
 
     <div class="pagination pagination-centered pagination-small">
+        <div>
+            <span>Rango: </span><?php echo $this->firstItemNumber; ?> - <?php echo $this->lastItemNumber; ?>
+        </div>
         <ul class="pagination">
 
             <!-- First page link -->
@@ -24,12 +27,12 @@
 
             <!-- Next page link -->
             <li<?php echo (isset($this->next)) ? '' : ' class="paginate_button disabled"'; ?>>
-                            <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('page' => $this->next) + $this->routeParams), true); ?>" >Next &gt;&gt;</a>
+                <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('page' => $this->next) + $this->routeParams), true); ?>" >Next &gt;&gt;</a>
             </li>
 
             <!-- Last page link -->
             <li<?php echo (isset($this->next)) ? '' : ' class="paginate_button disabled"'; ?>>
-                                    <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('page' => $this->last) + $this->routeParams), true); ?>" >Last &gt;&gt;</a>
+                <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('page' => $this->last) + $this->routeParams), true); ?>" >Last &gt;&gt;</a>
 
             </li>
 

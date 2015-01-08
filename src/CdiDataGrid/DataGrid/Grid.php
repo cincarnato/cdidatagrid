@@ -43,6 +43,7 @@ class Grid {
     protected $renameColumnCollection = array();
     protected $hiddenColumnCollection = array();
     protected $tooltipColumnCollection = array();
+    protected $linkColumnCollection = array();
     protected $booleanColumnCollection = array();
     protected $datetimeColumnCollection = array();
     protected $aditionalHtmlColumnCollection = array();
@@ -52,10 +53,13 @@ class Grid {
     protected $mvcEvent;
     protected $expRegData = "/\{\{\w*\}\}/";
     protected $formFilters;
+    protected $exportCsv = false;
+    protected $csvForm;
     protected $csvCommaOn = false;
     protected $csvSemicolonOn = false;
-    
-    protected $massAction = false;
+    protected $csvTabulatorOn = false;
+    protected $limitQuery = null;
+    protected $tableClass;
 
     CONST DEFAULT_RENDER = "shtml";
 
@@ -75,8 +79,10 @@ class Grid {
         $this->paginator->setDefaultItemCountPerPage($this->getRecordPerPage());
         $this->paginator->setCurrentPageNumber($this->getPage());
 
-
         $this->unprocessedData = $this->paginator->getCurrentItems();
+
+
+
 
         $this->processData();
         $this->mergeExtraColumn();
@@ -86,11 +92,20 @@ class Grid {
         $this->processTooltipColumns();
         $this->processBooleanColumns();
         $this->processDatetimeColumns();
+          $this->processLinkColumns();
         $this->processAditionalHtmlColumns();
         $this->processOrderColumn();
 
         $export = $this->exportCsv();
         return $this->export;
+    }
+
+    public function getAllData() {
+        return $this->getSource()->getAllData($this->limitQuery);
+    }
+    
+    public function csvForm(){
+        
     }
 
     protected function exportCsv() {
@@ -103,6 +118,11 @@ class Grid {
         if ($query["cdiExportSemiColonCsv"] == "yes") {
             $csv = new \CdiDataGrid\DataGrid\Renderer\Rcsv();
             $this->export = $csv->deploy($this, ";");
+            return $this->export;
+        }
+        if ($query["cdiExportTabulatorCsv"] == "yes") {
+            $csv = new \CdiDataGrid\DataGrid\Renderer\Rcsv();
+            $this->export = $csv->deploy($this, "\t");
             return $this->export;
         }
         return false;
@@ -171,16 +191,27 @@ class Grid {
                             if (preg_match("/==/", $value)) {
                                 $match = true;
                                 $type = "eq";
+                                $value = str_replace("==", "", $value);
                             }
 
-                            if (preg_match("/>/", $value)) {
+                            if (preg_match("/$</", $value)) {
                                 $match = true;
                                 $type = "lt";
+                                $value = str_replace("<", "", $value);
                             }
 
-                            if (preg_match("/</", $value)) {
+                            if (preg_match("/$>/", $value)) {
                                 $match = true;
                                 $type = "gt";
+                                $value = str_replace(">", "", $value);
+                            }
+
+                            if (preg_match("/<>/", $value)) {
+                                $match = true;
+                                $type = "between";
+                                $values = explode("<>", $value);
+                                $value = $values[0];
+                                $value2 = $values[1];
                             }
 
                             if (!$match) {
@@ -191,7 +222,8 @@ class Grid {
                             $filter = array(
                                 'key' => $column->getName(),
                                 'value' => $value,
-                                'type' => $type
+                                'type' => $type,
+                                'value2' => $value2
                             );
                             array_push($filters, $filter);
                         }
@@ -225,7 +257,6 @@ class Grid {
                     $this->formFilters->add($this->selectFilterCollection[$name]);
                 } else {
                     $element = new Element\Text($name);
-       
                     $this->formFilters->add($element);
                 }
             }
@@ -264,6 +295,10 @@ class Grid {
 
     public function tooltipColumn($columnName, $tooltip) {
         $this->tooltipColumnCollection[$columnName] = $tooltip;
+    }
+    
+     public function linkColumn($columnName) {
+        $this->linkColumnCollection[$columnName] = $columnName;
     }
 
     public function aditionalHtmlColumn($columnName, $HtmlBegin, $HtmlEnd) {
@@ -324,8 +359,8 @@ class Grid {
 
     public function processOrderColumn() {
 
-            asort($this->OrderColumnCollection);
-$newOrder = array();
+        asort($this->OrderColumnCollection);
+        $newOrder = array();
         foreach ($this->OrderColumnCollection as $key => $order) {
 
             foreach ($this->columnCollection as $keyColumn => $objColumn) {
@@ -392,6 +427,14 @@ $newOrder = array();
             if (key_exists($column->getName(), $this->datetimeColumnCollection))
                 $column->setType("datetime");
             $column->setFormatDatetime($this->datetimeColumnCollection[$column->getName()]);
+        }
+    }
+    
+       protected function processLinkColumns() {
+        foreach ($this->columnCollection as &$column) {
+            if (key_exists($column->getName(), $this->linkColumnCollection))
+                $column->setType("link");
+      
         }
     }
 
@@ -529,6 +572,49 @@ $newOrder = array();
         $this->csvSemicolonOn = $csvSemicolonOn;
     }
 
-}
+    public function getLimitQuery() {
+        return $this->limitQuery;
+    }
 
-?>
+    public function setLimitQuery($limitQuery) {
+        $this->limitQuery = $limitQuery;
+    }
+
+    public function getCsvTabulatorOn() {
+        return $this->csvTabulatorOn;
+    }
+
+    public function setCsvTabulatorOn($csvTabulatorOn) {
+        $this->csvTabulatorOn = $csvTabulatorOn;
+    }
+    
+    public function getTableClass() {
+        return $this->tableClass;
+    }
+
+    public function setTableClass($tableClass) {
+        $this->tableClass = $tableClass;
+    }
+    
+    public function getExportCsv() {
+        return $this->exportCsv;
+    }
+
+    public function setExportCsv($exportCsv) {
+        $this->exportCsv = $exportCsv;
+    }
+
+ public function getCsvForm(){
+     if(!$this->csvForm){
+     $this->csvForm = new \CdiDataGrid\Form\Csv();
+     }
+     
+     return $this->csvForm; 
+     
+ }
+
+
+
+
+
+}
