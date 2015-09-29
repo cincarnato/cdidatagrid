@@ -69,7 +69,7 @@ class Grid {
     protected $instanceToRender = "grid";
     protected $renderTemplate = "bootstrap";
     protected $user = null;
-        protected $columnFilter = true;
+    protected $columnFilter = true;
     protected $columnOrder = true;
 
     
