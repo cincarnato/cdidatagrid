@@ -1,4 +1,6 @@
 
+
+<br>
 <div class="row">
     <div class="col-xs-12">
         <?php if ($this->grid->getCsvCommaOn()): ?>
@@ -9,50 +11,57 @@
             <a class="btn btn-info" href="<?php echo $this->gview->url($this->route, array(), array('query' => array('cdiExportSemiColonCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (;)</a> 
 
         <?php endif; ?>
-
-        <?php if ($this->grid->getCsvTabulatorOn()): ?>
+            
+             <?php if ($this->grid->getCsvTabulatorOn()): ?>
             <a class="btn btn-info" href="<?php echo $this->gview->url($this->route, array(), array('query' => array('cdiExportTabulatorCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (Tabulado)</a> 
 
         <?php endif; ?>
-
-        <?php if ($this->grid->getExportCsv()): ?>
-
-            <?php echo $this->gview->partial('widget/csvForm', array('form' => $this->grid->getCsvForm(), 'route' => $this->route, 'routeParams' => $this->routeParams)); ?> 
+           
+                 <?php if ($this->grid->getExportCsv()): ?>
+            
+                    <?php echo $this->gview->partial('widget/csvForm', array('form' => $this->grid->getCsvForm(), 'route' =>$this->route, 'routeParams' => $this->routeParams)); ?> 
             <script>
-                function submitCsv() {
-                    var datastring = $('#csvExport').serialize();
-                    var sPageURL = window.location.href;
+                function submitCsv(){
+                     var datastring = $('#csvExport').serialize();
+                     var sPageURL = window.location.href;
+                     
+                     var patt = patt2 = /\?/;
+                     var res = patt.test(sPageURL);
+                 
+                     if(res){
+                          var finalUrl = sPageURL+"&"+datastring;
+                     }else{
+                          var finalUrl = sPageURL+"?"+datastring;
+                     }
+                     
+                    
+                      window.location.assign(finalUrl);
+                } 
+                </script>
 
-                    var patt = patt2 = /\?/;
-                    var res = patt.test(sPageURL);
-
-                    if (res) {
-                        var finalUrl = sPageURL + "&" + datastring;
-                    } else {
-                        var finalUrl = sPageURL + "?" + datastring;
-                    }
-
-
-                    window.location.assign(finalUrl);
-                }
-            </script>
-
-        <?php endif; ?> 
+ <?php endif; ?> 
     </div>
 </div>
 <br>
 
 <div class="row">
     <div class="col-lg-6">
-        <table class="table table-bordered table-striped">
-            <tr>
-                <th>Registros Totales:</th><td>  <?php echo $this->grid->getPaginator()->getTotalItemCount(); ?></td>
-            </tr>  
-        </table>
-    </div>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Registros Totales:</th><td>  <?php echo $this->grid->getPaginator()->getTotalItemCount(); ?></td>
+        </tr>  
+    </table>
+  </div>
 </div>
 
-
+   <?php if ($this->grid->getOptionAdd()): ?>
+<div class="row">
+    <div class="col-lg-6">
+        <?php echo $this->grid->getAddBtn(); ?>
+  </div>
+</div>
+<?php endif; ?> 
+<br>
 <?php
 $form = $this->grid->getFormFilters();
 $form->prepare();
@@ -63,48 +72,32 @@ $submit->setAttribute('class', 'btn btn-success');
 
 <?php echo $this->gview->form()->openTag($form); ?>
 <div class="table">
-    <div class="row divFilter">
-        <div class="col-lg-6">
-            <?php if ($this->grid->getOptionAdd()): ?>                 
-                <?php echo $this->grid->getAddBtn(); ?>
-
-            <?php endif; ?> 
-              <?php if ($this->grid->getColumnFilter()): ?>
-            <?php echo $this->gview->formElement($submit) ?>
-              <?php endif; ?>
-        </div>
-        <div class="col-lg-6">
-
-        </div>
-    </div>
-
+     <div class="divFilter"><?php echo $this->gview->formElement($submit) ?></div>
     <?php echo $this->gview->formElement($form->get("page")) ?>
     <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
-
+     
         <tr>
             <?php foreach ($this->grid->getColumnCollection() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
                     <th style="text-align: center; font-size: 14px;">
                         <?php $name = $column->getName(); ?>
-                <div >
-                    <table style="margin: 0 auto;"> 
-                        <tr>
-                            <td class="col-md-11"> <a  data-toggle="tooltip" title="<?php echo $column->getTooltip(); ?>" style="cursor: help">
+        <div >
+                <table style="margin: 0 auto;"> 
+                    <tr>
+                    <td class="col-md-11"> <a  data-toggle="tooltip" title="<?php echo $column->getTooltip(); ?>" style="cursor: help">
 
-                                    <?php echo $column; ?>
-                                </a></td>
-                            <?php if ($column->getType() != "extra"): ?>
-                                <?php if ($this->grid->getColumnOrder()): ?>
-                                    <td class="col-md-1  padding2">
-                                        <div >  <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-up"></i></a> </div>
+                            <?php echo $column; ?>
+                        </a></td>
+                         <?php if ($column->getType() != "extra"): ?>
+                    <td class="col-md-1  padding2">
+                        <div >  <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-up"></i></a> </div>
 
-                                        <div > <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-down"></i></a></div>
-                                    </td>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                        </tr>
-                    </table>
-                </div>
+                        <div > <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-down"></i></a></div>
+                    </td>
+                      <?php endif; ?>
+                    </tr>
+                </table>
+        </div>
 
 
 
@@ -113,22 +106,22 @@ $submit->setAttribute('class', 'btn btn-success');
         <?php endforeach; ?>
 
         </tr>
-        <?php if ($this->grid->getColumnFilter()): ?>
-            <tr>
 
-                <?php foreach ($this->grid->getColumnCollection() as $column): ?>
-                    <?php if (!$column->getHidden()): ?>
-                        <td> <?php
-                            if ($column->getFilterActive()) {
-                                echo $this->gview->formElement($form->get("f_" . $column->getName()));
-                            }
-                            ?></td>
-                    <?php endif; ?>
-                <?php endforeach; ?>
+        <tr>
+
+            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                <?php if (!$column->getHidden()): ?>
+                    <td> <?php
+                        if ($column->getFilterActive()) {
+                            echo $this->gview->formElement($form->get("f_" . $column->getName()));
+                        }
+                        ?></td>
+                <?php endif; ?>
+            <?php endforeach; ?>
 
 
-            </tr>
-        <?php endif; ?>
+        </tr>
+
         <?php if (count($this->grid->getRow())): ?>
             <?php foreach ($this->grid->getRow() as $data): ?>
                 <tr>
@@ -136,23 +129,23 @@ $submit->setAttribute('class', 'btn btn-success');
                         <?php if (!$column->getHidden()): ?>
                             <td >
                                 <?php echo $column->getHtmlBegin(); ?>
-
+                                
                                 <?php if ($column->getType() == "extra"): ?>
                                     <?php echo nl2br($data[$column->getName()]); ?>
                                 <?php endif; ?>
-
+                                
                                 <?php if ($column->getType() == "text"): ?>
                                     <?php echo nl2br($data[$column->getName()]); ?>
                                 <?php endif; ?>
-
-                                <?php if ($column->getType() == "longText"): ?>
-                                    <?php echo substr(nl2br($data[$column->getName()]), 0, $column->getLength()) . "..."; ?>
+                                
+                                  <?php if ($column->getType() == "longText"): ?>
+                                    <?php echo substr(nl2br($data[$column->getName()]), 0, $column->getLength())."..." ; ?>
                                 <?php endif; ?>
-
-                                <?php if ($column->getType() == "link"): ?>
-                                    <a target="_blank" href="<?php echo $data[$column->getName()]; ?>">LINK</a>
+                                
+                                 <?php if ($column->getType() == "link"): ?>
+                                <a target="_blank" href="<?php echo $data[$column->getName()]; ?>">LINK</a>
                                 <?php endif; ?>
-
+                                
                                 <?php if ($column->getType() == "boolean"): ?>
                                     <?php echo nl2br($this->gview->ColumnBoolean($column, $data[$column->getName()])); ?>
                                 <?php endif; ?>
@@ -181,7 +174,8 @@ echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', 'paginatio
     "routeParams" => $this->routeParams,
     'route' => $this->route));
 ?>
+    
 
-
-<?php echo $this->gview->JsCrud(); ?>
+<?php
+echo $this->gview->JsCrud(); ?>
 

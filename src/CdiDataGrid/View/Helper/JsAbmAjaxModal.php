@@ -41,8 +41,8 @@ class JsAbmAjaxModal extends AbstractHelper implements ServiceLocatorAwareInterf
         return $this->serviceLocator;
     }
 
-    public function __invoke($nameObject, $urlEdit, $urlSubmit) {
-        
+    public function __invoke($nameObject, $urlEdit, $urlSubmit, $urlDelete = null, $urlDeleteSubmit = null) {
+
         $return = "<div class='modal fade' id='cdiModal'>
     <div class='modal-dialog modal-lg'>
         <div class='modal-content'>
@@ -76,11 +76,6 @@ class JsAbmAjaxModal extends AbstractHelper implements ServiceLocatorAwareInterf
                 .done(function(data) {
             $('#cdiAjaxContent').html(data);
 
-            var patt = /Error/;
-
-            if (!patt.test(data)) {
-                setTimeout('refrescar()', 1000);
-            }
         });
     }
     
@@ -90,6 +85,31 @@ class JsAbmAjaxModal extends AbstractHelper implements ServiceLocatorAwareInterf
         window.location.reload();
     }
 </script>  ";
+
+        if ($urlDelete && $urlDeleteSubmit) {
+            $return .= "<script>
+
+    function cdiGoDelete(id) {
+        $.get('$urlDelete', {id: id})
+                .done(function(data) {
+            $('#cdiTitle').html('Edicion');
+            $('#cdiAjaxContent').html(data);
+            $('#cdiModal').modal('show');
+
+        });
+    }
+    
+    
+        function cdiSubmitDelete() {
+        var datastring = $('#$nameObject').serialize();
+        $.post('$urlDeleteSubmit', datastring)
+                .done(function(data) {
+            $('#cdiAjaxContent').html(data);
+        });
+    }
+    
+</script>  ";
+        }
 
 
         return $return;

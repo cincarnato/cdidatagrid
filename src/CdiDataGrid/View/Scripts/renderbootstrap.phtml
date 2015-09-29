@@ -16,10 +16,30 @@
             <a class="btn btn-info" href="<?php echo $this->gview->url($this->route, array(), array('query' => array('cdiExportTabulatorCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (Tabulado)</a> 
 
         <?php endif; ?>
-            <br><br>
+           
                  <?php if ($this->grid->getExportCsv()): ?>
+            
                     <?php echo $this->gview->partial('widget/csvForm', array('form' => $this->grid->getCsvForm(), 'route' =>$this->route, 'routeParams' => $this->routeParams)); ?> 
-                  <?php endif; ?> 
+            <script>
+                function submitCsv(){
+                     var datastring = $('#csvExport').serialize();
+                     var sPageURL = window.location.href;
+                     
+                     var patt = patt2 = /\?/;
+                     var res = patt.test(sPageURL);
+                 
+                     if(res){
+                          var finalUrl = sPageURL+"&"+datastring;
+                     }else{
+                          var finalUrl = sPageURL+"?"+datastring;
+                     }
+                     
+                    
+                      window.location.assign(finalUrl);
+                } 
+                </script>
+
+ <?php endif; ?> 
     </div>
 </div>
 <br>
@@ -105,6 +125,10 @@ $submit->setAttribute('class', 'btn btn-success');
                                     <?php echo nl2br($data[$column->getName()]); ?>
                                 <?php endif; ?>
                                 
+                                  <?php if ($column->getType() == "longText"): ?>
+                                    <?php echo substr(nl2br($data[$column->getName()]), 0, $column->getLength())."..." ; ?>
+                                <?php endif; ?>
+                                
                                  <?php if ($column->getType() == "link"): ?>
                                 <a target="_blank" href="<?php echo $data[$column->getName()]; ?>">LINK</a>
                                 <?php endif; ?>
@@ -138,4 +162,7 @@ echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', 'paginatio
     'route' => $this->route));
 ?>
     
+
+<?php
+echo $this->gview->JsCrud(); ?>
 

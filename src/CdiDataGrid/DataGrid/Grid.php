@@ -68,10 +68,6 @@ class Grid {
     protected $addBtn = null;
     protected $instanceToRender = "grid";
     protected $renderTemplate = "bootstrap";
-    protected $user = null;
-    protected $columnFilter = true;
-    protected $columnOrder = true;
-
     
     CONST DEFAULT_RENDER = "shtml";
 
@@ -151,7 +147,7 @@ class Grid {
 
             if ($aData["crudAction"] == 'submitEdit') {
                
-               $result = $this->getSource()->updateRecord($aData["crudId"], $aData,$this->user);
+               $result = $this->getSource()->updateRecord($aData["crudId"], $aData);
                
                 $this->getEntityForm()->add(array(
                     'name' => 'crudAction',
@@ -191,7 +187,7 @@ class Grid {
             
              if ($aData["crudAction"] == 'submitAdd') {
    
-               $result = $this->getSource()->saveRecord($aData,$this->user);
+               $result = $this->getSource()->saveRecord($aData);
                
                 $this->getEntityForm()->add(array(
                     'name' => 'crudAction',
@@ -838,31 +834,6 @@ class Grid {
     function setAddBtn($addBtn) {
         $this->addBtn = $addBtn;
     }
-    
-    function getUser() {
-        return $this->user;
-    }
-
-    function setUser($user) {
-        $this->user = $user;
-    }
-    
-        function getColumnFilter() {
-        return $this->columnFilter;
-    }
-
-    function setColumnFilter($columnFilter) {
-        $this->columnFilter = $columnFilter;
-    }
-    function getColumnOrder() {
-        return $this->columnOrder;
-    }
-
-    function setColumnOrder($columnOrder) {
-        $this->columnOrder = $columnOrder;
-    }
-
-
 
 
 }

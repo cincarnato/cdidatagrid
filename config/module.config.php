@@ -46,7 +46,9 @@ return array(
     ),
     'view_helpers' => array(
         'invokables' => array(
+              'RenderCdiGrid' => 'CdiDataGrid\View\Helper\RenderCdiGrid',
             'RenderBootstrapGrid' => 'CdiDataGrid\View\Helper\RenderBootstrapGrid',
+              'JsCrud' => 'CdiDataGrid\View\Helper\JsCrud',
              'JsAbmAjaxModal' => 'CdiDataGrid\View\Helper\JsAbmAjaxModal',
               'ColumnBoolean' => 'CdiDataGrid\View\Helper\ColumnBoolean',
         )

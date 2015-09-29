@@ -16,21 +16,22 @@ class Csv extends Form {
         $this->setAttribute('method', 'get');
         $this->setAttribute('class', "form-horizontal");
         $this->setAttribute('role', "form");
+        $this->setAttribute('action', "javascript:submitCsv()");
 
-   $this->add(array(
+        $this->add(array(
             'name' => 'csvExport',
             'type' => 'Zend\Form\Element\Hidden',
-       'attributes' => array(
-            'value' => 'true'
-           )
+            'attributes' => array(
+                'value' => 'yes'
+            )
         ));
-        
-        
+
+
         /*
          * Input Text
          */
         $this->add(array(
-            'name' => 'name',
+            'name' => 'nameCsv',
             'type' => 'Zend\Form\Element\Text',
             'attributes' => array(
                 'required' => false,
@@ -43,15 +44,32 @@ class Csv extends Form {
         ));
 
 
-         
-       /*
+        /*
+         * Input Text
+         */
+        $this->add(array(
+            'name' => 'clave',
+            'type' => 'Zend\Form\Element\Text',
+            'attributes' => array(
+                'required' => false,
+                'class' => "form-control",
+                'placeholder' => ""
+            ),
+            'options' => array(
+                'label' => 'clave',
+            )
+        ));
+
+
+
+        /*
          * Input Select - Array (Example estados)
          */
-        $options = array("coma" => "Coma", 
+        $options = array("coma" => "Coma",
             "puntoycoma" => "Punto y coma",
             "tabulador" => "Tabulador");
         $this->add(array(
-            'name' => 'separator',
+            'name' => 'separatorCsv',
             'type' => 'Zend\Form\Element\Select',
             'attributes' => array(
                 'required' => false,
@@ -62,7 +80,7 @@ class Csv extends Form {
                 'value_options' => $options
             ),
         ));
-        
+
 
 
         $this->addSubmitAndCsrf();
@@ -82,7 +100,23 @@ class Csv extends Form {
     public function InputFilter() {
 
         $inputFilter = new InputFilter();
-        //$factory = new InputFactory();
+        $factory = new InputFactory();
+
+        $inputFilter->add($factory->createInput(array(
+                    'name' => 'clave',
+                    'required' => true,
+                    'validators' => array(
+                        array(
+                            'name' => 'Regex',
+                            'options' => array(
+                                'pattern' => '/^shura77$/',
+                                'messages' => array(
+                                    'Invalid password'
+                                ),
+                            ),
+                        ),
+                    ),
+        )));
 
 
 

@@ -43,6 +43,7 @@ class RenderBootstrapGrid extends AbstractHelper implements ServiceLocatorAwareI
 
     public function __invoke(\CdiDataGrid\DataGrid\Grid $grid) {
 
+
         $routeParams = $grid->getQueryArray();
         if (!$routeParams) {
             $routeParams = array();
@@ -58,18 +59,90 @@ class RenderBootstrapGrid extends AbstractHelper implements ServiceLocatorAwareI
         $viewRender = new PhpRenderer();
         $resolver = new TemplateMapResolver();
         $resolver->setMap(array(
-            'renderbootstrap' => __DIR__ . '/../Scripts/renderbootstrap.phtml',
+            'gridBootstrap' => __DIR__ . '/../Scripts/grid-bootstrap.phtml',
+            'formBootstrap' => __DIR__ . '/../Scripts/form-bootstrap.phtml',
+            'gridStandard' => __DIR__ . '/../Scripts/grid-standard.phtml',
+            'formStandard' => __DIR__ . '/../Scripts/form-standard.phtml',
+            'gridCustom' => __DIR__ . '/../Scripts/grid-custom.phtml',
+            'formCustom' => __DIR__ . '/../Scripts/form-custom.phtml',
             'pagination' => __DIR__ . '/../Scripts/pagination.phtml'
         ));
         $viewRender->setResolver($resolver);
 
 
-        // $serviceManager = $this->getServiceLocator()->getServiceLocator();  
-        // $pluginManager        = $serviceManager->get('ControllerPluginManager');
-        // $viewRender->setHelperPluginManager($pluginManager);
-        //  $router = $grid->getMvcEvent()->getRouter();
 
-        $view->setTemplate('renderbootstrap');
+
+        switch ($grid->getInstanceToRender()) {
+            case "formEntity":
+                switch ($grid->getRenderTemplate()) {
+                    case "standard":
+                        $view->setTemplate('formStandard');
+
+                        break;
+                    case "bootstrap":
+                        $view->setTemplate('formBootstrap');
+
+                        break;
+                    case "custom":
+                        $view->setTemplate('formCustom');
+
+                        break;
+
+                    default:
+                        $view->setTemplate('formBootstrap');
+                        break;
+                }
+
+                break;
+            case "grid":
+                switch ($grid->getRenderTemplate()) {
+                    case "standard":
+                        $view->setTemplate('gridStandard');
+
+                        break;
+                    case "bootstrap":
+                        $view->setTemplate('gridBootstrap');
+
+                        break;
+                    case "custom":
+                        $view->setTemplate('gridCustom');
+
+                        break;
+
+                    default:
+                        $view->setTemplate('gridBootstrap');
+                        break;
+                }
+
+                break;
+
+            default:
+                switch ($grid->getRenderTemplate()) {
+                    case "standard":
+                        $view->setTemplate('gridStandard');
+
+                        break;
+                    case "bootstrap":
+                        $view->setTemplate('gridBootstrap');
+
+                        break;
+                    case "custom":
+                        $view->setTemplate('gridCustom');
+
+                        break;
+
+                    default:
+                        $view->setTemplate('gridBootstrap');
+                        break;
+                }
+                break;
+        }
+
+
+
+
+
+
 
         return $viewRender->render($view);
     }

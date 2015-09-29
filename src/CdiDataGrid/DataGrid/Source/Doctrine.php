@@ -5,7 +5,6 @@ namespace CdiDataGrid\DataGrid\Source;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use \Doctrine\ORM\Tools\Pagination\Paginator;
 use \Zend\Form\Annotation\AnnotationBuilder;
-use DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBuilder;
 
 class Doctrine extends AbstractSource {
 
@@ -33,63 +32,36 @@ class Doctrine extends AbstractSource {
         $this->getEntityManager()->flush();
     }
 
-    public function updateRecord($id, $aData, $user) {
+    public function updateRecord($id, $aData) {
         $this->generateEntityForm($id);
 
         $this->entityForm->setData($aData);
 
         if ($this->entityForm->isValid()) {
             $record = $this->entityForm->getObject();
-
-            if (property_exists($record, "lastUpdatedBy") && $user != null) {
-                $record->setLastUpdatedBy($user);
-            }
-
-            if (property_exists($record, "actualizadoPor") && $user != null) {
-                $record->setActualizadoPor($user);
-            }
-
             //Aqui deberia crear un evento en forma de escucha
             $this->getEntityManager()->persist($record);
             $this->getEntityManager()->flush();
             return true;
         } else {
-            var_dump($this->entityForm->getMessages()); //error messages
+             var_dump($this->entityForm->getMessages()); //error messages
             return false;
         }
     }
 
-    public function saveRecord($aData, $user) {
+    public function saveRecord($aData) {
         $this->generateEntityForm();
 
         $this->entityForm->setData($aData);
 
         if ($this->entityForm->isValid()) {
             $record = $this->entityForm->getObject();
-
-            if (property_exists($record, "createdBy") && $user != null) {
-                $record->setCreatedBy($user);
-            }
-
-            if (property_exists($record, "creadoPor") && $user != null) {
-                $record->setCreadoPor($user);
-            }
-
-            if (property_exists($record, "lastUpdatedBy") && $user != null) {
-                $record->setLastUpdatedBy($user);
-            }
-
-            if (property_exists($record, "actualizadoPor") && $user != null) {
-                $record->setActualizadoPor($user);
-            }
-
-
             //Aqui deberia crear un evento en forma de escucha
             $this->getEntityManager()->persist($record);
             $this->getEntityManager()->flush();
             return true;
         } else {
-            var_dump($this->entityForm->getMessages()); //error messages
+           var_dump($this->entityForm->getMessages()); //error messages
             return false;
         }
     }
@@ -141,7 +113,7 @@ class Doctrine extends AbstractSource {
 
     public function generateEntityForm($id = null) {
 
-        $builder = new DoctrineAnnotationBuilder($this->entityManager);
+        $builder = new AnnotationBuilder();
         $this->entityForm = $builder->createForm($this->entity);
 
         if ($id) {
