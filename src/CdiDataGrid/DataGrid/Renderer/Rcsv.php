@@ -18,7 +18,7 @@ class Rcsv extends AbstractRenderer {
     //put your code here
     protected $separator = ";";
 
-    public function deploy($grid, $separator = ";") {
+    public function deploy($grid, $separator = ";", $nameCsv = null) {
         $this->separator = $separator;
         $this->row = $grid->getRow();
 
@@ -26,7 +26,12 @@ class Rcsv extends AbstractRenderer {
 
         $path = "public/download";
 
-        $saveFilename = "grid";
+        if($nameCsv){
+             $saveFilename = $nameCsv;
+        }else{
+             $saveFilename = "grid";
+        }
+       
 
 
         if (!$handle = fopen($path . "/" . $saveFilename, "w")) {

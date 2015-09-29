@@ -19,7 +19,7 @@ abstract class AbstractColumn {
     protected $replaceTrueBy;
     protected $replaceFalseBy;
     protected $formatDatetime;
-
+     protected $length = 15;
     public function getName() {
         return $this->name;
     }
@@ -107,6 +107,16 @@ abstract class AbstractColumn {
     public function setFormatDatetime($formatDatetime) {
         $this->formatDatetime = $formatDatetime;
     }
+    
+    public function getLength() {
+        return $this->length;
+    }
+
+    public function setLength($length) {
+        $this->length = $length;
+    }
+
+
 
 }
 

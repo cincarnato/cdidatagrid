@@ -44,6 +44,7 @@ class Grid {
     protected $hiddenColumnCollection = array();
     protected $tooltipColumnCollection = array();
     protected $linkColumnCollection = array();
+    protected $longTextColumnCollection = array();
     protected $booleanColumnCollection = array();
     protected $datetimeColumnCollection = array();
     protected $aditionalHtmlColumnCollection = array();
@@ -53,6 +54,7 @@ class Grid {
     protected $mvcEvent;
     protected $expRegData = "/\{\{\w*\}\}/";
     protected $formFilters;
+    protected $editForm = null;
     protected $exportCsv = false;
     protected $csvForm;
     protected $csvCommaOn = false;
@@ -60,7 +62,17 @@ class Grid {
     protected $csvTabulatorOn = false;
     protected $limitQuery = null;
     protected $tableClass;
+    protected $optionDelete = false;
+    protected $optionEdit = false;
+    protected $optionAdd = false;
+    protected $addBtn = null;
+    protected $instanceToRender = "grid";
+    protected $renderTemplate = "bootstrap";
+    protected $user = null;
+        protected $columnFilter = true;
+    protected $columnOrder = true;
 
+    
     CONST DEFAULT_RENDER = "shtml";
 
     public function __construct() {
@@ -68,6 +80,9 @@ class Grid {
     }
 
     public function prepare() {
+
+        $returnCrud = $this->verifyCrudActions();
+
         $this->extractColumns();
         $this->prepareFilters();
         $this->prepareOrder();
@@ -81,9 +96,6 @@ class Grid {
 
         $this->unprocessedData = $this->paginator->getCurrentItems();
 
-
-
-
         $this->processData();
         $this->mergeExtraColumn();
         $this->processFormFilters();
@@ -92,19 +104,158 @@ class Grid {
         $this->processTooltipColumns();
         $this->processBooleanColumns();
         $this->processDatetimeColumns();
-          $this->processLinkColumns();
+        $this->processLinkColumns();
+        $this->processLongTextColumns();
         $this->processAditionalHtmlColumns();
+
         $this->processOrderColumn();
 
         $export = $this->exportCsv();
         return $this->export;
     }
 
+    protected function verifyCrudActions() {
+        $aData = $this->getPost();
+
+        if (isset($aData["crudAction"])) {
+
+            if ($aData["crudAction"] == 'delete') {
+
+                $return = $this->getSource()->delRecord($aData["crudId"]);
+                echo "Delete:".$aData["crudId"];
+                return $return;
+            }
+
+
+            if ($aData["crudAction"] == 'edit') {
+                $this->getSource()->generateEntityForm($aData["crudId"]);
+                $this->getEntityForm()->add(array(
+                    'name' => 'crudAction',
+                    'type' => 'Zend\Form\Element\Hidden',
+                    'attributes' => array(
+                        'value' => 'submitEdit'
+                    )
+                ));
+                $this->getEntityForm()->add(array(
+                    'name' => 'crudId',
+                    'type' => 'Zend\Form\Element\Hidden',
+                    'attributes' => array(
+                        'value' => $aData["crudId"]
+                    )
+                ));
+                $this->setInstanceToRender("formEntity");
+                return $return;
+            }
+            
+           
+
+            if ($aData["crudAction"] == 'submitEdit') {
+               
+               $result = $this->getSource()->updateRecord($aData["crudId"], $aData,$this->user);
+               
+                $this->getEntityForm()->add(array(
+                    'name' => 'crudAction',
+                    'type' => 'Zend\Form\Element\Hidden',
+                    'attributes' => array(
+                        'value' => 'submitEdit'
+                    )
+                ));
+                $this->getEntityForm()->add(array(
+                    'name' => 'crudId',
+                    'type' => 'Zend\Form\Element\Hidden',
+                    'attributes' => array(
+                        'value' => $aData["crudId"]
+                    )
+                ));
+                
+                
+               if(!$result){
+                     $this->setInstanceToRender("formEntity");
+               }
+            }
+            
+            
+             if ($aData["crudAction"] == 'add') {
+                $this->getSource()->generateEntityForm(null);
+                $this->getEntityForm()->add(array(
+                    'name' => 'crudAction',
+                    'type' => 'Zend\Form\Element\Hidden',
+                    'attributes' => array(
+                        'value' => 'submitAdd'
+                    )
+                ));
+
+                $this->setInstanceToRender("formEntity");
+                return $return;
+            }
+            
+             if ($aData["crudAction"] == 'submitAdd') {
+   
+               $result = $this->getSource()->saveRecord($aData,$this->user);
+               
+                $this->getEntityForm()->add(array(
+                    'name' => 'crudAction',
+                    'type' => 'Zend\Form\Element\Hidden',
+                    'attributes' => array(
+                        'value' => 'submitAdd'
+                    )
+                ));
+                
+                if(!$result){
+                     $this->setInstanceToRender("formEntity");
+               }
+             }
+        }
+    }
+
+    public function getEntityForm() {
+        return $this->getSource()->getEntityForm();
+    }
+
+    public function generateEntityForm() {
+
+
+
+        return $this->formEntity;
+    }
+
+    public function addDelOption($name, $side, $btnClass, $btnVal = null) {
+        $this->setOptionDelete(true);
+        $originalValue = "<i class='" . $btnClass . "' onclick='deleteRecord({{id}})'>" . $btnVal . "</i>";
+        $column = new ExtraColumn($name, $side);
+        $column->setOriginalValue($originalValue);
+        $column->setFilterActive(false);
+        if ($side == "left") {
+            array_unshift($this->extraColumnCollection, $column);
+        } else if ($side == "right") {
+            array_push($this->extraColumnCollection, $column);
+        }
+    }
+
+    public function addEditOption($name, $side, $btnClass, $btnVal = null) {
+        $this->setOptionEdit(true);
+        $originalValue = "<i class='" . $btnClass . "' onclick='editRecord({{id}})'>" . $btnVal . "</i>";
+        $column = new ExtraColumn($name, $side);
+        $column->setOriginalValue($originalValue);
+        $column->setFilterActive(false);
+        if ($side == "left") {
+            array_unshift($this->extraColumnCollection, $column);
+        } else if ($side == "right") {
+            array_push($this->extraColumnCollection, $column);
+        }
+    }
+    
+      public function addNewOption($name, $btnClass, $btnVal = "+") {
+        $this->setOptionAdd(true);
+        $this->addBtn = "<i id='.$name.' name='.$name.' class='" . $btnClass . "' onclick='addRecord()'>" . $btnVal . "</i>";
+       
+    }
+
     public function getAllData() {
         return $this->getSource()->getAllData($this->limitQuery);
     }
-    
-    public function csvForm(){
+
+    public function csvForm() {
         
     }
 
@@ -125,6 +276,15 @@ class Grid {
             $this->export = $csv->deploy($this, "\t");
             return $this->export;
         }
+
+        if ($query["csvExport"] == "yes") {
+            $separator = array("coma" => ",", "puntoycoma" => ";", "tabulador" => "\t");
+            $csv = new \CdiDataGrid\DataGrid\Renderer\Rcsv();
+
+            $this->export = $csv->deploy($this, $separator[$query["separatorCsv"]], $query["nameCsv"]);
+            return $this->export;
+        }
+
         return false;
     }
 
@@ -296,9 +456,13 @@ class Grid {
     public function tooltipColumn($columnName, $tooltip) {
         $this->tooltipColumnCollection[$columnName] = $tooltip;
     }
-    
-     public function linkColumn($columnName) {
+
+    public function linkColumn($columnName) {
         $this->linkColumnCollection[$columnName] = $columnName;
+    }
+
+    public function longTextColumn($columnName, $length = 15) {
+        $this->longTextColumnCollection[$columnName] = $length;
     }
 
     public function aditionalHtmlColumn($columnName, $HtmlBegin, $HtmlEnd) {
@@ -429,12 +593,19 @@ class Grid {
             $column->setFormatDatetime($this->datetimeColumnCollection[$column->getName()]);
         }
     }
-    
-       protected function processLinkColumns() {
+
+    protected function processLinkColumns() {
         foreach ($this->columnCollection as &$column) {
             if (key_exists($column->getName(), $this->linkColumnCollection))
                 $column->setType("link");
-      
+        }
+    }
+
+    protected function processLongTextColumns() {
+        foreach ($this->columnCollection as &$column) {
+            if (key_exists($column->getName(), $this->longTextColumnCollection))
+                $column->setType("longText");
+            $column->setLength($this->longTextColumnCollection[$column->getName()]);
         }
     }
 
@@ -587,7 +758,7 @@ class Grid {
     public function setCsvTabulatorOn($csvTabulatorOn) {
         $this->csvTabulatorOn = $csvTabulatorOn;
     }
-    
+
     public function getTableClass() {
         return $this->tableClass;
     }
@@ -595,7 +766,7 @@ class Grid {
     public function setTableClass($tableClass) {
         $this->tableClass = $tableClass;
     }
-    
+
     public function getExportCsv() {
         return $this->exportCsv;
     }
@@ -604,15 +775,92 @@ class Grid {
         $this->exportCsv = $exportCsv;
     }
 
- public function getCsvForm(){
-     if(!$this->csvForm){
-     $this->csvForm = new \CdiDataGrid\Form\Csv();
-     }
-     
-     return $this->csvForm; 
-     
- }
+    public function getCsvForm() {
+        if (!$this->csvForm) {
+            $this->csvForm = new \CdiDataGrid\Form\Csv();
+        }
 
+        return $this->csvForm;
+    }
+
+    function getOptionDelete() {
+        return $this->optionDelete;
+    }
+
+    function getOptionEdit() {
+        return $this->optionEdit;
+    }
+
+    function getOptionAdd() {
+        return $this->optionAdd;
+    }
+
+    function setOptionDelete($optionDelete) {
+        $this->optionDelete = $optionDelete;
+    }
+
+    function setOptionEdit($optionEdit) {
+        $this->optionEdit = $optionEdit;
+    }
+
+    function setOptionAdd($optionAdd) {
+        $this->optionAdd = $optionAdd;
+    }
+
+    function getEditForm() {
+        return $this->editForm;
+    }
+
+    function setEditForm($editForm) {
+        $this->editForm = $editForm;
+    }
+
+    function getInstanceToRender() {
+        return $this->instanceToRender;
+    }
+
+    function setInstanceToRender($instanceToRender) {
+        $this->instanceToRender = $instanceToRender;
+    }
+
+    function getRenderTemplate() {
+        return $this->renderTemplate;
+    }
+
+    function setRenderTemplate($renderTemplate) {
+        $this->renderTemplate = $renderTemplate;
+    }
+
+    function getAddBtn() {
+        return $this->addBtn;
+    }
+
+    function setAddBtn($addBtn) {
+        $this->addBtn = $addBtn;
+    }
+    
+    function getUser() {
+        return $this->user;
+    }
+
+    function setUser($user) {
+        $this->user = $user;
+    }
+    
+        function getColumnFilter() {
+        return $this->columnFilter;
+    }
+
+    function setColumnFilter($columnFilter) {
+        $this->columnFilter = $columnFilter;
+    }
+    function getColumnOrder() {
+        return $this->columnOrder;
+    }
+
+    function setColumnOrder($columnOrder) {
+        $this->columnOrder = $columnOrder;
+    }
 
 
 

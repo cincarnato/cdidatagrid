@@ -20,7 +20,8 @@ class ExtraColumn extends AbstractColumn{
     
     function __construct($name,$side) {
         $this->name = $name;
-         $this->visualName = $name;
+    $this->visualName = $name;
+    $this->type = "extra";
         $this->setSide($side);
     }
 

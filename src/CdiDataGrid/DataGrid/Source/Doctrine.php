@@ -4,6 +4,8 @@ namespace CdiDataGrid\DataGrid\Source;
 
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use \Doctrine\ORM\Tools\Pagination\Paginator;
+use \Zend\Form\Annotation\AnnotationBuilder;
+use DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBuilder;
 
 class Doctrine extends AbstractSource {
 
@@ -12,24 +14,92 @@ class Doctrine extends AbstractSource {
     protected $repository;
     protected $query;
     protected $filters;
-        protected $orderBy;
+    protected $orderBy;
     protected $orderDirection;
+    public $entityForm;
 
     public function __construct($entityManager, $entity, $query = null) {
         $this->setEntityManager($entityManager);
         $this->setEntity($entity);
         $this->setRepository($this->getEntityManager()->getRepository($this->getEntity()));
-        if($query){
+        if ($query) {
             $this->setQuery($query);
         }
     }
-    
-    public function getAllData($limit){
-        if($limit){
-        return $this->getEntityManager()->createQuery($this->getQuery())
-                ->setMaxResults($limit)->getArrayResult();
-        }else{
-             return $this->getEntityManager()->createQuery($this->getQuery())->getArrayResult();
+
+    public function delRecord($id) {
+        $record = $this->getEntityManager()->getRepository($this->entity)->find($id);
+        $this->getEntityManager()->remove($record);
+        $this->getEntityManager()->flush();
+    }
+
+    public function updateRecord($id, $aData, $user) {
+        $this->generateEntityForm($id);
+
+        $this->entityForm->setData($aData);
+
+        if ($this->entityForm->isValid()) {
+            $record = $this->entityForm->getObject();
+
+            if (property_exists($record, "lastUpdatedBy") && $user != null) {
+                $record->setLastUpdatedBy($user);
+            }
+
+            if (property_exists($record, "actualizadoPor") && $user != null) {
+                $record->setActualizadoPor($user);
+            }
+
+            //Aqui deberia crear un evento en forma de escucha
+            $this->getEntityManager()->persist($record);
+            $this->getEntityManager()->flush();
+            return true;
+        } else {
+            var_dump($this->entityForm->getMessages()); //error messages
+            return false;
+        }
+    }
+
+    public function saveRecord($aData, $user) {
+        $this->generateEntityForm();
+
+        $this->entityForm->setData($aData);
+
+        if ($this->entityForm->isValid()) {
+            $record = $this->entityForm->getObject();
+
+            if (property_exists($record, "createdBy") && $user != null) {
+                $record->setCreatedBy($user);
+            }
+
+            if (property_exists($record, "creadoPor") && $user != null) {
+                $record->setCreadoPor($user);
+            }
+
+            if (property_exists($record, "lastUpdatedBy") && $user != null) {
+                $record->setLastUpdatedBy($user);
+            }
+
+            if (property_exists($record, "actualizadoPor") && $user != null) {
+                $record->setActualizadoPor($user);
+            }
+
+
+            //Aqui deberia crear un evento en forma de escucha
+            $this->getEntityManager()->persist($record);
+            $this->getEntityManager()->flush();
+            return true;
+        } else {
+            var_dump($this->entityForm->getMessages()); //error messages
+            return false;
+        }
+    }
+
+    public function getAllData($limit) {
+        if ($limit) {
+            return $this->getEntityManager()->createQuery($this->getQuery())
+                            ->setMaxResults($limit)->getArrayResult();
+        } else {
+            return $this->getEntityManager()->createQuery($this->getQuery())->getArrayResult();
         }
     }
 
@@ -44,13 +114,13 @@ class Doctrine extends AbstractSource {
     }
 
     public function queryBuldier() {
-        if(!$this->query){
-        $query = $this->getEntityManager()->createQueryBuilder('u');
-        $query->select('u')->from($this->getEntity(), 'u');
+        if (!$this->query) {
+            $query = $this->getEntityManager()->createQueryBuilder('u');
+            $query->select('u')->from($this->getEntity(), 'u');
 
-        $this->setQuery($query);
-        return $this->query;
-        }else{
+            $this->setQuery($query);
+            return $this->query;
+        } else {
             return $this->query;
         }
     }
@@ -64,48 +134,81 @@ class Doctrine extends AbstractSource {
         return $fieldNames;
     }
 
+    public function getFieldMappings() {
+        $fieldMappings = $this->getEntityManager()->getClassMetadata($this->entity)->fieldMappings;
+        return $fieldMappings;
+    }
+
+    public function generateEntityForm($id = null) {
+
+        $builder = new DoctrineAnnotationBuilder($this->entityManager);
+        $this->entityForm = $builder->createForm($this->entity);
+
+        if ($id) {
+            $record = $this->getEntityManager()->getRepository($this->entity)->find($id);
+        } else {
+            $record = new $this->entity;
+        }
+
+        $this->entityForm->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEntityManager()))
+                ->setObject($record)
+                //  ->setInputFilter(new ReferenzwertFilter())
+                ->setAttribute('method', 'post');
+
+        $this->entityForm->add(array(
+            'name' => 'submit',
+            'type' => 'Zend\Form\Element\Submit',
+            'attributes' => array(
+                'value' => 'Guardar'
+            )
+        ));
+
+
+        $this->entityForm->bind($record);
+        return $this->entityForm;
+    }
+
     public function queryFilters() {
-        $where= "";
-        foreach($this->filters as $filter){
-            
-            if($filter["type"] == "like"){
-                $value = "%".$filter['value']."%";
-            $this->query->andWhere($this->query->expr()->like("u.".$filter["key"],$this->query->expr()->literal($value) ) );
-            }
-             if($filter["type"] == "eq"){
-                $value = $filter['value'];
-            $this->query->andWhere($this->query->expr()->eq("u.".$filter["key"],$this->query->expr()->literal($value) ) );
-            }
-            
-              if($filter["type"] == "lt"){
-                $value = $filter['value'];
-            $this->query->andWhere($this->query->expr()->lt("u.".$filter["key"],$this->query->expr()->literal($value) ) );
-            }
-            
-              if($filter["type"] == "gt"){
-                $value = $filter['value'];
-            $this->query->andWhere($this->query->expr()->gt("u.".$filter["key"],$this->query->expr()->literal($value) ) );
-            }
-            
-               if($filter["type"] == "between"){
-                $value = $filter['value'];
-                 $value2 = $filter['value2'];
-            $this->query->andWhere($this->query->expr()->between("u.".$filter["key"],$this->query->expr()->literal($value),$this->query->expr()->literal($value2) ) );
-            }
-            
-         // echo $this->query->getDQL();
-        //$where .= "u.".$filter["key"]." ".$filter["type"].$filter["value"];
-        //$this->query->andWhere($where );
-        }
+        $where = "";
+        foreach ($this->filters as $filter) {
 
+            if ($filter["type"] == "like") {
+                $value = "%" . $filter['value'] . "%";
+                $this->query->andWhere($this->query->expr()->like("u." . $filter["key"], $this->query->expr()->literal($value)));
+            }
+            if ($filter["type"] == "eq") {
+                $value = $filter['value'];
+                $this->query->andWhere($this->query->expr()->eq("u." . $filter["key"], $this->query->expr()->literal($value)));
+            }
+
+            if ($filter["type"] == "lt") {
+                $value = $filter['value'];
+                $this->query->andWhere($this->query->expr()->lt("u." . $filter["key"], $this->query->expr()->literal($value)));
+            }
+
+            if ($filter["type"] == "gt") {
+                $value = $filter['value'];
+                $this->query->andWhere($this->query->expr()->gt("u." . $filter["key"], $this->query->expr()->literal($value)));
+            }
+
+            if ($filter["type"] == "between") {
+                $value = $filter['value'];
+                $value2 = $filter['value2'];
+                $this->query->andWhere($this->query->expr()->between("u." . $filter["key"], $this->query->expr()->literal($value), $this->query->expr()->literal($value2)));
+            }
+
+            // echo $this->query->getDQL();
+            //$where .= "u.".$filter["key"]." ".$filter["type"].$filter["value"];
+            //$this->query->andWhere($where );
+        }
     }
 
-   public function queryOrder() {
-        if($this->orderBy && ($this->orderDirection == "DESC" || $this->orderDirection == "ASC") ){
-             $this->query->orderBy("u.$this->orderBy", $this->orderDirection);
+    public function queryOrder() {
+        if ($this->orderBy && ($this->orderDirection == "DESC" || $this->orderDirection == "ASC")) {
+            $this->query->orderBy("u.$this->orderBy", $this->orderDirection);
         }
-
     }
+
     public function getEntityManager() {
         return $this->entityManager;
     }
@@ -153,11 +256,17 @@ class Doctrine extends AbstractSource {
         $this->filters = $filters;
     }
 
-     public function setOrder($orderBy, $direction) {
+    public function setOrder($orderBy, $direction) {
         $this->orderBy = $orderBy;
-          $this->orderDirection = $direction;
+        $this->orderDirection = $direction;
     }
 
-    
+    function getEntityForm() {
+        return $this->entityForm;
+    }
+
+    function setEntityForm($entityForm) {
+        $this->entityForm = $entityForm;
+    }
 
 }
