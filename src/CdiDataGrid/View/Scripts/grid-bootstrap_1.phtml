@@ -65,22 +65,24 @@ $submit->setAttribute('class', 'btn btn-success');
 <div class="table">
     <div class="row divFilter">
         <div class="col-lg-6">
-            <?php if ($this->grid->getOptionAdd()): ?>                 
-                <?php echo $this->grid->getAddBtn(); ?>
+             <?php if ($this->grid->getOptionAdd()): ?>                 
+                        <?php echo $this->grid->getAddBtn(); ?>
 
             <?php endif; ?> 
-             <?php if ($this->grid->getColumnFilter()): ?>
             <?php echo $this->gview->formElement($submit) ?>
-              <?php endif; ?>
         </div>
         <div class="col-lg-6">
-
+           
         </div>
     </div>
 
     <?php echo $this->gview->formElement($form->get("page")) ?>
     <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
-
+        <tr>
+            
+</tr>
+        
+        
         <tr>
             <?php foreach ($this->grid->getColumnCollection() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
@@ -94,13 +96,11 @@ $submit->setAttribute('class', 'btn btn-success');
                                     <?php echo $column; ?>
                                 </a></td>
                             <?php if ($column->getType() != "extra"): ?>
-                                <?php if ($this->grid->getColumnOrder()): ?>
-                                    <td class="col-md-1  padding2">
-                                        <div >  <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-up"></i></a> </div>
+                                <td class="col-md-1  padding2">
+                                    <div >  <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-up"></i></a> </div>
 
-                                        <div > <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-down"></i></a></div>
-                                    </td>
-                                <?php endif; ?>
+                                    <div > <a href="<?php echo $this->gview->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>" ><i class="fa fa-caret-down"></i></a></div>
+                                </td>
                             <?php endif; ?>
                         </tr>
                     </table>
@@ -111,24 +111,24 @@ $submit->setAttribute('class', 'btn btn-success');
                 </th>
             <?php endif; ?>
         <?php endforeach; ?>
+          <?php echo $this->gview->form()->closeTag($form); ?>       
+        </tr>
+        
+        <tr>
+
+            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                <?php if (!$column->getHidden()): ?>
+                    <td> <?php
+                        if ($column->getFilterActive()) {
+                            echo $this->gview->formElement($form->get("f_" . $column->getName()));
+                        }
+                        ?></td>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
 
         </tr>
-        <?php if ($this->grid->getColumnFilter()): ?>
-            <tr>
 
-                <?php foreach ($this->grid->getColumnCollection() as $column): ?>
-                    <?php if (!$column->getHidden()): ?>
-                        <td> <?php
-                            if ($column->getFilterActive()) {
-                                echo $this->gview->formElement($form->get("f_" . $column->getName()));
-                            }
-                            ?></td>
-                    <?php endif; ?>
-                <?php endforeach; ?>
-
-
-            </tr>
-        <?php endif; ?>
         <?php if (count($this->grid->getRow())): ?>
             <?php foreach ($this->grid->getRow() as $data): ?>
                 <tr>
@@ -172,7 +172,7 @@ $submit->setAttribute('class', 'btn btn-success');
             <?php endforeach; ?>
         <?php endif; ?>
     </table>
-    <?php echo $this->gview->form()->closeTag($form); ?>
+<!--   Aca estaba el close form-->
 </div>
 
 

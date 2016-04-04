@@ -6,6 +6,9 @@ use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use \Doctrine\ORM\Tools\Pagination\Paginator;
 use \Zend\Form\Annotation\AnnotationBuilder;
 
+use DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBuilder;
+
+
 class Doctrine extends AbstractSource {
 
     protected $entityManager;
@@ -113,7 +116,7 @@ class Doctrine extends AbstractSource {
 
     public function generateEntityForm($id = null) {
 
-        $builder = new AnnotationBuilder();
+        $builder = new DoctrineAnnotationBuilder($this->entityManager);
         $this->entityForm = $builder->createForm($this->entity);
 
         if ($id) {

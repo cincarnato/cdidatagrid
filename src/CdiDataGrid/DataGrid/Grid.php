@@ -68,7 +68,9 @@ class Grid {
     protected $addBtn = null;
     protected $instanceToRender = "grid";
     protected $renderTemplate = "bootstrap";
-    
+    protected $columnFilter = true;
+    protected $columnOrder = true;
+
     CONST DEFAULT_RENDER = "shtml";
 
     public function __construct() {
@@ -118,7 +120,7 @@ class Grid {
             if ($aData["crudAction"] == 'delete') {
 
                 $return = $this->getSource()->delRecord($aData["crudId"]);
-                echo "Delete:".$aData["crudId"];
+                echo "Delete:" . $aData["crudId"];
                 return $return;
             }
 
@@ -142,13 +144,13 @@ class Grid {
                 $this->setInstanceToRender("formEntity");
                 return $return;
             }
-            
-           
+
+
 
             if ($aData["crudAction"] == 'submitEdit') {
-               
-               $result = $this->getSource()->updateRecord($aData["crudId"], $aData);
-               
+
+                $result = $this->getSource()->updateRecord($aData["crudId"], $aData);
+
                 $this->getEntityForm()->add(array(
                     'name' => 'crudAction',
                     'type' => 'Zend\Form\Element\Hidden',
@@ -163,15 +165,15 @@ class Grid {
                         'value' => $aData["crudId"]
                     )
                 ));
-                
-                
-               if(!$result){
-                     $this->setInstanceToRender("formEntity");
-               }
+
+
+                if (!$result) {
+                    $this->setInstanceToRender("formEntity");
+                }
             }
-            
-            
-             if ($aData["crudAction"] == 'add') {
+
+
+            if ($aData["crudAction"] == 'add') {
                 $this->getSource()->generateEntityForm(null);
                 $this->getEntityForm()->add(array(
                     'name' => 'crudAction',
@@ -184,11 +186,11 @@ class Grid {
                 $this->setInstanceToRender("formEntity");
                 return $return;
             }
-            
-             if ($aData["crudAction"] == 'submitAdd') {
-   
-               $result = $this->getSource()->saveRecord($aData);
-               
+
+            if ($aData["crudAction"] == 'submitAdd') {
+
+                $result = $this->getSource()->saveRecord($aData);
+
                 $this->getEntityForm()->add(array(
                     'name' => 'crudAction',
                     'type' => 'Zend\Form\Element\Hidden',
@@ -196,11 +198,11 @@ class Grid {
                         'value' => 'submitAdd'
                     )
                 ));
-                
-                if(!$result){
-                     $this->setInstanceToRender("formEntity");
-               }
-             }
+
+                if (!$result) {
+                    $this->setInstanceToRender("formEntity");
+                }
+            }
         }
     }
 
@@ -240,11 +242,10 @@ class Grid {
             array_push($this->extraColumnCollection, $column);
         }
     }
-    
-      public function addNewOption($name, $btnClass, $btnVal = "+") {
+
+    public function addNewOption($name, $btnClass, $btnVal = "+") {
         $this->setOptionAdd(true);
         $this->addBtn = "<i id='.$name.' name='.$name.' class='" . $btnClass . "' onclick='addRecord()'>" . $btnVal . "</i>";
-       
     }
 
     public function getAllData() {
@@ -834,6 +835,22 @@ class Grid {
     function setAddBtn($addBtn) {
         $this->addBtn = $addBtn;
     }
+
+    function getColumnFilter() {
+        return $this->columnFilter;
+    }
+
+    function setColumnFilter($columnFilter) {
+        $this->columnFilter = $columnFilter;
+    }
+    function getColumnOrder() {
+        return $this->columnOrder;
+    }
+
+    function setColumnOrder($columnOrder) {
+        $this->columnOrder = $columnOrder;
+    }
+
 
 
 }
