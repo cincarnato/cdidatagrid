@@ -152,6 +152,10 @@ $submit->setAttribute('class', 'btn btn-success');
                                 <?php if ($column->getType() == "link"): ?>
                                     <a target="_blank" href="<?php echo $data[$column->getName()]; ?>">LINK</a>
                                 <?php endif; ?>
+                                    
+                                      <?php if ($column->getType() == "clink"): ?>
+                                <a target="_blank" href="<?php echo $column->getPath(); //Path ?>/<?php echo $data[$column->getDatalink()]; //ID ?>">                <?php echo nl2br($data[$column->getName()]); ?></a>
+                                <?php endif; ?>
 
                                 <?php if ($column->getType() == "boolean"): ?>
                                     <?php echo nl2br($this->gview->ColumnBoolean($column, $data[$column->getName()])); ?>

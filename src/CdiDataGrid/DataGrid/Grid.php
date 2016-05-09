@@ -44,6 +44,7 @@ class Grid {
     protected $hiddenColumnCollection = array();
     protected $tooltipColumnCollection = array();
     protected $linkColumnCollection = array();
+      protected $clinkColumnCollection = array();
     protected $longTextColumnCollection = array();
     protected $booleanColumnCollection = array();
     protected $datetimeColumnCollection = array();
@@ -103,6 +104,7 @@ class Grid {
         $this->processBooleanColumns();
         $this->processDatetimeColumns();
         $this->processLinkColumns();
+         $this->processClinkColumns();
         $this->processLongTextColumns();
         $this->processAditionalHtmlColumns();
 
@@ -457,6 +459,12 @@ class Grid {
     public function linkColumn($columnName) {
         $this->linkColumnCollection[$columnName] = $columnName;
     }
+    
+      public function clinkColumn($columnName, $path, $datalink) {
+        $this->clinkColumnCollection[$columnName]["path"] = $path;
+        $this->clinkColumnCollection[$columnName]["datalink"] = $datalink;
+    }
+
 
     public function longTextColumn($columnName, $length = 15) {
         $this->longTextColumnCollection[$columnName] = $length;
@@ -595,6 +603,16 @@ class Grid {
         foreach ($this->columnCollection as &$column) {
             if (key_exists($column->getName(), $this->linkColumnCollection))
                 $column->setType("link");
+        }
+    }
+    
+     protected function processClinkColumns() {
+        foreach ($this->columnCollection as &$column) {
+            if (key_exists($column->getName(), $this->clinkColumnCollection)) {
+                $column->setType("clink");
+                $column->setPath($this->clinkColumnCollection[$column->getName()]["path"]);
+                $column->setDatalink($this->clinkColumnCollection[$column->getName()]["datalink"]);
+            }
         }
     }
 
