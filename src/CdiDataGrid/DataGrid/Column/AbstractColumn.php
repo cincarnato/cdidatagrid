@@ -19,9 +19,9 @@ abstract class AbstractColumn {
     protected $replaceTrueBy;
     protected $replaceFalseBy;
     protected $formatDatetime;
-     protected $length = 15;
-         protected $path;
-      protected $datalink;
+    protected $length = 15;
+    protected $clink;
+
     public function getName() {
         return $this->name;
     }
@@ -109,7 +109,7 @@ abstract class AbstractColumn {
     public function setFormatDatetime($formatDatetime) {
         $this->formatDatetime = $formatDatetime;
     }
-    
+
     public function getLength() {
         return $this->length;
     }
@@ -118,24 +118,13 @@ abstract class AbstractColumn {
         $this->length = $length;
     }
 
-    function getPath() {
-        return $this->path;
+    function getClink() {
+        return $this->clink;
     }
 
-    function getDatalink() {
-        return $this->datalink;
+    function setClink($clink) {
+        $this->clink = $clink;
     }
-
-    function setPath($path) {
-        $this->path = $path;
-    }
-
-    function setDatalink($datalink) {
-        $this->datalink = $datalink;
-    }
-
-
-
 
 }
 

@@ -51,6 +51,7 @@ return array(
               'JsCrud' => 'CdiDataGrid\View\Helper\JsCrud',
              'JsAbmAjaxModal' => 'CdiDataGrid\View\Helper\JsAbmAjaxModal',
               'ColumnBoolean' => 'CdiDataGrid\View\Helper\ColumnBoolean',
+             'Clink' => 'CdiDataGrid\View\Helper\Clink',
         )
     ),
     'view_manager' => array(
