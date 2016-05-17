@@ -116,6 +116,7 @@ class Grid {
 
     protected function verifyCrudActions() {
         $aData = $this->getPost();
+     
 
         if (isset($aData["crudAction"])) {
 
@@ -306,7 +307,12 @@ class Grid {
     }
 
     public function getPost() {
-        return $this->getMvcEvent()->getRequest()->getPost();
+        //  return $this->getMvcEvent()->getRequest()->getPost();
+        //se agrega para file
+        $post = array_merge_recursive(
+                $this->getMvcEvent()->getRequest()->getPost()->toArray(), $this->getMvcEvent()->getRequest()->getFiles()->toArray()
+        ); 
+        return $post;
     }
 
     public function getQueryArray() {
@@ -461,7 +467,7 @@ class Grid {
     }
 
     public function clinkColumn($columnName, array $a) {
-        $i=0;
+        $i = 0;
         foreach ($a as $value) {
             $this->clinkColumnCollection[$columnName][$i]["path"] = $value["path"];
             $this->clinkColumnCollection[$columnName][$i]["data"] = $value["data"];
