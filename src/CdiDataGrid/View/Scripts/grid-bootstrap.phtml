@@ -145,6 +145,10 @@ $submit->setAttribute('class', 'btn btn-success');
                                     <?php echo nl2br($data[$column->getName()]); ?>
                                 <?php endif; ?>
 
+                                <?php if ($column->getType() == "file"): ?>
+                                <img style="width:<?php echo $column->getFileWidth(); ?>;height:<?php echo $column->getFileHeight(); ?>; " src="<?php echo $column->getFilePath(); ?><?php echo $data[$column->getName()]; ?>" />
+                                <?php endif; ?>
+
                                 <?php if ($column->getType() == "longText"): ?>
                                     <?php echo substr(nl2br($data[$column->getName()]), 0, $column->getLength()) . "..."; ?>
                                 <?php endif; ?>

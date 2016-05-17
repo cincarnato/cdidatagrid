@@ -17,6 +17,9 @@ abstract class AbstractColumn {
     protected $htmlEnd;
     protected $type = "text";
     protected $replaceTrueBy;
+    protected $filePath;
+      protected $fileWidth = "100%";
+      protected $fileHeight= "100%";
     protected $replaceFalseBy;
     protected $formatDatetime;
     protected $length = 15;
@@ -125,6 +128,31 @@ abstract class AbstractColumn {
     function setClink($clink) {
         $this->clink = $clink;
     }
+
+    function getFilePath() {
+        return $this->filePath;
+    }
+
+    function setFilePath($filePath) {
+        $this->filePath = $filePath;
+    }
+    function getFileWidth() {
+        return $this->fileWidth;
+    }
+
+    function getFileHeight() {
+        return $this->fileHeight;
+    }
+
+    function setFileWidth($fileWidth) {
+        $this->fileWidth = $fileWidth;
+    }
+
+    function setFileHeight($fileHeight) {
+        $this->fileHeight = $fileHeight;
+    }
+
+
 
 }
 

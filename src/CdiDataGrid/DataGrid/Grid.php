@@ -47,6 +47,7 @@ class Grid {
     protected $clinkColumnCollection = array();
     protected $longTextColumnCollection = array();
     protected $booleanColumnCollection = array();
+    protected $fileColumnCollection = array();
     protected $datetimeColumnCollection = array();
     protected $aditionalHtmlColumnCollection = array();
     protected $recordPerPage = 10;
@@ -100,6 +101,7 @@ class Grid {
         $this->processFormFilters();
         $this->processRenameColumns();
         $this->processHiddenColumns();
+        $this->processFileColumns();
         $this->processTooltipColumns();
         $this->processBooleanColumns();
         $this->processDatetimeColumns();
@@ -116,7 +118,7 @@ class Grid {
 
     protected function verifyCrudActions() {
         $aData = $this->getPost();
-     
+
 
         if (isset($aData["crudAction"])) {
 
@@ -311,7 +313,7 @@ class Grid {
         //se agrega para file
         $post = array_merge_recursive(
                 $this->getMvcEvent()->getRequest()->getPost()->toArray(), $this->getMvcEvent()->getRequest()->getFiles()->toArray()
-        ); 
+        );
         return $post;
     }
 
@@ -490,6 +492,12 @@ class Grid {
         $this->booleanColumnCollection[$columnName]["false"] = $replaceFalseBy;
     }
 
+    public function fileColumn($columnName, $path, $width = "100%", $height = "100%") {
+        $this->fileColumnCollection[$columnName]["path"] = $path;
+        $this->fileColumnCollection[$columnName]["width"] = $width;
+        $this->fileColumnCollection[$columnName]["height"] = $height;
+    }
+
     protected function processData() {
 
         foreach ($this->unprocessedData as $record) {
@@ -525,7 +533,7 @@ class Grid {
         $fieldNames = $this->getSource()->getColumns();
         foreach ($fieldNames as $name) {
             $column = new Column($name);
-            array_push($this->columnCollection, $column);
+            $this->columnCollection[$name] = $column;
         }
     }
 
@@ -588,30 +596,45 @@ class Grid {
 
     protected function processRenameColumns() {
         foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->renameColumnCollection))
+            if (key_exists($column->getName(), $this->renameColumnCollection)) {
                 $column->setVisualName($this->renameColumnCollection[$column->getName()]);
+            }
         }
     }
 
     protected function processHiddenColumns() {
         foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->hiddenColumnCollection))
+            if (key_exists($column->getName(), $this->hiddenColumnCollection)) {
                 $column->setHidden(true);
+            }
         }
     }
 
     protected function processDatetimeColumns() {
         foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->datetimeColumnCollection))
+            if (key_exists($column->getName(), $this->datetimeColumnCollection)) {
                 $column->setType("datetime");
-            $column->setFormatDatetime($this->datetimeColumnCollection[$column->getName()]);
+                $column->setFormatDatetime($this->datetimeColumnCollection[$column->getName()]);
+            }
         }
     }
 
     protected function processLinkColumns() {
         foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->linkColumnCollection))
+            if (key_exists($column->getName(), $this->linkColumnCollection)) {
                 $column->setType("link");
+            }
+        }
+    }
+
+    protected function processFileColumns() {
+        foreach ($this->columnCollection as &$column) {
+            if (key_exists($column->getName(), $this->fileColumnCollection)) {
+                $column->setType("file");
+                $column->setFilePath($this->fileColumnCollection[$column->getName()]["path"]);
+                $column->setFileWidth($this->fileColumnCollection[$column->getName()]["width"]);
+                $column->setFileHeight($this->fileColumnCollection[$column->getName()]["height"]);
+            }
         }
     }
 
@@ -626,16 +649,18 @@ class Grid {
 
     protected function processLongTextColumns() {
         foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->longTextColumnCollection))
+            if (key_exists($column->getName(), $this->longTextColumnCollection)) {
                 $column->setType("longText");
-            $column->setLength($this->longTextColumnCollection[$column->getName()]);
+                $column->setLength($this->longTextColumnCollection[$column->getName()]);
+            }
         }
     }
 
     protected function processTooltipColumns() {
         foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->tooltipColumnCollection))
+            if (key_exists($column->getName(), $this->tooltipColumnCollection)) {
                 $column->setTooltip($this->tooltipColumnCollection[$column->getName()]);
+            }
         }
     }
 
