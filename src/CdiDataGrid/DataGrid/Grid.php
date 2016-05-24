@@ -125,7 +125,6 @@ class Grid {
             if ($aData["crudAction"] == 'delete') {
 
                 $return = $this->getSource()->delRecord($aData["crudId"]);
-                echo "Delete:" . $aData["crudId"];
                 return $return;
             }
 

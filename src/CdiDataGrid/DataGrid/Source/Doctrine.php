@@ -47,7 +47,7 @@ class Doctrine extends AbstractSource {
             $this->getEntityManager()->flush();
             return true;
         } else {
-             var_dump($this->entityForm->getMessages()); //error messages
+          //   var_dump($this->entityForm->getMessages()); //error messages
             return false;
         }
     }
@@ -64,7 +64,7 @@ class Doctrine extends AbstractSource {
             $this->getEntityManager()->flush();
             return true;
         } else {
-           var_dump($this->entityForm->getMessages()); //error messages
+         //  var_dump($this->entityForm->getMessages()); //error messages
             return false;
         }
     }
