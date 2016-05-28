@@ -54,14 +54,6 @@
   </div>
 </div>
 
-   <?php if ($this->grid->getOptionAdd()): ?>
-<div class="row">
-    <div class="col-lg-6">
-        <?php echo $this->grid->getAddBtn(); ?>
-  </div>
-</div>
-<?php endif; ?> 
-<br>
 <?php
 $form = $this->grid->getFormFilters();
 $form->prepare();
@@ -72,7 +64,13 @@ $submit->setAttribute('class', 'btn btn-success');
 
 <?php echo $this->gview->form()->openTag($form); ?>
 <div class="table">
-     <div class="divFilter"><?php echo $this->gview->formElement($submit) ?></div>
+     <div class="divFilter padding5">
+          <?php if ($this->grid->getOptionAdd()): ?>
+           <?php echo $this->grid->getAddBtn(); ?>
+         <?php endif; ?> 
+         <?php echo $this->gview->formElement($submit) ?>
+     
+     </div>
     <?php echo $this->gview->formElement($form->get("page")) ?>
     <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
      
