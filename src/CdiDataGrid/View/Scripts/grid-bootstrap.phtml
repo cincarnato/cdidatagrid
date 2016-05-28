@@ -91,7 +91,7 @@ $submit->setAttribute('class', 'btn btn-success');
                         <tr>
                             <td class="col-md-11"> <a  data-toggle="tooltip" title="<?php echo $column->getTooltip(); ?>" style="cursor: help">
 
-                                    <?php echo $column; ?>
+                                    <?php echo $this->gview->translate((string) $column); ?>
                                 </a></td>
                             <?php if ($column->getType() != "extra"): ?>
                                 <?php if ($this->grid->getColumnOrder()): ?>
