@@ -12,8 +12,6 @@
             echo $this->gview->form()->openTag($form);
             ?>
 
-            <?php $columns = $this->grid->getColumnCollection(); ?>
-
 
             <?php $multiplo = 2; ?>
             <?php $countRow = 2; ?>
@@ -34,101 +32,51 @@
                                     </div>
                                 </div>
                             </div>
-                            <?php break; ?>
-                        <?php case "file": ?>         
-                            <div class="row" id="row_<?php echo $element->getName(); ?>">
+                        </div>
+                        <?php break; ?>
+                    <?php default: ?>
+
+                        <?php
+                        $element->setAttribute('class', 'form-control');
+                        //  ->setAttribute('placeholder', $element->getLabel());
+                        ?>
+                        <div class="row">
 
 
-                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <div  class="form-group<?php if ($this->gview->formElementErrors($element)) echo " has-error" ?>">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div  class="form-group<?php if ($this->gview->formElementErrors($element)) echo " has-error" ?>">
 
-                                        <label class="col-lg-4 col-md-4 control-label"><?php echo $element->getLabel() ?></label>
+                                    <label class="col-lg-4 col-md-4 control-label"><?php echo $element->getLabel() ?></label>
 
-                                        <div class="col-lg-8 col-md-8">
+                                    <div class="col-lg-8 col-md-8">
+                                        <?php echo $this->gview->formElement($element); ?>
+                                        <?php if ($element->getOption('description')): ?>
+                                            <p class="help-block"><?php echo $element->getOption('description') ?></p>
+                                        <?php endif; ?>
+                                        <?php if ($this->gview->formElementErrors($element)) : ?>
+                                            <?php
+                                            // Imprimo los errores
+                                            echo $this->gview->formElementErrors()
+                                                    ->setMessageOpenFormat('<span class="help-block">')
+                                                    ->setMessageSeparatorString('</span><span class="help-block">')
+                                                    ->setMessageCloseString('</span>')
+                                                    ->render($element);
+                                            ?>
 
-                                            <div class="col-lg-3 col-md-3">
-                                                <?php $column = $columns[$element->getName()]; ?>
-                                                <img style="width:<?php echo $column->getFileWidth(); ?>;height:<?php echo $column->getFileHeight(); ?>; " src="<?php echo $column->getFilePath(); ?><?php echo $element->getValue(); ?>" />
-
-                                            </div>
-                                            <div class="col-lg-5 col-md-5">
-                                                <?php echo $this->gview->formElement($element); ?>
-                                                <?php if ($element->getOption('description')): ?>
-                                                    <p class="help-block"><?php echo $element->getOption('description') ?></p>
-                                                <?php endif; ?>
-                                                <?php if ($this->gview->formElementErrors($element)) : ?>
-                                                    <?php
-                                                    // Imprimo los errores
-                                                    echo $this->gview->formElementErrors()
-                                                            ->setMessageOpenFormat('<span class="help-block">')
-                                                            ->setMessageSeparatorString('</span><span class="help-block">')
-                                                            ->setMessageCloseString('</span>')
-                                                            ->render($element);
-                                                    ?>
-
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
-
-                            </div>
-                            <?php break; ?>
-                        <?php default: ?>
-
-                            <?php
-                            $element->setAttribute('class', 'form-control')
-                            ;
-                            ?>
-                            <div class="row" id="row_<?php echo $element->getName(); ?>">
-
-
-                                <div class="col-lg-12 col-md-12 col-xs-12">
-                                    <div  class="form-group<?php if ($this->gview->formElementErrors($element)) echo " has-error" ?> has-feedback">
-
-                                        <label class="col-lg-4 col-md-4 control-label"><?php echo $element->getLabel() ?></label>
-
-                                        <div class="col-lg-8 col-md-8">
-
-                                            <?php if ($form->getInputFilter()->get($element->getName())->isRequired()): ?>
-                                                <div class="input-group danger">
-                                                    <span class="input-group-addon fa fa-asterisk alert-danger" ></span>
-                                                     <?php echo $this->gview->formElement($element); ?>
-                                                </div>
-                                               
-                                            <?php else: ?>
-                                                <?php echo $this->gview->formElement($element); ?>
-                                            <?php endif; ?>
-
-
-
-                                            <?php if ($element->getOption('description')): ?>
-                                                <p class="help-block"><?php echo $element->getOption('description') ?></p>
-                                            <?php endif; ?>
-                                            <?php if ($this->gview->formElementErrors($element)) : ?>
-                                                <?php
-                                                // Imprimo los errores
-                                                echo $this->gview->formElementErrors()
-                                                        ->setMessageOpenFormat('<span class="help-block">')
-                                                        ->setMessageSeparatorString('</span><span class="help-block">')
-                                                        ->setMessageCloseString('</span>')
-                                                        ->render($element);
-                                                ?>
-
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
 
+                        </div>
 
-                            <?php break; ?>
-                    <?php endswitch; ?>
 
-                <?php endforeach; ?>
+                        <?php break; ?>
+                <?php endswitch; ?>
 
-                <?php echo $this->gview->form()->closeTag($form); ?>
-            </div>
+            <?php endforeach; ?>
+
+            <?php echo $this->gview->form()->closeTag($form); ?>
         </div>
     </div>
+</div>
