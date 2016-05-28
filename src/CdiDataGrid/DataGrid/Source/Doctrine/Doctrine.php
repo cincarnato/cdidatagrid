@@ -59,7 +59,7 @@ class Doctrine extends AbstractSource {
 
         if ($this->entityForm->isValid()) {
             $record = $this->entityForm->getObject();
-            $argv += array('record' => $record, 'form' => $this->entityForm, 'data' => $aData);
+            $argv = array('record' => $record, 'form' => $this->entityForm, 'data' => $aData);
             $this->getEventManager()->trigger(__FUNCTION__ . '_before', $this, $argv);
             $this->getEntityManager()->persist($record);
             $this->getEntityManager()->flush();
