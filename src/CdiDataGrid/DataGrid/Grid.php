@@ -54,6 +54,7 @@ class Grid {
     protected $renderOk = false;
     protected $options = "";
     protected $mvcEvent;
+     protected $serviceLocator;
     protected $expRegData = "/\{\{\w*\}\}/";
     protected $formFilters;
     protected $editForm = null;
@@ -67,11 +68,13 @@ class Grid {
     protected $optionDelete = false;
     protected $optionEdit = false;
     protected $optionAdd = false;
+    protected $optionView = false;
     protected $addBtn = null;
     protected $instanceToRender = "grid";
     protected $renderTemplate = "bootstrap";
     protected $columnFilter = true;
     protected $columnOrder = true;
+    protected $recordDetail;
 
     CONST DEFAULT_RENDER = "shtml";
 
@@ -128,6 +131,11 @@ class Grid {
                 return $return;
             }
 
+            if ($aData["crudAction"] == 'view') {
+                $this->setInstanceToRender("detail");
+                $this->recordDetail = $this->getSource()->viewRecord($aData["crudId"]);
+                return true;
+            }
 
             if ($aData["crudAction"] == 'edit') {
                 $this->getSource()->generateEntityForm($aData["crudId"]);
@@ -174,6 +182,10 @@ class Grid {
                 if (!$result) {
                     $this->setInstanceToRender("formEntity");
                 }
+                
+                
+                //Maybe a Redirect
+                
             }
 
 
@@ -205,6 +217,9 @@ class Grid {
 
                 if (!$result) {
                     $this->setInstanceToRender("formEntity");
+                }else{
+                    //$plugin = $this->getServiceLocator()->get('CdiDatagridRefresh');
+                    
                 }
             }
         }
@@ -237,6 +252,19 @@ class Grid {
     public function addEditOption($name, $side, $btnClass, $btnVal = null) {
         $this->setOptionEdit(true);
         $originalValue = "<i class='" . $btnClass . "' onclick='editRecord({{id}})'>" . $btnVal . "</i>";
+        $column = new ExtraColumn($name, $side);
+        $column->setOriginalValue($originalValue);
+        $column->setFilterActive(false);
+        if ($side == "left") {
+            array_unshift($this->extraColumnCollection, $column);
+        } else if ($side == "right") {
+            array_push($this->extraColumnCollection, $column);
+        }
+    }
+
+    public function addViewOption($name, $side, $btnClass, $btnVal = null) {
+        $this->setOptionEdit(true);
+        $originalValue = "<i class='" . $btnClass . "' onclick='viewRecord({{id}})'>" . $btnVal . "</i>";
         $column = new ExtraColumn($name, $side);
         $column->setOriginalValue($originalValue);
         $column->setFilterActive(false);
@@ -901,5 +929,25 @@ class Grid {
     function setColumnOrder($columnOrder) {
         $this->columnOrder = $columnOrder;
     }
+    
+    function getRecordDetail() {
+        return $this->recordDetail;
+    }
+
+    function setRecordDetail($recordDetail) {
+        $this->recordDetail = $recordDetail;
+    }
+    
+    function getServiceLocator() {
+        return $this->serviceLocator;
+    }
+
+    function setServiceLocator($serviceLocator) {
+        $this->serviceLocator = $serviceLocator;
+    }
+
+
+
+
 
 }

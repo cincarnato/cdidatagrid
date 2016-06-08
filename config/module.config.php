@@ -46,19 +46,36 @@ return array(
     ),
     'view_helpers' => array(
         'invokables' => array(
-              'RenderCdiGrid' => 'CdiDataGrid\View\Helper\RenderCdiGrid',
+            'RenderCdiGrid' => 'CdiDataGrid\View\Helper\RenderCdiGrid',
             'RenderBootstrapGrid' => 'CdiDataGrid\View\Helper\RenderBootstrapGrid',
-              'JsCrud' => 'CdiDataGrid\View\Helper\JsCrud',
-             'JsAbmAjaxModal' => 'CdiDataGrid\View\Helper\JsAbmAjaxModal',
-              'ColumnBoolean' => 'CdiDataGrid\View\Helper\ColumnBoolean',
-             'Clink' => 'CdiDataGrid\View\Helper\Clink',
+            'JsCrud' => 'CdiDataGrid\View\Helper\JsCrud',
+            'JsAbmAjaxModal' => 'CdiDataGrid\View\Helper\JsAbmAjaxModal',
+            'ColumnBoolean' => 'CdiDataGrid\View\Helper\ColumnBoolean',
+            'Clink' => 'CdiDataGrid\View\Helper\Clink',
+            'CdiGrid' => 'CdiDataGrid\View\Helper\Grid',
         )
     ),
     'view_manager' => array(
+        'template_path_stack' => array(
+            'cdidatagrid' => __DIR__ . '/../view',
+        ),
         'display_not_found_reason' => true,
-        'display_exceptions'       => true,
-         'template_map' => array(
-             'widget/csvForm' => __DIR__ . '/../view/widget/csv-form.phtml',
-        ), 
+        'display_exceptions' => true,
+        'template_map' => array(
+            'widget/csvForm' => __DIR__ . '/../view/widget/csv-form.phtml',
+        ),
     ),
+    'cdidatagrid_options' => array(
+        'from_view' => 'cdidatagrid/form/form-bootstrap',
+        'grid_view' => 'cdidatagrid/grid/grid-bootstrap',
+        'detail_view' => 'cdidatagrid/detail/detail-bootstrap',
+        'pagination_view' => 'cdidatagrid/pagination/pagination-bootstrap'
+    ),
+    'controller_plugins' => array(
+		'invokables' => array(
+			'CdiDatagridRefresh' => 'CdiDatagrid\Controller\Plugin\Refresh',
+
+		),
+
+	),
 );

@@ -57,6 +57,10 @@ class JsCrud extends AbstractHelper implements ServiceLocatorAwareInterface {
             post({crudAction: "edit", crudId: objectId});
     }';
         
+                $view .= 'function viewRecord(objectId){
+            post({crudAction: "view", crudId: objectId});
+    }';
+        
         
            $view .= 'function addRecord(){
             post({crudAction: "add"});
