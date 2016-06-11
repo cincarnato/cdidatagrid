@@ -90,7 +90,7 @@ $submit->setAttribute('class', 'btn btn-success');
 
         </tr>
 
-        <tr>
+        <tr id="tr-filter" >
 
             <?php foreach ($this->grid->getColumnCollection() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
@@ -110,7 +110,7 @@ $submit->setAttribute('class', 'btn btn-success');
                 <tr>
                     <?php foreach ($this->grid->getColumnCollection() as $column): ?>
                         <?php if (!$column->getHidden()): ?>
-                            <td >
+                            <td class="<?php echo $this->grid->getClassTdColumn($column->getName()) ?>">
                                 <?php echo $column->getHtmlBegin(); ?>
                                 
                                 <?php if ($column->getType() == "extra"): ?>
@@ -150,7 +150,6 @@ $submit->setAttribute('class', 'btn btn-success');
     </table>
     <?php echo $this->form()->closeTag($form); ?>
 </div>
-
 
 <?php
 echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', $this->partialPagination, array("routeParams" => $this->routeParams,

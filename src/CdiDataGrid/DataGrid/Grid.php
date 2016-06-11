@@ -40,6 +40,7 @@ class Grid {
     protected $OrderColumnCollection = array();
     protected $extraColumnCollection = array();
     protected $selectFilterCollection = array();
+     protected $classTdColumnCollection = array();
     protected $renameColumnCollection = array();
     protected $hiddenColumnCollection = array();
     protected $tooltipColumnCollection = array();
@@ -494,6 +495,10 @@ class Grid {
     public function linkColumn($columnName) {
         $this->linkColumnCollection[$columnName] = $columnName;
     }
+    
+     public function classTdColumn($columnName,$class) {
+        $this->classTdColumnCollection[$columnName] = $class;
+    }
 
     public function clinkColumn($columnName, array $a) {
         $i = 0;
@@ -947,7 +952,9 @@ class Grid {
     }
 
 
-
+    public function getClassTdColumn($columnName){
+        return $this->classTdColumnCollection[$columnName];
+    }
 
 
 }
