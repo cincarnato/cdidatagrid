@@ -39,18 +39,6 @@
  <?php endif; ?> 
     </div>
 </div>
-<br>
-
-<div class="row">
-    <div class="col-lg-6">
-    <table class="table table-bordered table-striped">
-        <tr>
-            <th>Registros Totales:</th><td>  <?php echo $this->grid->getPaginator()->getTotalItemCount(); ?></td>
-        </tr>  
-    </table>
-  </div>
-</div>
-
 <?php
 $form = $this->grid->getFormFilters();
 $form->prepare();
