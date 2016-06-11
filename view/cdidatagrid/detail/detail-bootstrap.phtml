@@ -1,13 +1,12 @@
 <?php $record = $this->grid->getRecordDetail(); ?>
 <div class="row clearfix">
-    <div class="lg-col-1">   
+    <div class="col-lg-6">   
         <a class="btn btn-default" href="<?php echo $this->url($this->route, array(), array('query' => $this->routeParams), true); ?>" ><?php echo $this->translate('List'); ?></a>
-    </div>
-    <div class="lg-col-1">
-        <?php if($this->grid->getOptionEdit()): ?>
+         <?php if($this->grid->getOptionEdit()): ?>
         <i class='btn btn-danger' onclick='editRecord(<?php echo $record->getId(); ?>)'><?php echo $this->translate('Edit'); ?></i>
         <?php endif; ?>
     </div>
+  
 </div>
 <div class="row clearfix">
 
@@ -34,3 +33,6 @@
         <?php endforeach; ?>
     </table>
 </div>
+
+<?php
+echo $this->JsCrud(); ?>
