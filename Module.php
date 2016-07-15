@@ -32,7 +32,7 @@ class Module implements AutoloaderProviderInterface {
     }
 
     public function getServiceConfig() {
-        
+            return include __DIR__ . '/config/services.config.php';
     }
 
   
