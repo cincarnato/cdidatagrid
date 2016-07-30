@@ -30,53 +30,31 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface {
 
     public function __invoke(\CdiDataGrid\DataGrid\Grid $grid) {
 
-        /* @var $cdiDataGridOptions \CdiDataGrid\Options\CdiDataGridOptions   */
-        $cdiDataGridOptions = $this->getServiceLocator()->getServiceLocator()->get('cdidatagrid_options');
-
-
+        $template = $grid->getTemplate();
+        $templates = $grid->getOptions()->getTemplates();
 
         switch ($grid->getInstanceToRender()) {
             case "formEntity":
-                if ($cdiDataGridOptions->getFormView() != null) {
-                    $partial = $cdiDataGridOptions->getFormView();
-                } else {
-                    $partial = "cdidatagrid/form/form-bootstrap";
-                }
-
+                $partial = $templates[$template]["form_view"];
                 break;
             case "grid":
-                if ($cdiDataGridOptions->getGridView() != null) {
-                    $partial = $cdiDataGridOptions->getGridView();
-                } else {
-                    $partial = "cdidatagrid/grid/grid-bootstrap";
-                }
-
-                if ($cdiDataGridOptions->getPaginationView() != null) {
-                    $partialPagination = $cdiDataGridOptions->getPaginationView();
-                } else {
-                    $partialPagination = "cdidatagrid/pagination/pagination-bootstrap";
-                }
-
+                $partial = $templates[$template]["grid_view"];
                 break;
             case "detail":
-                if ($cdiDataGridOptions->getDetailView() != null) {
-                    $partial = $cdiDataGridOptions->getDetailView();
-                } else {
-                    $partial = "cdidatagrid/detail/detail-bootstrap";
-                }
+                $partial = $templates[$template]["detail_view"];
                 break;
             default:
-                $partial = "cdidatagrid/table/grid-bootstrap";
+                $partial = $templates[$template]["grid_view"];
                 break;
         }
+
+        $partialPagination = $templates[$template]["pagination_view"];
 
         $routeParams = $grid->getQueryArray();
         if (!$routeParams) {
             $routeParams = array();
         }
         $route = $grid->getRoute();
-
-        //ver en partial poner el pagination como parametro opcional
 
         return $this->view->partial($partial, array(
                     "grid" => $grid,

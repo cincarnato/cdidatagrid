@@ -1,0 +1,146 @@
+<div class="row">
+    <div class="col-xs-12">
+        <?php if ($this->grid->getCsvCommaOn()): ?>
+            <a class="btn btn-info" href="<?php echo $this->url($this->route, array(), array('query' => array('cdiExportCommaCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (,)</a> 
+
+        <?php endif; ?>
+        <?php if ($this->grid->getCsvSemicolonOn()): ?>
+            <a class="btn btn-info" href="<?php echo $this->url($this->route, array(), array('query' => array('cdiExportSemiColonCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (;)</a> 
+
+        <?php endif; ?>
+
+        <?php if ($this->grid->getCsvTabulatorOn()): ?>
+            <a class="btn btn-info" href="<?php echo $this->url($this->route, array(), array('query' => array('cdiExportTabulatorCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (Tabulado)</a> 
+
+        <?php endif; ?>
+
+        <?php if ($this->grid->getExportCsv()): ?>
+
+            <?php echo $this->partial('widget/csvForm', array('form' => $this->grid->getCsvForm(), 'route' => $this->route, 'routeParams' => $this->routeParams)); ?> 
+            <script>
+                function submitCsv() {
+                    var datastring = $('#csvExport').serialize();
+                    var sPageURL = window.location.href;
+
+                    var patt = patt2 = /\?/;
+                    var res = patt.test(sPageURL);
+
+                    if (res) {
+                        var finalUrl = sPageURL + "&" + datastring;
+                    } else {
+                        var finalUrl = sPageURL + "?" + datastring;
+                    }
+
+
+                    window.location.assign(finalUrl);
+                }
+            </script>
+
+        <?php endif; ?> 
+    </div>
+</div>
+
+
+
+
+
+<div class="table">
+    <div class="padding5">
+        <?php if ($this->grid->getOptionAdd()): ?>
+            <?php $addBtn = $this->grid->getAddBtn(); ?>
+            <?php echo $this->CdiGridBtnAdd($addBtn["name"], $addBtn["class"], $addBtn["value"], "addRecord()"); ?>
+
+        <?php endif; ?> 
+
+
+    </div>
+
+    <div>
+        <?php
+        $form = $this->grid->getFormFilters();
+        $form->prepare();
+        $submit = $form->get("submit");
+        $submit->setAttribute('class', 'btn btn-success');
+        ?>
+        <?php //echo $this->formElement($submit)       ?>
+
+        <?php echo $this->form()->openTag($form); ?>
+
+        <div class="row container-fluid">
+            <div class="panel panel-info nomargin">
+                <div class="panel-heading padding2 text-center">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
+                        Filtros
+                    </a>
+                </div>
+                <div id="collapseFilter" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
+                    <div id="adest">
+                        <?php echo $this->partial("cdidatagrid/form/form-filter", array("form" => $form)); ?>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <?php echo $this->form()->closeTag($form); ?>
+    </div>
+
+    <?php echo $this->formElement($form->get("page")) ?>
+    <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
+
+        <tr>
+            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                <?php if (!$column->getHidden()): ?>
+                    <th style="text-align: center; font-size: 14px;">
+                        <?php $name = $column->getName(); ?>
+                        <?php echo $this->translate((string) $column); ?>
+                        <?php if ($this->grid->getOrderBy() == $column->getName()): ?>
+                            <?php if ($this->grid->getOrderDirection() == "DESC"): ?>
+                                <a class="fa fa-sort-asc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>"></a>
+                            <?php elseif ($this->grid->getOrderDirection() == "ASC"): ?>
+                                <a class="fa fa-sort-desc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a class="fa fa-sort" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
+
+                        <?php endif; ?>
+
+
+
+                    </th>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
+        </tr>
+
+        <?php if (count($this->grid->getRow())): ?>
+            <?php foreach ($this->grid->getRow() as $data): ?>
+                <tr>
+                    <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                        <?php if (!$column->getHidden()): ?>
+                            <td class="<?php echo $this->grid->getClassTdColumn($column->getName()) ?>">
+                                <?php echo $column->getHtmlBegin(); ?>
+
+                                <?php echo $this->CdiGridField($column, $data); ?>
+
+                                <?php echo $column->getHtmlEnd(); ?>
+
+                            </td>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </table>
+
+</div>
+
+<?php
+echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', $this->partialPagination, array("routeParams" => $this->routeParams,
+    'route' => $this->route));
+?>
+
+
+<?php echo $this->CdiGridCrud(); ?>
+

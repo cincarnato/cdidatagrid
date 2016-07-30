@@ -9,9 +9,6 @@ namespace CdiDataGrid\DataGrid\Column;
  */
 class Column extends AbstractColumn{
  
-
-
-    
     protected $filterActive = true;
     
     protected $filter;
@@ -20,11 +17,6 @@ class Column extends AbstractColumn{
         $this->name = $name;
         $this->visualName = $name;
     }
-
-    
- 
- 
-
 
     public function getFilterActive() {
         return $this->filterActive;
@@ -41,14 +33,7 @@ class Column extends AbstractColumn{
     public function setFilter($filter) {
         $this->filter = $filter;
     }
-
-
-
-
-
-
-
-    
+ 
 }
 
 ?>

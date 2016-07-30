@@ -9,19 +9,15 @@ use CdiDataGrid\DataGrid\Grid as Grid;
 class GridFactory implements FactoryInterface {
 
     public function createService(ServiceLocatorInterface $serviceLocator) {
-        $config = $serviceLocator->get('config');
-
-        if (!isset($config['CdiDatagrid'])) {
-            throw new InvalidArgumentException('Config "CdiDatagrid" is missing');
-        }
+        $config = $serviceLocator->get('cdidatagrid_options');
 
         /* @var $application \Zend\Mvc\Application */
         $application = $serviceLocator->get('application');
 
         $grid = new Grid();
-        $grid->setOptions($config['CdiDatagrid']);
+        $grid->setOptions($config);
         $grid->setMvcEvent($application->getMvcEvent());
-         $grid->setServiceLocator($serviceLocator);
+        $grid->setServiceLocator($serviceLocator);
         return $grid;
     }
 

@@ -7,7 +7,7 @@ namespace CdiDataGrid\DataGrid\Column;
  *
  * @author cincarnato
  */
-abstract class AbstractColumn {
+abstract class AbstractColumn implements InterfaceColumn {
 
     protected $name;
     protected $visualName;
@@ -18,12 +18,13 @@ abstract class AbstractColumn {
     protected $type = "text";
     protected $replaceTrueBy;
     protected $filePath;
-      protected $fileWidth = "100%";
-      protected $fileHeight= "100%";
+    protected $fileWidth = "100%";
+    protected $fileHeight= "100%";
     protected $replaceFalseBy;
     protected $formatDatetime;
     protected $length = 15;
-    protected $clink;
+     protected $helper;
+ 
 
     public function getName() {
         return $this->name;
@@ -121,14 +122,6 @@ abstract class AbstractColumn {
         $this->length = $length;
     }
 
-    function getClink() {
-        return $this->clink;
-    }
-
-    function setClink($clink) {
-        $this->clink = $clink;
-    }
-
     function getFilePath() {
         return $this->filePath;
     }
@@ -151,6 +144,16 @@ abstract class AbstractColumn {
     function setFileHeight($fileHeight) {
         $this->fileHeight = $fileHeight;
     }
+    
+    function getHelper() {
+        return $this->helper;
+    }
+
+    function setHelper($helper) {
+        $this->helper = $helper;
+    }
+
+
 
 
 

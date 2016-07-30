@@ -1,12 +1,13 @@
 <?php
 
 namespace CdiDataGrid\DataGrid\Source;
+
 use CdiCommons\EventManager\EventProvider;
 
 abstract class AbstractSource extends EventProvider {
-    
+
     protected $paginatorAdapter;
-    
+
     public function getPaginatorAdapter() {
         return $this->paginatorAdapter;
     }
@@ -15,10 +16,6 @@ abstract class AbstractSource extends EventProvider {
         $this->paginatorAdapter = $paginatorAdapter;
     }
 
-
-    
-    
 }
-
 
 ?>

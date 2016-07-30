@@ -23,10 +23,24 @@ use Zend\Http\Headers;
  */
 class Grid {
 
-    //put your code here
-
-    protected $id;
-    protected $title;
+    /**
+     * Template a renderzar.
+     * @var string
+     */
+    protected $template = "default";
+    
+    /**
+     * Identificador del Grid
+     * @var string
+     */
+    protected $id = "CdiGrid";
+    
+    /**
+     * Titulo
+     * @var string
+     */
+    protected $title = "";
+    
     protected $source;
     protected $page;
     protected $paginator;
@@ -35,27 +49,31 @@ class Grid {
     protected $row;
     protected $filters;
     protected $orderBy;
+    protected $orderDirection;
     protected $columnsName = array();
     protected $columnCollection = array();
+    
     protected $OrderColumnCollection = array();
     protected $extraColumnCollection = array();
     protected $selectFilterCollection = array();
-     protected $classTdColumnCollection = array();
+    protected $classTdColumnCollection = array();
     protected $renameColumnCollection = array();
     protected $hiddenColumnCollection = array();
     protected $tooltipColumnCollection = array();
     protected $linkColumnCollection = array();
-    protected $clinkColumnCollection = array();
     protected $longTextColumnCollection = array();
     protected $booleanColumnCollection = array();
     protected $fileColumnCollection = array();
     protected $datetimeColumnCollection = array();
+    
+     protected $customHelperColumnCollection = array();
+    
     protected $aditionalHtmlColumnCollection = array();
     protected $recordPerPage = 10;
     protected $renderOk = false;
-    protected $options = "";
+    protected $options;
     protected $mvcEvent;
-     protected $serviceLocator;
+    protected $serviceLocator;
     protected $expRegData = "/\{\{\w*\}\}/";
     protected $formFilters;
     protected $editForm = null;
@@ -76,11 +94,18 @@ class Grid {
     protected $columnFilter = true;
     protected $columnOrder = true;
     protected $recordDetail;
-
-    CONST DEFAULT_RENDER = "shtml";
+    protected $partialsView = array();
 
     public function __construct() {
         
+    }
+
+    public function getPartialsView() {
+        return $this->partialsView;
+    }
+
+    public function setPartialsView(array $partialsView = array()) {
+        $this->partialsView = $partialsView;
     }
 
     public function prepare() {
@@ -95,7 +120,7 @@ class Grid {
         $this->paginatorAdapter = $this->getSource()->query();
 
         $this->paginator = new Paginator($this->paginatorAdapter);
-        $this->paginator->setDefaultItemCountPerPage($this->getRecordPerPage());
+        $this->paginator->setDefaultItemCountPerPage($this->getOptions()->getRecordsPerPage());
         $this->paginator->setCurrentPageNumber($this->getPage());
 
         $this->unprocessedData = $this->paginator->getCurrentItems();
@@ -110,9 +135,9 @@ class Grid {
         $this->processBooleanColumns();
         $this->processDatetimeColumns();
         $this->processLinkColumns();
-        $this->processClinkColumns();
         $this->processLongTextColumns();
         $this->processAditionalHtmlColumns();
+        $this->processCustomHelperColumn();
 
         $this->processOrderColumn();
 
@@ -183,10 +208,9 @@ class Grid {
                 if (!$result) {
                     $this->setInstanceToRender("formEntity");
                 }
-                
-                
+
+
                 //Maybe a Redirect
-                
             }
 
 
@@ -218,9 +242,8 @@ class Grid {
 
                 if (!$result) {
                     $this->setInstanceToRender("formEntity");
-                }else{
+                } else {
                     //$plugin = $this->getServiceLocator()->get('CdiDatagridRefresh');
-                    
                 }
             }
         }
@@ -239,7 +262,7 @@ class Grid {
 
     public function addDelOption($name, $side, $btnClass, $btnVal = null) {
         $this->setOptionDelete(true);
-        $originalValue = "<i class='" . $btnClass . "' onclick='deleteRecord({{id}})'>" . $btnVal . "</i>";
+        $originalValue = "<i class='" . $btnClass . "' onclick='cdiDeleteRecord({{id}})'>" . $btnVal . "</i>";
         $column = new ExtraColumn($name, $side);
         $column->setOriginalValue($originalValue);
         $column->setFilterActive(false);
@@ -252,7 +275,7 @@ class Grid {
 
     public function addEditOption($name, $side, $btnClass, $btnVal = null) {
         $this->setOptionEdit(true);
-        $originalValue = "<i class='" . $btnClass . "' onclick='editRecord({{id}})'>" . $btnVal . "</i>";
+        $originalValue = "<i class='" . $btnClass . "' onclick='cdiEditRecord({{id}})'>" . $btnVal . "</i>";
         $column = new ExtraColumn($name, $side);
         $column->setOriginalValue($originalValue);
         $column->setFilterActive(false);
@@ -265,7 +288,7 @@ class Grid {
 
     public function addViewOption($name, $side, $btnClass, $btnVal = null) {
         $this->setOptionEdit(true);
-        $originalValue = "<i class='" . $btnClass . "' onclick='viewRecord({{id}})'>" . $btnVal . "</i>";
+        $originalValue = "<i class='" . $btnClass . "' onclick='cdiViewRecord({{id}})'>" . $btnVal . "</i>";
         $column = new ExtraColumn($name, $side);
         $column->setOriginalValue($originalValue);
         $column->setFilterActive(false);
@@ -278,7 +301,9 @@ class Grid {
 
     public function addNewOption($name, $btnClass, $btnVal = "+") {
         $this->setOptionAdd(true);
-        $this->addBtn = "<i id='.$name.' name='.$name.' class='" . $btnClass . "' onclick='addRecord()'>" . $btnVal . "</i>";
+        $this->addBtn["name"] = $name;
+        $this->addBtn["class"] = $btnClass;
+        $this->addBtn["value"] = $btnVal;
     }
 
     public function getAllData() {
@@ -389,13 +414,13 @@ class Grid {
                                 $value = str_replace("==", "", $value);
                             }
 
-                            if (preg_match("/$</", $value)) {
+                            if (preg_match("/^</", $value)) {
                                 $match = true;
                                 $type = "lt";
                                 $value = str_replace("<", "", $value);
                             }
 
-                            if (preg_match("/$>/", $value)) {
+                            if (preg_match("/^>/", $value)) {
                                 $match = true;
                                 $type = "gt";
                                 $value = str_replace(">", "", $value);
@@ -447,12 +472,13 @@ class Grid {
             if ($column->getFilterActive()) {
 
                 $name = "f_" . $column->getName();
-                if (key_exists($name, $this->selectFilterCollection)) {
-
-                    $this->formFilters->add($this->selectFilterCollection[$name]);
-                } else {
-                    $element = new Element\Text($name);
-                    $this->formFilters->add($element);
+                if ($this->hiddenColumnCollection[$column->getName()] != true) {
+                    if (key_exists($name, $this->selectFilterCollection)) {
+                        $this->formFilters->add($this->selectFilterCollection[$name]);
+                    } else {
+                        $element = new Element\Text($name);
+                        $this->formFilters->add($element);
+                    }
                 }
             }
         }
@@ -479,9 +505,22 @@ class Grid {
 
         $this->formFilters->setData($request);
     }
+    
+      public function customHelperColumn($columnName, $helperName) {
+        $this->customHelperColumnCollection[$columnName] = $helperName;
+    }
+    
+    protected function processCustomHelperColumn() {
+        foreach ($this->columnCollection as &$column) {
+            if (key_exists($column->getName(), $this->customHelperColumnCollection)) {
+                $column->setHelper($this->customHelperColumnCollection[$column->getName()]);
+               $column->setType("custom");
+            }
+        }
+    }
 
-    public function hiddenColumn($columnName) {
-        $this->hiddenColumnCollection[$columnName] = $columnName;
+    public function hiddenColumn($columnName, $showFilter = true) {
+        $this->hiddenColumnCollection[$columnName] = $showFilter;
     }
 
     public function datetimeColumn($columnName, $format) {
@@ -495,19 +534,12 @@ class Grid {
     public function linkColumn($columnName) {
         $this->linkColumnCollection[$columnName] = $columnName;
     }
-    
-     public function classTdColumn($columnName,$class) {
+
+    public function classTdColumn($columnName, $class) {
         $this->classTdColumnCollection[$columnName] = $class;
     }
 
-    public function clinkColumn($columnName, array $a) {
-        $i = 0;
-        foreach ($a as $value) {
-            $this->clinkColumnCollection[$columnName][$i]["path"] = $value["path"];
-            $this->clinkColumnCollection[$columnName][$i]["data"] = $value["data"];
-            $i++;
-        }
-    }
+ 
 
     public function longTextColumn($columnName, $length = 15) {
         $this->longTextColumnCollection[$columnName] = $length;
@@ -670,15 +702,6 @@ class Grid {
         }
     }
 
-    protected function processClinkColumns() {
-        foreach ($this->columnCollection as &$column) {
-            if (key_exists($column->getName(), $this->clinkColumnCollection)) {
-                $column->setType("clink");
-                $column->setClink($this->clinkColumnCollection[$column->getName()]);
-            }
-        }
-    }
-
     protected function processLongTextColumns() {
         foreach ($this->columnCollection as &$column) {
             if (key_exists($column->getName(), $this->longTextColumnCollection)) {
@@ -743,7 +766,7 @@ class Grid {
         return $this->options;
     }
 
-    public function setOptions($options) {
+    public function setOptions(\CdiDataGrid\Options\GridOptionsInterface $options) {
         $this->options = $options;
     }
 
@@ -787,8 +810,16 @@ class Grid {
         return $this->recordPerPage;
     }
 
-    public function setRecordPerPage($recordPerPage) {
-        $this->recordPerPage = $recordPerPage;
+    public function setRecordsPerPage($recordsPerPage) {
+        $this->getOptions()->setRecordsPerPage($recordsPerPage);
+    }
+
+    /*
+     * Compatibilidad
+     */
+
+    public function setRecordPerPage($recordsPerPage) {
+        $this->getOptions()->setRecordsPerPage($recordsPerPage);
     }
 
     public function getColumnCollection() {
@@ -934,7 +965,7 @@ class Grid {
     function setColumnOrder($columnOrder) {
         $this->columnOrder = $columnOrder;
     }
-    
+
     function getRecordDetail() {
         return $this->recordDetail;
     }
@@ -942,7 +973,7 @@ class Grid {
     function setRecordDetail($recordDetail) {
         $this->recordDetail = $recordDetail;
     }
-    
+
     function getServiceLocator() {
         return $this->serviceLocator;
     }
@@ -951,10 +982,30 @@ class Grid {
         $this->serviceLocator = $serviceLocator;
     }
 
-
-    public function getClassTdColumn($columnName){
+    public function getClassTdColumn($columnName) {
         return $this->classTdColumnCollection[$columnName];
     }
 
+    function getOrderBy() {
+        return $this->orderBy;
+    }
+
+    function getOrderDirection() {
+        return $this->orderDirection;
+    }
+
+    /**
+     * @return string $template
+     */
+    function getTemplate() {
+        return $this->template;
+    }
+
+    /**
+     * @param string $template 
+     */
+    function setTemplate($template) {
+        $this->template = $template;
+    }
 
 }

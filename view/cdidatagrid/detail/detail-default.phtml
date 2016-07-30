@@ -1,0 +1,35 @@
+<?php $record = $this->grid->getRecordDetail(); ?>
+<div class="row clearfix">
+    <div class="col-lg-6">   
+        <a class="btn btn-default" href="<?php echo $this->url($this->route, array(), array('query' => $this->routeParams), true); ?>" ><?php echo $this->translate('List'); ?></a>
+         <?php if($this->grid->getOptionEdit()): ?>
+        <i class='btn btn-danger' onclick='editRecord(<?php echo $record->getId(); ?>)'><?php echo $this->translate('Edit'); ?></i>
+        <?php endif; ?>
+    </div>
+  
+</div>
+<div class="row clearfix">
+
+
+    <table class="table table-striped table-bordered">
+        <?php foreach ((array) $record as $key => $value): ?>
+            <tr>
+                <th><?php echo $this->translate($key); ?></th>
+
+                <td>
+                    <?php if (substr($key, 0, 1) != '_'): ?>
+                        <?php if (is_object($value)): ?>
+                            <?php if (is_a($value, "DateTime")): ?>
+                                <?php echo $value->format("Y-m-d H:i:s"); ?>
+                            <?php else: ?> 
+                                <?php echo $value; ?>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <?php echo $value; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</div>

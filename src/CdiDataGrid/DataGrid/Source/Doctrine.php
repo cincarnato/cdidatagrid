@@ -68,8 +68,9 @@ class Doctrine extends AbstractSource {
             $this->getEventManager()->trigger(__FUNCTION__ . '_before', $this, $argv);
             $this->getEntityManager()->persist($record);
             $this->getEntityManager()->flush();
+            $argv["record"] = $record;
             $this->getEventManager()->trigger(__FUNCTION__ . '_post', $this, $argv);
-            return true;
+            return true; 
         } else {
             return false;
         }
@@ -133,7 +134,6 @@ class Doctrine extends AbstractSource {
 
         $this->entityForm->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEntityManager()))
                 ->setObject($record)
-                //  ->setInputFilter(new ReferenzwertFilter())
                 ->setAttribute('method', 'post');
 
         $this->entityForm->add(array(

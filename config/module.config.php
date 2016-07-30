@@ -13,6 +13,23 @@
  * 
  */
 return array(
+    'cdidatagrid_options' => array(
+        'recordsPerPage' => 10,
+        'templates' => array(
+            'default' => array(
+                'form_view' => 'cdidatagrid/form/form-default',
+                'grid_view' => 'cdidatagrid/grid/grid-default',
+                'detail_view' => 'cdidatagrid/detail/detail-default',
+                'pagination_view' => 'cdidatagrid/pagination/pagination-default'
+            ),
+            'ajax' => array(
+                'form_view' => 'cdidatagrid/form/form-ajax',
+                'grid_view' => 'cdidatagrid/grid/grid-ajax',
+                'detail_view' => 'cdidatagrid/detail/detail-ajax',
+                'pagination_view' => 'cdidatagrid/pagination/pagination-ajax'
+            )
+        )
+    ),
     'router' => array(
         'routes' => array(
             'cdidatagrid' => array(
@@ -52,7 +69,19 @@ return array(
             'JsAbmAjaxModal' => 'CdiDataGrid\View\Helper\JsAbmAjaxModal',
             'ColumnBoolean' => 'CdiDataGrid\View\Helper\ColumnBoolean',
             'Clink' => 'CdiDataGrid\View\Helper\Clink',
+            //News
             'CdiGrid' => 'CdiDataGrid\View\Helper\Grid',
+            'CdiGridCrud' => 'CdiDataGrid\View\Helper\CdiGridCrud',
+            'CdiGridCrudAjax' => 'CdiDataGrid\View\Helper\CdiGridCrudAjax',
+            'CdiGridField' => 'CdiDataGrid\View\Helper\CdiGridField',
+            'CdiGridFieldText' => 'CdiDataGrid\View\Helper\CdiGridFieldText',
+            'CdiGridFieldBoolean' => 'CdiDataGrid\View\Helper\CdiGridFieldBoolean',
+            'CdiGridFieldDateTime' => 'CdiDataGrid\View\Helper\CdiGridFieldDateTime',
+            'CdiGridFieldExtra' => 'CdiDataGrid\View\Helper\CdiGridFieldExtra',
+            'CdiGridFieldLink' => 'CdiDataGrid\View\Helper\CdiGridFieldLink',
+            'CdiGridFieldLongText' => 'CdiDataGrid\View\Helper\CdiGridFieldLongText',
+            'CdiGridFieldCustom' => 'CdiDataGrid\View\Helper\CdiGridFieldCustom',
+            'CdiGridBtnAdd' => 'CdiDataGrid\View\Helper\CdiGridBtnAdd',
         )
     ),
     'view_manager' => array(
@@ -65,17 +94,9 @@ return array(
             'widget/csvForm' => __DIR__ . '/../view/widget/csv-form.phtml',
         ),
     ),
-    'cdidatagrid_options' => array(
-        'from_view' => 'cdidatagrid/form/form-bootstrap',
-        'grid_view' => 'cdidatagrid/grid/grid-bootstrap',
-        'detail_view' => 'cdidatagrid/detail/detail-bootstrap',
-        'pagination_view' => 'cdidatagrid/pagination/pagination-bootstrap'
-    ),
     'controller_plugins' => array(
-		'invokables' => array(
-			'CdiDatagridRefresh' => 'CdiDatagrid\Controller\Plugin\Refresh',
-
-		),
-
-	),
+        'invokables' => array(
+            'CdiDatagridRefresh' => 'CdiDatagrid\Controller\Plugin\Refresh',
+        ),
+    ),
 );
