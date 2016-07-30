@@ -1,11 +1,11 @@
-# cdidatagrid
+# cdidatagrid zf2
 
 
 Zend Framework 2 module.
 
-It allows you to render a datagrid from an entity Doctrine 2.
+It allows you to render a datagrid from an Doctrine2 entity.
 
-Features: Pager, Filter, Order, Add, edit, view and delete records
+Features: Paginate, Filter, Order, Add, edit, view and delete records
 
 -----------------------------------------------------------------------
 
