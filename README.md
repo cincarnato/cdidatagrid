@@ -5,6 +5,10 @@ cdidatagrid
 Modulo/Libreria para Zend Framework 2 que pretende resolver la presentacion en formato de tabla / grid, 
 trabajando principalmente con entidades de Doctrine 2.
 
+
+![alt tag](https://cloud.githubusercontent.com/assets/7002030/17273141/a97f1a0c-5681-11e6-90ee-de90f478c4af.jpg)
+
+
 Caracteristicas / Funcionalidades / features:
 - Paginador
 - Filtros por columna
