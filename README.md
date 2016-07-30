@@ -10,16 +10,36 @@ trabajando principalmente con entidades de Doctrine 2.
 
 
 Caracteristicas / Funcionalidades / features:
-- Paginador
-- Filtros por columna
-- Filtros por combobox / smartpick / select
-- Orden por columna
-- Agregar columnas extra
-- Oculatar columnas
-- Agregar Tooltip a Columna
-- Callback para procesar cada elemento de la columna e imprimir el retorno de la funcion
-- Mostrar otro nombre de columna, respecto al nombre original en la DB/Entidad
-- Agregar html extra a las filas por columna. Ejemplo "<span style="color:red">elemento</span>"
-- Agregar html extra a las filas de forma condicional. Si es > mayor que...
-- Generador de Zend Form para agregar y editar registros.
-- Render por Zend Helper. Formato bootstrap.
+- Paginador / Paginator
+- Filtros / Filter
+- Ordenar / Order
+- Columnas Extras / Extra Column
+- Render de campo personalizado con ViewHelper / Custom View Helper field
+- Oculatar columnas / Hidden Column
+- Tooltip
+
+
+----Simple usage----
+
+$grid = $this->getServiceLocator()->get('cdiGrid');
+$source = new \CdiDataGrid\DataGrid\Source\Doctrine($this->getEntityManager(), 'CdiCrm\Entity\Ticket');
+$grid->setSource($source);
+$grid->setRecordsPerPage(5);
+$grid->setTemplate("ajax");
+$grid->prepare();
+$view = new ViewModel(array('grid' => $grid));
+return $view;
+
+----In View----
+
+<?php echo $this->CdiGrid($this->grid); ?>
+
+
+----Obs----
+#The default template need jQuery and Bootstrap
+
+
+----Features----
+
+
+
