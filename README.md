@@ -44,6 +44,8 @@ return $view;
 
 ##  Functions
 
+After "$grid->prepare();"
+
 ### Hidden Column
 ```PHP
 $grid->hiddenColumn('columnName');
