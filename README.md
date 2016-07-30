@@ -19,8 +19,8 @@ Caracteristicas / Funcionalidades / features:
 - Tooltip
 
 
-----Simple usage----
-
+## Simple usage
+```PHP
 $grid = $this->getServiceLocator()->get('cdiGrid');
 $source = new \CdiDataGrid\DataGrid\Source\Doctrine($this->getEntityManager(), 'CdiCrm\Entity\Ticket');
 $grid->setSource($source);
@@ -29,17 +29,19 @@ $grid->setTemplate("ajax");
 $grid->prepare();
 $view = new ViewModel(array('grid' => $grid));
 return $view;
+```
+## In View
 
-----In View----
-
+```PHP
 <?php echo $this->CdiGrid($this->grid); ?>
+```
+
+### Obs
+
+-The default template need jQuery and Bootstrap
 
 
-----Obs----
-#The default template need jQuery and Bootstrap
-
-
-----Features----
+###  Features
 
 
 
