@@ -25,7 +25,6 @@ $grid = $this->getServiceLocator()->get('cdiGrid');
 $source = new \CdiDataGrid\DataGrid\Source\Doctrine($this->getEntityManager(), 'CdiCrm\Entity\Ticket');
 $grid->setSource($source);
 $grid->setRecordsPerPage(5);
-$grid->setTemplate("ajax");
 $grid->prepare();
 $view = new ViewModel(array('grid' => $grid));
 return $view;
@@ -36,12 +35,19 @@ return $view;
 <?php echo $this->CdiGrid($this->grid); ?>
 ```
 
-### Obs
+## Obs
 
 -The default template need jQuery and Bootstrap
 
 
-###  Features
+##  Features
 
+### Set Template to Render
+```PHP
+$grid->setTemplate("ajax");
+```
 
-
+### Hidden Column
+```PHP
+  $grid->hiddenColumn('columnName');
+```
