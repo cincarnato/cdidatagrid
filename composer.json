@@ -2,7 +2,7 @@
     "name": "cdi/cdidatagrid",
     "description": "Zend Framework 2 Module that provides a datagrid",
     "type": "library",
-    "license": "WTFPL",
+    "license": "MIT",
     "keywords": [
         "ZfcDatagrid",
         "datagrid",
@@ -12,8 +12,11 @@
         "module",
         "zf",
         "zf2",
+        "zf3",
         "Zend Framework",
         "Zend Framework 2",
+        "Zend Framework 3",
+        "zend",
         "doctrine",
         "doctrine 2",
         "order",
@@ -24,7 +27,8 @@
         "delete",
         "view",
         "abm",
-        "crud"
+        "crud",
+        "php"
     ],
     "authors": [{
             "name": "Cristian Incarnato",
@@ -40,14 +44,11 @@
         "zendframework/zend-modulemanager": "~2.2",
         "zendframework/zend-view": "~2.2",
         "zendframework/zend-http": "~2.2",
-        "zendframework/zend-paginator": "~2.2"
-    },
-    "require-dev": {
-        "zendframework/zendframework": "~2.2",
-        "doctrine/doctrine-orm-module": ">=0.8"
+        "zendframework/zend-paginator": "~2.2",
+        "doctrine/doctrine-orm-module": ">=0.9"
     },
     "suggest": {
-        "doctrine/doctrine-orm-module": ">=0.8"
+        "doctrine/doctrine-orm-module": ">=0.9"
     },
     "autoload": {
         "psr-0": {
