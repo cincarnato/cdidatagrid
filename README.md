@@ -42,12 +42,38 @@ return $view;
 
 ##  Features
 
+### Hidden Column
+```PHP
+$grid->hiddenColumn('columnName');
+```
+
+### Change Column Visual Name
+```PHP
+$grid->changeColumnName('columnName','newColumnName');
+```
+
+### Set DateTime Column Format
+```PHP
+$grid->datetimeColumn('createdAt', 'Y-m-d H:i:s');
+```
+
+### Set render a column with a custom view helper
+```PHP
+$grid->customHelperColumn('columnname',"ViewHelperName");
+```
+
+
 ### Set Template to Render
 ```PHP
 $grid->setTemplate("ajax");
 ```
 
-### Hidden Column
+### Set a custom class to table
 ```PHP
-  $grid->hiddenColumn('columnName');
+$grid->setTableClass("customClass table-condensed table-striped");
+```
+
+### Set a custom class to Column (<td>)
+```PHP
+$grid->classTdColumn('columnName', "customClass text-center col-md-1");
 ```
