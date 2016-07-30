@@ -1,27 +1,25 @@
-cdidatagrid
-==========
+# cdidatagrid
 
 
-Modulo para Zend Framework 2 que renderiza un datagrid a partir de una entidad de Doctrine 2. 
+Zend Framework 2 module.
 
-Permite visualizar los registros de la DB de esa entidad con un paginador, posibilidad de filtrar, ordenar, agregar, editar, eliminar.
+It allows you to render a datagrid from an entity Doctrine 2.
+
+Features: Pager, Filter, Order, Add, edit, view and delete records
+
+-----------------------------------------------------------------------
+
+Modulo para Zend Framework 2.
+
+Permite renderizar un datagrid a partir de una entidad de Doctrine 2. 
+
+Caracteristicas: Paginar,Filtrar, Ordenar, Agregar, editar, visualizar y eliminar registros
 
 
-
+##Ejemplo/Example:
 
 ![alt tag](https://cloud.githubusercontent.com/assets/7002030/17273141/a97f1a0c-5681-11e6-90ee-de90f478c4af.jpg)
 
-
-Caracteristicas / Funcionalidades / features:
-- Paginador / Paginator
-- Filtros / Filter
-- Ordenar / Order
-- Columnas Extras / Extra Column
-- Render de campo personalizado con ViewHelper / Custom View Helper field
-- Oculatar columnas / Hidden Column
-- Tooltip
-- ABM
-- View record detail
 
 
 ## Simple usage
@@ -41,11 +39,10 @@ return $view;
 ```
 
 ## Obs
-
 -The default template need jQuery and Bootstrap
 
 
-##  Features
+##  Functions
 
 ### Hidden Column
 ```PHP
@@ -82,3 +79,6 @@ $grid->setTableClass("customClass table-condensed table-striped");
 ```PHP
 $grid->classTdColumn('columnName', "customClass text-center col-md-1");
 ```
+
+
+many more...
