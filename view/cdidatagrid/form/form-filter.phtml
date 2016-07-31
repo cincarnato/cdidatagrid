@@ -43,6 +43,18 @@ echo $this->form()->openTag($form);
 
             <?php
             break;
+        case "checkbox" :
+            ?>
+
+            <?php
+           // $element->setAttribute('class', 'form-control');
+            ?>
+            <div class="col-lg-4 col-md-6 col-xs-12">
+                <?php echo $this->partial('cdidatagrid/form/filter-element-checkbox', array('element' => $element)); ?>
+            </div>
+
+            <?php
+            break;
         default:
             ?>
 

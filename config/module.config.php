@@ -63,7 +63,7 @@ return array(
     ),
     'view_helpers' => array(
         'invokables' => array(
-            'RenderCdiGrid' => 'CdiDataGrid\View\Helper\RenderCdiGrid',
+            'RenderCdiGrid' => 'CdiDataGrid\View\Helper\Grid',
             'RenderBootstrapGrid' => 'CdiDataGrid\View\Helper\RenderBootstrapGrid',
             'JsCrud' => 'CdiDataGrid\View\Helper\JsCrud',
             'JsAbmAjaxModal' => 'CdiDataGrid\View\Helper\JsAbmAjaxModal',

@@ -18,20 +18,7 @@
             <?php echo $this->formElement($this->element); ?>
         </div>
 
-        <?php if ($element->getOption('description')): ?>
-            <p class="help-block"><?php echo $this->element->getOption('description') ?></p>
-        <?php endif; ?>
-        <?php if ($this->formElementErrors($this->element)) : ?>
-            <?php
-            // Imprimo los errores
-            echo $this->formElementErrors()
-                    ->setMessageOpenFormat('<span class="help-block">')
-                    ->setMessageSeparatorString('</span><span class="help-block">')
-                    ->setMessageCloseString('</span>')
-                    ->render($element);
-            ?>
 
-        <?php endif; ?>
     </div>
 </div>
 
