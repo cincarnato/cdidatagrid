@@ -396,12 +396,16 @@ class Grid {
                 if ($value != "") {
                     foreach ($this->columnCollection as $column) {
 
-                        if (preg_match("/select/i", $this->formFilters->get($name)->getAttribute("type"))) {
-                            $match = true;
-                            $type = "eq";
-                        }
+
 
                         if ($column->getName() == $name) {
+                            echo $name;
+
+                            if (preg_match("/select/i", $this->formFilters->get($name)->getAttribute("type"))) {
+                                $match = true;
+                                $type = "eq";
+                                $value = $value;
+                            }
 
                             if (preg_match("/^==/", $value)) {
                                 $match = true;
@@ -459,7 +463,7 @@ class Grid {
             if ($this->formFilters->has($key)) {
                 $this->formFilters->remove($key);
             }
-             $this->formFilters->add($element);
+            $this->formFilters->add($element);
         }
 
 
@@ -470,8 +474,8 @@ class Grid {
                 'value' => $this->getPage()
             )
         ));
-        
-         $this->formFilters->add(array(
+
+        $this->formFilters->add(array(
             'name' => 'submit',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
