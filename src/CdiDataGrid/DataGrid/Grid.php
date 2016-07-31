@@ -28,19 +28,18 @@ class Grid {
      * @var string
      */
     protected $template = "default";
-    
+
     /**
      * Identificador del Grid
      * @var string
      */
     protected $id = "CdiGrid";
-    
+
     /**
      * Titulo
      * @var string
      */
     protected $title = "";
-    
     protected $source;
     protected $page;
     protected $paginator;
@@ -52,7 +51,6 @@ class Grid {
     protected $orderDirection;
     protected $columnsName = array();
     protected $columnCollection = array();
-    
     protected $OrderColumnCollection = array();
     protected $extraColumnCollection = array();
     protected $selectFilterCollection = array();
@@ -65,9 +63,7 @@ class Grid {
     protected $booleanColumnCollection = array();
     protected $fileColumnCollection = array();
     protected $datetimeColumnCollection = array();
-    
-     protected $customHelperColumnCollection = array();
-    
+    protected $customHelperColumnCollection = array();
     protected $aditionalHtmlColumnCollection = array();
     protected $recordPerPage = 10;
     protected $renderOk = false;
@@ -94,18 +90,21 @@ class Grid {
     protected $columnFilter = true;
     protected $columnOrder = true;
     protected $recordDetail;
-    protected $partialsView = array();
+    protected $forceFilters = array();
+
+    public function addForceFilter($key, $element) {
+        $this->forceFilters[$key] = $element;
+    }
+
+    /**
+     * Compatibilidad
+     */
+    public function setFormFilterSelect($key, \Zend\Form\Element\Select $element) {
+        $this->forceFilters[$key] = $element;
+    }
 
     public function __construct() {
         
-    }
-
-    public function getPartialsView() {
-        return $this->partialsView;
-    }
-
-    public function setPartialsView(array $partialsView = array()) {
-        $this->partialsView = $partialsView;
     }
 
     public function prepare() {
@@ -113,7 +112,10 @@ class Grid {
         $returnCrud = $this->verifyCrudActions();
 
         $this->extractColumns();
+
+        $this->processFormFilters();
         $this->prepareFilters();
+
         $this->prepareOrder();
         $this->getSource()->setFilters($this->filters);
         $this->getSource()->setOrder($this->orderBy, $this->orderDirection);
@@ -127,7 +129,7 @@ class Grid {
 
         $this->processData();
         $this->mergeExtraColumn();
-        $this->processFormFilters();
+
         $this->processRenameColumns();
         $this->processHiddenColumns();
         $this->processFileColumns();
@@ -251,13 +253,6 @@ class Grid {
 
     public function getEntityForm() {
         return $this->getSource()->getEntityForm();
-    }
-
-    public function generateEntityForm() {
-
-
-
-        return $this->formEntity;
     }
 
     public function addDelOption($name, $side, $btnClass, $btnVal = null) {
@@ -400,15 +395,15 @@ class Grid {
                 $match = false;
                 if ($value != "") {
                     foreach ($this->columnCollection as $column) {
+
+                        if (preg_match("/select/i", $this->formFilters->get($name)->getAttribute("type"))) {
+                            $match = true;
+                            $type = "eq";
+                        }
+
                         if ($column->getName() == $name) {
 
-                            if (key_exists($key, $this->selectFilterCollection)) {
-
-                                $match = true;
-                                $type = "eq";
-                            }
-
-                            if (preg_match("/==/", $value)) {
+                            if (preg_match("/^==/", $value)) {
                                 $match = true;
                                 $type = "eq";
                                 $value = str_replace("==", "", $value);
@@ -426,10 +421,10 @@ class Grid {
                                 $value = str_replace(">", "", $value);
                             }
 
-                            if (preg_match("/<>/", $value)) {
+                            if (preg_match("/></", $value)) {
                                 $match = true;
                                 $type = "between";
-                                $values = explode("<>", $value);
+                                $values = explode("><", $value);
                                 $value = $values[0];
                                 $value2 = $values[1];
                             }
@@ -454,43 +449,19 @@ class Grid {
         $this->filters = $filters;
     }
 
-    public function setFormFilterSelect($ColumnName, \Zend\Form\Element\Select $filter) {
-        $name = "f_" . $ColumnName;
-        $filter->setName($name);
-
-        $this->selectFilterCollection[$name] = $filter;
-    }
-
     protected function processFormFilters() {
+        $this->formFilters = $this->source->getBasicForm();
 
-        $this->formFilters = new \Zend\Form\Form();
-        $this->formFilters->setName("GridFormFilters");
-        //$this->formFilters->setOption("action", "");
+        $this->formFilters->setName('GridFormFilters');
         $this->formFilters->setAttribute('method', 'get');
 
-        foreach ($this->columnCollection as $column) {
-            if ($column->getFilterActive()) {
-
-                $name = "f_" . $column->getName();
-                if ($this->hiddenColumnCollection[$column->getName()] != true) {
-                    if (key_exists($name, $this->selectFilterCollection)) {
-                        $this->formFilters->add($this->selectFilterCollection[$name]);
-                    } else {
-                        $element = new Element\Text($name);
-                        $this->formFilters->add($element);
-                    }
-                }
+        foreach ($this->forceFilters as $key => $element) {
+            if ($this->formFilters->has($key)) {
+                $this->formFilters->remove($key);
             }
+             $this->formFilters->add($element);
         }
 
-        $this->formFilters->add(array(
-            'name' => 'submit',
-            'options' => array('label' => 'Aplicar Filtros'),
-            'attributes' => array(
-                'type' => 'submit',
-                'value' => 'Aplicar Filtros'
-            )
-        ));
 
         $this->formFilters->add(array(
             'name' => 'page',
@@ -499,22 +470,30 @@ class Grid {
                 'value' => $this->getPage()
             )
         ));
+        
+         $this->formFilters->add(array(
+            'name' => 'submit',
+            'type' => 'Zend\Form\Element\Submit',
+            'attributes' => array(
+                'value' => 'Filter'
+            )
+        ));
 
 
         $request = $this->getMvcEvent()->getRequest()->getQuery();
 
         $this->formFilters->setData($request);
     }
-    
-      public function customHelperColumn($columnName, $helperName) {
+
+    public function customHelperColumn($columnName, $helperName) {
         $this->customHelperColumnCollection[$columnName] = $helperName;
     }
-    
+
     protected function processCustomHelperColumn() {
         foreach ($this->columnCollection as &$column) {
             if (key_exists($column->getName(), $this->customHelperColumnCollection)) {
                 $column->setHelper($this->customHelperColumnCollection[$column->getName()]);
-               $column->setType("custom");
+                $column->setType("custom");
             }
         }
     }
@@ -538,8 +517,6 @@ class Grid {
     public function classTdColumn($columnName, $class) {
         $this->classTdColumnCollection[$columnName] = $class;
     }
-
- 
 
     public function longTextColumn($columnName, $length = 15) {
         $this->longTextColumnCollection[$columnName] = $length;

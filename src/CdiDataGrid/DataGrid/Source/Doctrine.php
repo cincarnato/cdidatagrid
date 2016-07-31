@@ -70,7 +70,7 @@ class Doctrine extends AbstractSource {
             $this->getEntityManager()->flush();
             $argv["record"] = $record;
             $this->getEventManager()->trigger(__FUNCTION__ . '_post', $this, $argv);
-            return true; 
+            return true;
         } else {
             return false;
         }
@@ -121,10 +121,17 @@ class Doctrine extends AbstractSource {
         return $fieldMappings;
     }
 
-    public function generateEntityForm($id = null) {
+    public function getBasicForm($id = null) {
 
         $builder = new DoctrineAnnotationBuilder($this->entityManager);
-        $this->entityForm = $builder->createForm($this->entity);
+        $form = $builder->createForm($this->entity);
+        $form->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEntityManager()));
+        return $form;
+    }
+
+    public function generateEntityForm($id = null) {
+
+        $this->entityForm = $this->getBasicForm();
 
         if ($id) {
             $record = $this->getEntityManager()->getRepository($this->entity)->find($id);
@@ -132,15 +139,13 @@ class Doctrine extends AbstractSource {
             $record = new $this->entity;
         }
 
-        $this->entityForm->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEntityManager()))
-                ->setObject($record)
-                ->setAttribute('method', 'post');
-
+        $this->entityForm->setObject($record);
+        $this->entityForm->setAttribute('method', 'post');
         $this->entityForm->add(array(
             'name' => 'submit',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
-                'value' => 'Guardar'
+                'value' => 'submit'
             )
         ));
 
@@ -243,6 +248,9 @@ class Doctrine extends AbstractSource {
     }
 
     function getEntityForm() {
+        if (!isset($this->entityForm)) {
+            $this->generateEntityForm();
+        }
         return $this->entityForm;
     }
 
