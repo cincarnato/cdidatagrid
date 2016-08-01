@@ -20,15 +20,15 @@ echo $this->form()->openTag($form);
         case "submit" :
         case "button" :
             ?>
-            <div class="row">
+     
                 <div class="col-lg-12 col-md-12 col-xs-12 ">
                     <div  class="form-group">
                         <div class="col-lg-12 col-md-12 col-xs-12 ">
-                            <?php echo $this->formElement($element); ?>     
+                               <?php echo $this->formElement($element); ?>       
                         </div>
                     </div>
                 </div>
-            </div>
+          
             <?php
             break;
         case "select" :
@@ -36,8 +36,9 @@ echo $this->form()->openTag($form);
 
             <?php
             $element->setAttribute('class', 'form-control');
+             $element->setAttribute('placeholder', $element->getName());
             ?>
-            <div class="col-lg-4 col-md-6 col-xs-12">
+            <div class="col-lg-4 col-md-6 col-xs-12" style="height: 45px">
                 <?php echo $this->partial('cdidatagrid/form/filter-element-select', array('element' => $element)); ?>
             </div>
 
@@ -49,7 +50,7 @@ echo $this->form()->openTag($form);
             <?php
            // $element->setAttribute('class', 'form-control');
             ?>
-            <div class="col-lg-4 col-md-6 col-xs-12">
+            <div class="col-lg-4 col-md-6 col-xs-12" style="height: 45px">
                 <?php echo $this->partial('cdidatagrid/form/filter-element-checkbox', array('element' => $element)); ?>
             </div>
 
@@ -62,13 +63,13 @@ echo $this->form()->openTag($form);
             $element->setAttribute('class', 'form-control');
             $element->setAttribute('placeholder', $element->getName());
             ?>
-            <div class="col-lg-4 col-md-6 col-xs-12">
+            <div class="col-lg-4 col-md-6 col-xs-12" style="height: 45px">
                 <?php echo $this->partial('cdidatagrid/form/filter-element', array('element' => $element)); ?>
             </div>
 
             <?php break; ?>
     <?php endswitch; ?>
-
+  
 <?php endforeach; ?>
 
 <?php echo $this->form()->closeTag($form); ?>

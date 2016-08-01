@@ -24,6 +24,7 @@ abstract class AbstractColumn implements InterfaceColumn {
     protected $formatDatetime;
     protected $length = 15;
      protected $helper;
+     protected $customData = array();
  
 
     public function getName() {
@@ -151,6 +152,14 @@ abstract class AbstractColumn implements InterfaceColumn {
 
     function setHelper($helper) {
         $this->helper = $helper;
+    }
+
+    function getCustomData() {
+        return $this->customData;
+    }
+
+    function setCustomData($customData) {
+        $this->customData = $customData;
     }
 
 

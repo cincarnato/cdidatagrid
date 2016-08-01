@@ -40,51 +40,49 @@
     </div>
 </div>
 
+<div class="padding5">
+    <?php if ($this->grid->getOptionAdd()): ?>
+        <?php $addBtn = $this->grid->getAddBtn(); ?>
+        <?php echo $this->CdiGridBtnAdd($addBtn["name"], $addBtn["class"], $addBtn["value"], "cdiAddRecord()"); ?>
+
+    <?php endif; ?> 
 
 
+</div>
 
+<div >
+    <?php
+    $form = $this->grid->getFormFilters();
+    $form->prepare();
+    $submit = $form->get("submit");
+    $submit->setAttribute('class', 'btn btn-success');
+    ?>
+    <?php //echo $this->formElement($submit)       ?>
 
-<div class="table">
-    <div class="padding5">
-        <?php if ($this->grid->getOptionAdd()): ?>
-            <?php $addBtn = $this->grid->getAddBtn(); ?>
-            <?php echo $this->CdiGridBtnAdd($addBtn["name"], $addBtn["class"], $addBtn["value"], "cdiAddRecord()"); ?>
+    <?php echo $this->form()->openTag($form); ?>
 
-        <?php endif; ?> 
-
-
-    </div>
-
-    <div>
-        <?php
-        $form = $this->grid->getFormFilters();
-        $form->prepare();
-        $submit = $form->get("submit");
-        $submit->setAttribute('class', 'btn btn-success');
-        ?>
-        <?php //echo $this->formElement($submit)       ?>
-
-        <?php echo $this->form()->openTag($form); ?>
-
-        <div class="row container-fluid">
-            <div class="panel panel-info nomargin">
-                <div class="panel-heading padding2 text-center">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
-                        Filtros
-                    </a>
-                </div>
-                <div id="collapseFilter" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
-                    <div id="adest">
-                        <?php echo $this->partial("cdidatagrid/form/form-filter", array("form" => $form)); ?>
-                    </div>
-
+    <div class="row container-fluid">
+        <div class="panel panel-info nomargin">
+            <div class="panel-heading padding2 text-center">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
+                    Filtros
+                </a>
+            </div>
+            <div id="collapseFilter" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
+                <div id="adest">
+                    <?php echo $this->partial("cdidatagrid/form/form-filter", array("form" => $form)); ?>
                 </div>
 
             </div>
-        </div>
 
-        <?php echo $this->form()->closeTag($form); ?>
+        </div>
     </div>
+
+    <?php echo $this->form()->closeTag($form); ?>
+</div>
+
+<div class="table">
+
 
     <?php echo $this->formElement($form->get("page")) ?>
     <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">

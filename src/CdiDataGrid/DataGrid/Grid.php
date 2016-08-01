@@ -399,7 +399,6 @@ class Grid {
 
 
                         if ($column->getName() == $name) {
-                            echo $name;
 
                             if (preg_match("/select/i", $this->formFilters->get($name)->getAttribute("type"))) {
                                 $match = true;
@@ -459,12 +458,32 @@ class Grid {
         $this->formFilters->setName('GridFormFilters');
         $this->formFilters->setAttribute('method', 'get');
 
+        foreach ($this->formFilters as $key => $element) {
+            if (preg_match("/hidden/i", $element->getAttribute("type")) && $element->getName() == 'id') {
+                $newElement = new \Zend\Form\Element\Text('id');
+                $this->formFilters->remove($element->getName());
+                $this->formFilters->add($newElement);
+            }
+
+            
+            if (preg_match("/textarea/i", $element->getAttribute("type"))) {
+                $name = $element->getName();
+                $newElement = new \Zend\Form\Element\Text($name);
+                $this->formFilters->remove($element->getName());
+                $this->formFilters->add($newElement);
+            }
+        }
+
+
         foreach ($this->forceFilters as $key => $element) {
             if ($this->formFilters->has($key)) {
                 $this->formFilters->remove($key);
             }
             $this->formFilters->add($element);
         }
+
+
+
 
 
         $this->formFilters->add(array(
@@ -489,14 +508,16 @@ class Grid {
         $this->formFilters->setData($request);
     }
 
-    public function customHelperColumn($columnName, $helperName) {
-        $this->customHelperColumnCollection[$columnName] = $helperName;
+    public function customHelperColumn($columnName, $helperName, $customData = null) {
+        $this->customHelperColumnCollection[$columnName]["helper"] = $helperName;
+        $this->customHelperColumnCollection[$columnName]["customData"] = $customData;
     }
 
     protected function processCustomHelperColumn() {
         foreach ($this->columnCollection as &$column) {
             if (key_exists($column->getName(), $this->customHelperColumnCollection)) {
-                $column->setHelper($this->customHelperColumnCollection[$column->getName()]);
+                $column->setHelper($this->customHelperColumnCollection[$column->getName()]["helper"]);
+                $column->setCustomData($this->customHelperColumnCollection[$column->getName()]["customData"]);
                 $column->setType("custom");
             }
         }

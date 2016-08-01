@@ -1,104 +1,106 @@
 <div id="<?php echo $this->grid->getId(); ?>" >
 
-<?php
-$form = $this->grid->getFormFilters();
-$form->prepare();
-$form->setAttribute("action", "javascript:cdiFilter()");
-$submit = $form->get("submit");
-$submit->setAttribute('class', 'btn btn-success');
-?>
-<?php //echo $this->formElement($submit)       ?>
-
-<?php echo $this->form()->openTag($form); ?>
-
-<div class="row container-fluid">
-    <div class="panel panel-info nomargin">
-        <div class="panel-heading padding2 text-center">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
-                Filtros
-            </a>
-        </div>
-        <div id="collapseFilter" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
-            <div id="adest">
-                <?php echo $this->partial("cdidatagrid/form/form-filter", array("form" => $form)); ?>
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-<?php echo $this->form()->closeTag($form); ?>
-
-<div class="table">
-    <div class="divFilter padding5">
+    <div class="padding5">
         <?php if ($this->grid->getOptionAdd()): ?>
-        <?php $addBtn = $this->grid->getAddBtn(); ?>
-            <?php echo $this->CdiGridBtnAdd($addBtn["name"],$addBtn["class"],$addBtn["value"],"cdiAddRecord()"); ?>
+            <?php $addBtn = $this->grid->getAddBtn(); ?>
+            <?php echo $this->CdiGridBtnAdd($addBtn["name"], $addBtn["class"], $addBtn["value"], "cdiAddRecord()"); ?>
         <?php endif; ?> 
 
     </div>
-    <?php echo $this->formElement($form->get("page")) ?>
-    <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
 
-        <tr>
-            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
-                <?php if (!$column->getHidden()): ?>
-                    <th style="text-align: center; font-size: 14px;">
-                        <?php $name = $column->getName(); ?>
-              
+    <?php
+    $form = $this->grid->getFormFilters();
+    $form->prepare();
+    $form->setAttribute("action", "javascript:cdiFilter()");
+    $submit = $form->get("submit");
+    $submit->setAttribute('class', 'btn btn-success');
+    ?>
+    <?php //echo $this->formElement($submit)       ?>
 
-                    <?php echo $this->translate((string) $column); ?>
-                    <?php if ($this->grid->getOrderBy() == $column->getName()): ?>
-                        <?php if ($this->grid->getOrderDirection() == "DESC"): ?>
-                            <i class="fa fa-sort-asc" onclick="cdiOrder('<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>')"></i>
-                        <?php elseif ($this->grid->getOrderDirection() == "ASC"): ?>
-                            <i class="fa fa-sort-desc" onclick="cdiOrder('<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>')"></i>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <i class="fa fa-sort" onclick="cdiOrder('<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>')"></i>
+    <?php echo $this->form()->openTag($form); ?>
 
+    <div class="row container-fluid">
+        <div class="panel panel-info nomargin">
+            <div class="panel-heading padding2 text-center">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
+                    Filtros
+                </a>
+            </div>
+            <div id="collapseFilter" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
+                <div id="adest">
+                    <?php echo $this->partial("cdidatagrid/form/form-filter", array("form" => $form)); ?>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <?php echo $this->form()->closeTag($form); ?>
+
+    <div class="table">
+
+        <?php echo $this->formElement($form->get("page")) ?>
+        <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
+
+            <tr>
+                <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                    <?php if (!$column->getHidden()): ?>
+                        <th style="text-align: center; font-size: 14px;">
+                            <?php $name = $column->getName(); ?>
+
+
+                            <?php echo $this->translate((string) $column); ?>
+                            <?php if ($this->grid->getOrderBy() == $column->getName()): ?>
+                                <?php if ($this->grid->getOrderDirection() == "DESC"): ?>
+                                    <i class="fa fa-sort-asc" onclick="cdiOrder('<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>')"></i>
+                                <?php elseif ($this->grid->getOrderDirection() == "ASC"): ?>
+                                    <i class="fa fa-sort-desc" onclick="cdiOrder('<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>')"></i>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <i class="fa fa-sort" onclick="cdiOrder('<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>')"></i>
+
+                            <?php endif; ?>
+
+
+
+
+
+                        </th>
                     <?php endif; ?>
+                <?php endforeach; ?>
 
-                
+            </tr>
 
 
 
-                </th>
+            <?php if (count($this->grid->getRow())): ?>
+                <?php foreach ($this->grid->getRow() as $data): ?>
+                    <tr>
+                        <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                            <?php if (!$column->getHidden()): ?>
+                                <td class="<?php echo $this->grid->getClassTdColumn($column->getName()) ?>">
+                                    <?php echo $column->getHtmlBegin(); ?>
+
+                                    <?php echo $this->CdiGridField($column, $data); ?>
+
+                                    <?php echo $column->getHtmlEnd(); ?>
+
+                                </td>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
             <?php endif; ?>
-        <?php endforeach; ?>
+        </table>
 
-        </tr>
+    </div>
 
-
-
-        <?php if (count($this->grid->getRow())): ?>
-            <?php foreach ($this->grid->getRow() as $data): ?>
-                <tr>
-                    <?php foreach ($this->grid->getColumnCollection() as $column): ?>
-                        <?php if (!$column->getHidden()): ?>
-                            <td class="<?php echo $this->grid->getClassTdColumn($column->getName()) ?>">
-                                <?php echo $column->getHtmlBegin(); ?>
-
-                             <?php echo $this->CdiGridField($column, $data); ?>
-
-                                <?php echo $column->getHtmlEnd(); ?>
-
-                            </td>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </tr>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </table>
-
-</div>
-
-<?php
-echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', $this->partialPagination, array("routeParams" => $this->routeParams,
-    'route' => $this->route));
-?>
+    <?php
+    echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', $this->partialPagination, array("routeParams" => $this->routeParams,
+        'route' => $this->route));
+    ?>
 
 
-<?php echo $this->CdiGridCrudAjax($this->grid->getId(), $this->url($this->route,array(),array(),true)); ?>
+    <?php echo $this->CdiGridCrudAjax($this->grid->getId(), $this->url($this->route, array(), array(), true)); ?>
 </div>
