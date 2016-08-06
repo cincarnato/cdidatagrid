@@ -93,18 +93,18 @@
                     <th style="text-align: center; font-size: 14px;">
                         <?php $name = $column->getName(); ?>
                         <?php echo $this->translate((string) $column); ?>
-                        <?php if ($this->grid->getOrderBy() == $column->getName()): ?>
-                            <?php if ($this->grid->getOrderDirection() == "DESC"): ?>
-                                <a class="fa fa-sort-asc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>"></a>
-                            <?php elseif ($this->grid->getOrderDirection() == "ASC"): ?>
-                                <a class="fa fa-sort-desc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
+                        <?php if ($column->getType() != "extra"): ?>
+                            <?php if ($this->grid->getOrderBy() == $column->getName()): ?>
+                                <?php if ($this->grid->getOrderDirection() == "DESC"): ?>
+                                    <a class="fa fa-sort-asc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>"></a>
+                                <?php elseif ($this->grid->getOrderDirection() == "ASC"): ?>
+                                    <a class="fa fa-sort-desc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <a class="fa fa-sort" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
                             <?php endif; ?>
-                        <?php else: ?>
-                            <a class="fa fa-sort" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
 
                         <?php endif; ?>
-
-
 
                     </th>
                 <?php endif; ?>

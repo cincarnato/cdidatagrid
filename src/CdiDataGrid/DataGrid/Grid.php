@@ -465,10 +465,30 @@ class Grid {
                 $this->formFilters->add($newElement);
             }
 
-            
+
             if (preg_match("/textarea/i", $element->getAttribute("type"))) {
                 $name = $element->getName();
                 $newElement = new \Zend\Form\Element\Text($name);
+                $this->formFilters->remove($element->getName());
+                $this->formFilters->add($newElement);
+            }
+            
+              if (preg_match("/number/i", $element->getAttribute("type"))) {
+                $name = $element->getName();
+                $newElement = new \Zend\Form\Element\Text($name);
+                $this->formFilters->remove($element->getName());
+                $this->formFilters->add($newElement);
+            }
+
+            if (preg_match("/checkbox/i", $element->getAttribute("type"))) {
+                $name = $element->getName();
+
+                $newElement = new \Zend\Form\Element\Select($name);
+                $newElement->setOptions(array(
+                    'value_options' => array(0 => "false", 1 => "true"),
+                    'empty_option' => $name
+                ));
+
                 $this->formFilters->remove($element->getName());
                 $this->formFilters->add($newElement);
             }
