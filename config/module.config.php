@@ -53,14 +53,6 @@ return array(
             'CdiDataGrid\Controller\Grid' => 'CdiDataGrid\Controller\GridController',
         ),
     ),
-    'service_manager' => array(
-        'invokables' => array(
-        ),
-        'factories' => array(
-            'cdiGrid' => 'CdiDataGrid\Service\GridFactory',
-            'doctrineAdapter' => 'CdiDataGrid\Service\AdapterDoctrineFactory',
-        ),
-    ),
     'view_helpers' => array(
         'invokables' => array(
             'RenderCdiGrid' => 'CdiDataGrid\View\Helper\Grid',
