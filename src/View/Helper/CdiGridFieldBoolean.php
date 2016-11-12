@@ -3,7 +3,7 @@
 namespace CdiDataGrid\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use CdiDataGrid\Column\InterfaceColumn;
+use CdiDataGrid\Column\ColumnInterface;
 
 /**
  * @author cincarnato
@@ -15,11 +15,11 @@ class CdiGridFieldBoolean extends AbstractHelper {
      *
      * Proxies to {@link render()}.
      *
-     * @param  InterfaceColumn $column
+     * @param  ColumnInterface $column
      * @param  array $data
      * @return string
      */
-    public function __invoke(InterfaceColumn $column, array $data) {
+    public function __invoke(ColumnInterface $column, array $data) {
 
 
 
@@ -29,11 +29,11 @@ class CdiGridFieldBoolean extends AbstractHelper {
     /**
      * Render a Field from the provided $column and $data
      *
-     * @param  InterfaceColumn $column
+     * @param  ColumnInterface $column
      * @param  array $data
      * @return string
      */
-    public function render(InterfaceColumn $column, array $data) {
+    public function render(ColumnInterface $column, array $data) {
         $value = $data[$column->getName()];
         if ($value) {
             $output = $column->getValueWhenTrue();

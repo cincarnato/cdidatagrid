@@ -3,9 +3,7 @@
 namespace CdiDataGrid\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-use CdiDataGrid\DataGrid\Column\InterfaceColumn;
+use CdiDataGrid\Column\ColumnInterface;
 
 /**
  * @author cincarnato
@@ -18,11 +16,11 @@ class CdiGridFieldLink extends AbstractHelper {
      *
      * Proxies to {@link render()}.
      *
-     * @param  InterfaceColumn $column
+     * @param  ColumnInterface $column
      * @param  array $data
      * @return string
      */
-    public function __invoke(InterfaceColumn $column, array $data) {
+    public function __invoke(ColumnInterface $column, array $data) {
 
 
 
@@ -32,11 +30,11 @@ class CdiGridFieldLink extends AbstractHelper {
     /**
      * Render a Field from the provided $column and $data
      *
-     * @param  InterfaceColumn $column
+     * @param  ColumnInterface $column
      * @param  array $data
      * @return string
      */
-    public function render(InterfaceColumn $column, array $data) {
+    public function render(ColumnInterface $column, array $data) {
 
         return '<a target="_blank" href="'.$data[$column->getName()].'">LINK</a>';
     }

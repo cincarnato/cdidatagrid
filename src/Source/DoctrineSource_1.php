@@ -1,13 +1,13 @@
 <?php
 
-namespace CdiDataGrid\Source\Doctrine;
+namespace CdiDataGrid\Source;
 
 use CdiDataGrid\Source\AbstractSource;
-use \DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
-use \Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
+use \Doctrine\ORM\Tools\Pagination\Paginator;
 use \DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBuilder;
 
-class DoctrineSource extends AbstractSource {
+class DoctrineSource extends AbstractSource implements SourceInterface {
 
     protected $entityManager;
     protected $entity;
@@ -33,6 +33,11 @@ class DoctrineSource extends AbstractSource {
         $this->getEntityManager()->flush();
     }
 
+    public function viewRecord($id) {
+        $record = $this->getEntityManager()->getRepository($this->entity)->find($id);
+        return $record;
+    }
+
     public function updateRecord($id, $aData) {
         $this->generateEntityForm($id);
 
@@ -45,9 +50,9 @@ class DoctrineSource extends AbstractSource {
             $this->getEventManager()->trigger(__FUNCTION__ . '_before', $this, $argv);
             $this->getEntityManager()->persist($record);
             $this->getEntityManager()->flush();
+            $this->getEventManager()->trigger(__FUNCTION__ . '_post', $this, $argv);
             return true;
         } else {
-            //   var_dump($this->entityForm->getMessages()); //error messages
             return false;
         }
     }
@@ -63,9 +68,10 @@ class DoctrineSource extends AbstractSource {
             $this->getEventManager()->trigger(__FUNCTION__ . '_before', $this, $argv);
             $this->getEntityManager()->persist($record);
             $this->getEntityManager()->flush();
+            $argv["record"] = $record;
+            $this->getEventManager()->trigger(__FUNCTION__ . '_post', $this, $argv);
             return true;
         } else {
-            //  var_dump($this->entityForm->getMessages()); //error messages
             return false;
         }
     }
@@ -84,12 +90,9 @@ class DoctrineSource extends AbstractSource {
         $this->queryFilters();
         $this->queryOrder();
 
-        return $this->getQuery();
-    }
-    
-    public function getPaginatorAdapter(){
-         return new DoctrinePaginatorAdapter(new DoctrinePaginator($this->query()));
-           
+        $paginatorAdapter = new DoctrinePaginator(new Paginator($this->getQuery()));
+
+        return $paginatorAdapter;
     }
 
     public function queryBuldier() {
@@ -118,10 +121,16 @@ class DoctrineSource extends AbstractSource {
         return $fieldMappings;
     }
 
+    public function getBasicForm($id = null) {
+        $builder = new DoctrineAnnotationBuilder($this->entityManager);
+        $form = $builder->createForm($this->entity);
+        $form->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEntityManager()));
+        return $form;
+    }
+
     public function generateEntityForm($id = null) {
 
-        $builder = new DoctrineAnnotationBuilder($this->entityManager);
-        $this->entityForm = $builder->createForm($this->entity);
+        $this->entityForm = $this->getBasicForm();
 
         if ($id) {
             $record = $this->getEntityManager()->getRepository($this->entity)->find($id);
@@ -129,15 +138,13 @@ class DoctrineSource extends AbstractSource {
             $record = new $this->entity;
         }
 
-        $this->entityForm->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEntityManager()))
-                ->setObject($record)
-                ->setAttribute('method', 'post');
-
+        $this->entityForm->setObject($record);
+        $this->entityForm->setAttribute('method', 'post');
         $this->entityForm->add(array(
             'name' => 'submit',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
-                'value' => 'Guardar'
+                'value' => 'submit'
             )
         ));
 
@@ -145,6 +152,7 @@ class DoctrineSource extends AbstractSource {
         $this->entityForm->bind($record);
         return $this->entityForm;
     }
+
 
     public function queryFilters() {
         $where = "";
@@ -236,6 +244,9 @@ class DoctrineSource extends AbstractSource {
     }
 
     function getEntityForm() {
+        if (!isset($this->entityForm)) {
+            $this->generateEntityForm();
+        }
         return $this->entityForm;
     }
 

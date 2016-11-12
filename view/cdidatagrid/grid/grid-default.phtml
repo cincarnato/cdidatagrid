@@ -1,44 +1,3 @@
-<div class="row">
-    <div class="col-xs-12">
-        <?php if ($this->grid->getCsvCommaOn()): ?>
-            <a class="btn btn-info" href="<?php echo $this->url($this->route, array(), array('query' => array('cdiExportCommaCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (,)</a> 
-
-        <?php endif; ?>
-        <?php if ($this->grid->getCsvSemicolonOn()): ?>
-            <a class="btn btn-info" href="<?php echo $this->url($this->route, array(), array('query' => array('cdiExportSemiColonCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (;)</a> 
-
-        <?php endif; ?>
-
-        <?php if ($this->grid->getCsvTabulatorOn()): ?>
-            <a class="btn btn-info" href="<?php echo $this->url($this->route, array(), array('query' => array('cdiExportTabulatorCsv' => "yes") + $this->routeParams), true); ?>">Exportar CSV (Tabulado)</a> 
-
-        <?php endif; ?>
-
-        <?php if ($this->grid->getExportCsv()): ?>
-
-            <?php echo $this->partial('widget/csvForm', array('form' => $this->grid->getCsvForm(), 'route' => $this->route, 'routeParams' => $this->routeParams)); ?> 
-            <script>
-                function submitCsv() {
-                    var datastring = $('#csvExport').serialize();
-                    var sPageURL = window.location.href;
-
-                    var patt = patt2 = /\?/;
-                    var res = patt.test(sPageURL);
-
-                    if (res) {
-                        var finalUrl = sPageURL + "&" + datastring;
-                    } else {
-                        var finalUrl = sPageURL + "?" + datastring;
-                    }
-
-
-                    window.location.assign(finalUrl);
-                }
-            </script>
-
-        <?php endif; ?> 
-    </div>
-</div>
 
 <div class="padding5">
     <?php if ($this->grid->getOptionAdd()): ?>
@@ -62,7 +21,7 @@
     <?php echo $this->form()->openTag($form); ?>
 
     <div class="row container-fluid">
-        <div class="panel panel-info nomargin">
+        <div class="panel panel-default nomargin">
             <div class="panel-heading padding2 text-center">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
                     Filtros
@@ -88,7 +47,7 @@
     <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
 
         <tr>
-            <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+            <?php foreach ($this->grid->getColumns() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
                     <th style="text-align: center; font-size: 14px;">
                         <?php $name = $column->getName(); ?>
@@ -115,14 +74,14 @@
         <?php if (count($this->grid->getRow())): ?>
             <?php foreach ($this->grid->getRow() as $data): ?>
                 <tr>
-                    <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                    <?php foreach ($this->grid->getColumns() as $column): ?>
                         <?php if (!$column->getHidden()): ?>
-                            <td class="<?php echo $this->grid->getClassTdColumn($column->getName()) ?>">
-                                <?php echo $column->getHtmlBegin(); ?>
-
+                            <td class="<?php echo $column->getTdClass(); ?>">
+                                <?php //TODO - echo $column->getHtmlBegin(); ?>
+                            
                                 <?php echo $this->CdiGridField($column, $data); ?>
 
-                                <?php echo $column->getHtmlEnd(); ?>
+                                <?php //TODO - echo $column->getHtmlEnd(); ?>
 
                             </td>
                         <?php endif; ?>

@@ -40,15 +40,22 @@
     },
     "require": {
         "php": ">=5.6",
-        "zendframework/zend-mvc": "^3.0.1",
-        "doctrine/doctrine-orm-module": "^1.0"
+         "zendframework/zend-mvc": "^3.0.1",
+        "doctrine/doctrine-orm-module": "^1.0",
+        "zendframework/zend-view": "~2.2",
+        "zendframework/zend-http": "~2.2",
+        "zendframework/zend-paginator": "~2.2",
+         "zendframework/zend-code": "^2.6 || ^3.0"
     },
     "suggest": {
-        "doctrine/doctrine-orm-module": "^1.0"
+        "doctrine/doctrine-orm-module": ">=0.9"
     },
     "autoload": {
         "psr-4": {
             "CdiDataGrid\\": "src/"
-        }
+        },
+        "classmap": [
+            "./Module.php"
+        ]
     }
 }

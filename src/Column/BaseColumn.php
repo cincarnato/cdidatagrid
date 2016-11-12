@@ -26,6 +26,8 @@ class BaseColumn extends AbstractColumn {
     function setTdClass($tdClass) {
         $this->tdClass = $tdClass;
     }
+    
+    
 
 
 }

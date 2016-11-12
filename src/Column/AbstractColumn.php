@@ -7,7 +7,7 @@ namespace CdiDataGrid\Column;
  *
  * @author cincarnato
  */
-abstract class AbstractColumn implements InterfaceColumn {
+abstract class AbstractColumn implements ColumnInterface {
 
     const type = "abstract";
 

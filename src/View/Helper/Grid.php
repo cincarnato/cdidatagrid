@@ -7,7 +7,7 @@ use Zend\View\Helper\AbstractHelper;
 class Grid extends AbstractHelper  {
 
 
-    public function __invoke(\CdiDataGrid\DataGrid\Grid $grid) {
+    public function __invoke(\CdiDataGrid\Grid $grid) {
 
         $template = $grid->getTemplate();
         $templates = $grid->getOptions()->getTemplates();

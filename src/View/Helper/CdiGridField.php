@@ -3,7 +3,7 @@
 namespace CdiDataGrid\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-use CdiDataGrid\Column\InterfaceColumn;
+use CdiDataGrid\Column\ColumnInterface;
 
 /**
  * @author cincarnato
@@ -40,11 +40,11 @@ class CdiGridField extends AbstractHelper {
      *
      * Proxies to {@link render()}.
      *
-     * @param  InterfaceColumn $column
+     * @param  ColumnInterface $column
      * @param  array $data
      * @return string
      */
-    public function __invoke(InterfaceColumn $column, array $data) {
+    public function __invoke(ColumnInterface $column, array $data) {
 
 
 
@@ -57,11 +57,11 @@ class CdiGridField extends AbstractHelper {
      * Introspects the element type and attributes to determine which
      * helper to utilize when rendering.
      *
-     * @param  InterfaceColumn $column
+     * @param  ColumnInterface $column
      * @param  array $data
      * @return string
      */
-    public function render(InterfaceColumn $column, array $data) {
+    public function render(ColumnInterface $column, array $data) {
         $renderer = $this->getView();
         if (!method_exists($renderer, 'plugin')) {
             // Bail early if renderer is not pluggable
@@ -84,7 +84,7 @@ class CdiGridField extends AbstractHelper {
      * @param ElementInterface $element
      * @return string|null
      */
-    protected function renderType(InterfaceColumn $column, array $data) {
+    protected function renderType(ColumnInterface $column, array $data) {
         if (isset($this->typeMap[$column->getType()])) {
             return $this->renderHelper($this->typeMap[$column->getType()], $column, $data);
         }
@@ -98,7 +98,7 @@ class CdiGridField extends AbstractHelper {
      * @param ElementInterface $element
      * @return string
      */
-    protected function renderHelper($name, InterfaceColumn $column, array $data) {
+    protected function renderHelper($name, ColumnInterface $column, array $data) {
         $helper = $this->getView()->plugin($name);
         return $helper($column, $data);
     }

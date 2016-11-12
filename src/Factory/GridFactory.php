@@ -7,7 +7,7 @@ use CdiDataGrid\Grid;
 
 class GridFactory implements FactoryInterface
 {
-    public function __invoke(ContainerInterface $container, $requestedName)
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = NULL)
     {
         /* @var $config \CdiDataGrid\Opcions\GridOptions */
         $config = $container->get('cdidatagrid_options');
@@ -18,13 +18,7 @@ class GridFactory implements FactoryInterface
         /* @var $mvcevent \Zend\Mvc\MvcEvent */
         $mvcevent = $application->getMvcEvent();
         
-        /* @var $request \Zend\Http\Request */
-        $request = $mvcevent->getRequest();
-        
-        /* @var $routematch \Zend\Router\RouteMatch */
-        $routematch = $mvcevent->getRouteMatch();
-        
-        $grid = new Grid($request,$routematch);
+        $grid = new Grid($mvcevent);
         $grid->setOptions($config);
 
         return $grid;

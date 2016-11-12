@@ -66,6 +66,7 @@ return array(
             'CdiGridCrud' => 'CdiDataGrid\View\Helper\CdiGridCrud',
             'CdiGridCrudAjax' => 'CdiDataGrid\View\Helper\CdiGridCrudAjax',
             'CdiGridField' => 'CdiDataGrid\View\Helper\CdiGridField',
+            'CdiGridFieldString' => 'CdiDataGrid\View\Helper\CdiGridFieldString',
             'CdiGridFieldText' => 'CdiDataGrid\View\Helper\CdiGridFieldText',
             'CdiGridFieldBoolean' => 'CdiDataGrid\View\Helper\CdiGridFieldBoolean',
             'CdiGridFieldDateTime' => 'CdiDataGrid\View\Helper\CdiGridFieldDateTime',
