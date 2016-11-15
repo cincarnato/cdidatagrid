@@ -3,14 +3,12 @@
 namespace CdiDataGrid\View\Helper;
 
 use Zend\View\Helper\AbstractHelper;
-
 use CdiDataGrid\Column\ColumnInterface;
 
 /**
  * @author cincarnato
  */
-class CdiGridFieldDateTime extends AbstractHelper {
-
+class CdiGridFieldCrud extends AbstractHelper {
 
     /**
      * Invoke helper
@@ -35,14 +33,9 @@ class CdiGridFieldDateTime extends AbstractHelper {
      * @param  array $data
      * @return string
      */
-    public function render(ColumnInterface $column, array $data) {
+    public function render(\CdiDataGrid\Column\CrudColumn $column, array $data) {
 
-        if (is_a($data[$column->getName()], "\datetime")){
-            return $data[$column->getName()]->format($column->getFormat());
-        }
-        
-        return '';
-                                  
+         return nl2br($data[$column->getName()]);
     }
 
 }

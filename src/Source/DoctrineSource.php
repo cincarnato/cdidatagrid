@@ -24,13 +24,6 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
     protected $filters;
 
     /**
-     * Form to add or edit
-     * 
-     * @var type
-     */
-    protected $form;
-
-    /**
      * Description
      * 
      * @var type
@@ -55,10 +48,8 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
         $this->applyFilters();
 
         //3-Paginator
-        
-        //echo $this->qb->getDQL();
-        //var_dump($this->qb->getParameters());
-        
+//        $this->log->log(5,$this->qb->getDQL());
+//        $this->log->log(5,$this->qb->getParameters());
         $this->paginator = new DoctrinePaginatorAdapter(new DoctrinePaginator($this->getQb()));
 
         return $this->paginator;
@@ -81,7 +72,7 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
         $doctrineFilter = new \CdiDataGrid\Source\Doctrine\Filter($this->qb);
         if (is_a($this->getFilters(), "\CdiDataGrid\Filter\Filters")) {
             foreach ($this->getFilters() as $key => $filter) {
-                $doctrineFilter->applyFilter($filter,$key);
+                $doctrineFilter->applyFilter($filter, $key);
             }
         }
     }
@@ -91,17 +82,6 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
             $ra = $this->qb->getRootAliases();
             $this->qb->orderBy($ra[0] . $this->orderBy, $this->orderDirection);
         }
-    }
-
-    function getForm() {
-        if (!isset($this->form)) {
-            $this->buildForm();
-        }
-        return $this->form;
-    }
-
-    function setForm($form) {
-        $this->form = $form;
     }
 
     function getFilters() {

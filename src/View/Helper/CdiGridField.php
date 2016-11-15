@@ -24,6 +24,7 @@ class CdiGridField extends AbstractHelper {
         'datetime' => 'CdiGridFieldDateTime',
         'link' => 'CdiGridFieldLink',
         'extra' => 'CdiGridFieldExtra',
+        'crud' => 'CdiGridFieldCrud',
         'longText' => 'CdiGridFieldLongText',
         'custom' => 'CdiGridFieldCustom',
     );

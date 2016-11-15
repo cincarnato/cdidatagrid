@@ -7,11 +7,14 @@
                     <span class="caret"></span> <span class="sr-only">Toggle Dropdown</span> 
                 </button>
                 <ul class="dropdown-menu"> 
-                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>','')"><?php echo $this->translate("like (Default)"); ?></a></li> 
-                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>','==')"><?php echo $this->translate("equal"); ?> ==</a></li> 
-                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>','>')"><?php echo $this->translate("greater"); ?> ></a></li>
-                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>','<')"><?php echo $this->translate("less"); ?> <</a></li> 
-                      <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>','val1 >< val2')"><?php echo $this->translate("between"); ?> ><</a></li> 
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '~')"><?php echo $this->translate("like (Default) ~"); ?></a></li> 
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '!~')"><?php echo $this->translate("not like !~"); ?></a></li> 
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '==')"><?php echo $this->translate("equal"); ?> ==</a></li> 
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '>')"><?php echo $this->translate("greater"); ?> ></a></li>
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '<')"><?php echo $this->translate("less"); ?> <</a></li> 
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '>=')"><?php echo $this->translate("greater equal"); ?> >=</a></li>
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', '<=')"><?php echo $this->translate("less equal"); ?> <=</a></li> 
+                    <li><a onclick="changeOp('<?php echo $this->element->getName(); ?>', 'val1<>val2')"><?php echo $this->translate("between"); ?> <></a></li> 
 
                 </ul>
             </div>

@@ -3,7 +3,8 @@
 namespace CdiDataGrid;
 
 use \Zend\Paginator\Paginator;
-use CdiDataGrid\DataGrid\Column\ExtraColumn;
+use CdiDataGrid\Column\ExtraColumn;
+use CdiDataGrid\Column\CrudColumn;
 
 /**
  * Main Class for GRID
@@ -18,13 +19,6 @@ class Grid {
      * @var string
      */
     protected $id = "CdiGrid";
-
-    /**
-     * Template a renderzar.
-     * 
-     * @var string
-     */
-    protected $template = "default";
 
     /**
      * Data source of grid
@@ -83,13 +77,6 @@ class Grid {
     protected $row;
 
     /**
-     * Columns config
-     *
-     * @var Array
-     */
-    protected $columnConfig = array();
-
-    /**
      * A factory for columns
      *
      * @var \CdiDataGrid\Factory\ColumnFactory
@@ -97,11 +84,32 @@ class Grid {
     protected $columnFactory;
 
     /**
+     * A factory for formFilter
+     *
+     * @var \CdiDataGrid\Factory\FormFilterFactory
+     */
+    protected $formFilterFactory;
+
+    /**
      * A columns collection
      * 
      * @var array
      */
     protected $columns = array();
+
+    /**
+     * A extra columns collection
+     * 
+     * @var array
+     */
+    protected $extraColumns = array();
+
+    /**
+     * A crud columns collection
+     * 
+     * @var array
+     */
+    protected $crudColumn = array();
 
     /**
      * Description
@@ -116,17 +124,45 @@ class Grid {
      * @var type
      */
     protected $instanceToRender = "grid";
+
+    /**
+     * CRUD
+     * 
+     * @var \CdiDataGrid\Crud
+     */
+    protected $crud;
+
+
+    //CONFIG REFACTOR
+
+    /**
+     * Grid Options
+     *
+     * @var Array
+     */
+    protected $options;
+
+    /**
+     * Template a renderzar.
+     * 
+     * @var string
+     */
+    protected $template = "default";
+
+    /**
+     * Defined if the Grid has been prepared
+     * 
+     * @var type
+     */
+    protected $ready = false;
     //TOREVIEW
 
     protected $orderBy;
     protected $orderDirection;
     protected $columnsName = array();
     protected $OrderColumnCollection = array();
-    protected $extraColumnCollection = array();
     protected $selectFilterCollection = array();
     protected $renderOk = false;
-    protected $options;
-    protected $expRegData = "/\{\{\w*\}\}/";
     protected $formFilters;
     protected $editForm = null;
     protected $tableClass;
@@ -138,27 +174,58 @@ class Grid {
     protected $recordDetail;
     protected $forceFilters = array();
 
-    public function __construct(\Zend\Mvc\MvcEvent $mvcevent) {
+    /**
+     * Construct
+     * 
+     * @param \Zend\Mvc\MvcEvent $mvcevent
+     */
+    public function __construct(\Zend\Mvc\MvcEvent $mvcevent, \CdiDataGrid\Options\GridOptionsInterface $options) {
 
+        $this->setMvcevent($mvcevent);
+
+        $this->setOptions($options);
+    }
+
+    function getMvcevent() {
+        return $this->mvcevent;
+    }
+
+    function setMvcevent(\Zend\Mvc\MvcEvent $mvcevent) {
         $this->mvcevent = $mvcevent;
-
-        /* @var $request \Zend\Http\Request */
-        $request = $this->mvcevent->getRequest();
-
-        /* @var $routematch \Zend\Router\RouteMatch */
-        $routeMatch = $this->mvcevent->getRouteMatch();
-
-        $this->setRequest($request);
-        $this->setRouteMatch($routeMatch);
     }
 
-    function getColumnConfig() {
-        return $this->columnConfig;
+    //-->CONFIG
+
+    public function getOptions() {
+        return $this->options;
     }
 
-    function setColumnConfig(Array $columnConfig) {
-        $this->columnConfig = $columnConfig;
+    public function setOptions(\CdiDataGrid\Options\GridOptionsInterface $options) {
+        $this->options = $options;
     }
+
+
+
+    function getColumnsConfig() {
+        return $this->getOptions()->getColumnsConfig();
+    }
+
+    function setColumnsConfig(Array $columnsConfig) {
+        $this->getOptions()->setColumnsConfig($columnsConfig);
+    }
+
+    public function getRecordPerPage() {
+        return $this->recordPerPage;
+    }
+
+    public function setRecordsPerPage($recordsPerPage) {
+        $this->getOptions()->setRecordsPerPage($recordsPerPage);
+    }
+
+    //<--CONFIG
+    //
+    //
+    //-->COLUMNS
 
     protected function buildColumns() {
         $sourceColumnsName = $this->getSource()->pullColumns();
@@ -169,8 +236,8 @@ class Grid {
     }
 
     protected function createColumn($name) {
-        if (key_exists($name, $this->columnConfig)) {
-            $columnConfig = $this->columnConfig[$name];
+        if (key_exists($name, $this->getColumnsConfig())) {
+            $columnConfig = $this->getColumnsConfig()[$name];
         } else {
             $columnConfig = array();
         }
@@ -188,14 +255,20 @@ class Grid {
         $this->columnFactory = $columnFactory;
     }
 
+    //<--COLUMNS
+
     public function prepare() {
 
         if (!isset($this->source)) {
             throw new \CdiDataGrid\Exception\SourceException();
         }
 
-        //CRUD - to review
-        $this->verifyCrudActions();
+        //CRUD - to review 
+        $this->processCrudActions();
+        //SEE IF CAN RETURN HERE
+        
+        //CRUD CONFIGURE
+          $this->crudConfigure();
 
         //Extract and generate source columns
         $this->buildColumns();
@@ -221,6 +294,15 @@ class Grid {
 
         //Order again? (To review)
         $this->processOrderColumn();
+
+        $this->ready = true;
+    }
+    
+    
+      protected function crudConfigure() {
+        if ($this->getOptions()->getCrudConfig()["enable"] === true) {
+            $this->addCrudColumn("", "left", $this->getOptions()->getCrudConfig());
+        }
     }
 
     protected function preparePaginator() {
@@ -230,84 +312,75 @@ class Grid {
         $this->paginator->setCurrentPageNumber($this->getPage());
     }
 
-    
-
-    public function getEntityForm() {
-        return $this->getSource()->getEntityForm();
+    public function getForm() {
+        return $this->getSource()->getForm();
     }
 
-    public function addDelOption($name, $side, $btnClass, $btnVal = null) {
-        $this->setOptionDelete(true);
-        $originalValue = "<i class='" . $btnClass . "' onclick='cdiDeleteRecord({{id}})'>" . $btnVal . "</i>";
-        $column = new ExtraColumn($name, $side);
-        $column->setOriginalValue($originalValue);
+    //-->CRUD
+
+    public function getCrudForm() {
+        return $this->getCrud()->getCrudForm();
+    }
+
+    protected function processCrudActions() {
+        if ($this->getCrud()->crudActions()) {
+            $this->setInstanceToRender($this->getCrud()->getInstanceToRender());
+        }
+    }
+
+    function getCrud() {
+        if (!isset($this->crud)) {
+            $this->crud = new \CdiDataGrid\Crud($this->source, $this->getPost());
+        }
+        return $this->crud;
+    }
+
+    function setCrud($crud) {
+        $this->crud = $crud;
+    }
+
+    public function addCrudColumn($name = "", $side = "left", $crudConfig = []) {
+        $column = new CrudColumn($name, $side, $crudConfig);
         $column->setFilterActive(false);
         if ($side == "left") {
-            array_unshift($this->extraColumnCollection, $column);
+            array_unshift($this->extraColumns, $column);
         } else if ($side == "right") {
-            array_push($this->extraColumnCollection, $column);
+            array_push($this->extraColumns, $column);
         }
     }
 
-    public function addEditOption($name, $side, $btnClass, $btnVal = null) {
-        $this->setOptionEdit(true);
-        $originalValue = "<i class='" . $btnClass . "' onclick='cdiEditRecord({{id}})'>" . $btnVal . "</i>";
-        $column = new ExtraColumn($name, $side);
-        $column->setOriginalValue($originalValue);
-        $column->setFilterActive(false);
-        if ($side == "left") {
-            array_unshift($this->extraColumnCollection, $column);
-        } else if ($side == "right") {
-            array_push($this->extraColumnCollection, $column);
-        }
-    }
-
-    public function addViewOption($name, $side, $btnClass, $btnVal = null) {
-        $this->setOptionEdit(true);
-        $originalValue = "<i class='" . $btnClass . "' onclick='cdiViewRecord({{id}})'>" . $btnVal . "</i>";
-        $column = new ExtraColumn($name, $side);
-        $column->setOriginalValue($originalValue);
-        $column->setFilterActive(false);
-        if ($side == "left") {
-            array_unshift($this->extraColumnCollection, $column);
-        } else if ($side == "right") {
-            array_push($this->extraColumnCollection, $column);
-        }
-    }
-
-    public function addNewOption($name, $btnClass, $btnVal = "+") {
-        $this->setOptionAdd(true);
-        $this->addBtn["name"] = $name;
-        $this->addBtn["class"] = $btnClass;
-        $this->addBtn["value"] = $btnVal;
-    }
-
-    public function getAllData() {
-        return $this->getSource()->getAllData($this->limitQuery);
-    }
-
-    protected function mergeExtraColumn() {
-        foreach ($this->extraColumnCollection as $ExtraColumn) {
-            if ($ExtraColumn->getSide() == "left") {
-                array_unshift($this->columnCollection, $ExtraColumn);
-            } else if ($ExtraColumn->getSide() == "right") {
-                array_push($this->columnCollection, $ExtraColumn);
-            }
-        }
-    }
-
+    //<--CRUD
+    //
+    //
+    //-->MVCEVENT
     public function getRoute() {
-        return $this->getRouteMatch()->getMatchedRouteName();
+        return $this->getMvcevent()->getRouteMatch()->getMatchedRouteName();
     }
 
     public function getQuery() {
-        return $this->getRequest()->getQuery();
+        return $this->getMvcevent()->getRequest()->getQuery();
     }
 
     public function getPost() {
         return array_merge_recursive(
-                $this->getRequest()->getPost()->toArray(), $this->getRequest()->getFiles()->toArray()
+                $this->getMvcevent()->getRequest()->getPost()->toArray(), $this->getMvcevent()->getRequest()->getFiles()->toArray()
         );
+    }
+
+    public function getPage() {
+        if (!$this->page) {
+            $page = $this->getMvcevent()->getRequest()->getQuery('page');
+            if ($page) {
+                $this->setPage($page);
+            } else {
+                $this->setPage(1);
+            }
+        }
+        return $this->page;
+    }
+
+    public function setPage($page) {
+        $this->page = $page;
     }
 
     public function getQueryArray() {
@@ -319,6 +392,9 @@ class Grid {
         return $return;
     }
 
+    //<--MVCEVENT
+
+
     public function prepareOrder() {
         $query = $this->getQuery();
         $order = $query["orderBy"];
@@ -329,21 +405,17 @@ class Grid {
         }
     }
 
+    //-->FILTERS
+
     public function buildFilters() {
-        $query = $this->getQuery();
         $this->filters = new \CdiDataGrid\Filter\Filters();
-        $match = false;
-        if (count($query)) {
-            foreach ($query as $key => $value) {
+        if (count($this->getQuery())) {
+            foreach ($this->getQuery() as $key => $value) {
                 $name = str_replace("f_", "", $key);
-
-                $match = false;
                 if ($value != "") {
-                    if(key_exists($name, $this->columns)){
-
-                            $filter = new \CdiDataGrid\Filter\Filter($this->columns[$name],$value);
-                            $this->filters->addFilter($filter);
-                        
+                    if (key_exists($name, $this->columns)) {
+                        $filter = new \CdiDataGrid\Filter\Filter($this->columns[$name], $value);
+                        $this->filters->addFilter($filter);
                     }
                 }
             }
@@ -351,131 +423,44 @@ class Grid {
     }
 
     protected function generateFormFilters() {
-        $this->formFilters = $this->source->getBasicForm();
-
-        $this->formFilters->setName('GridFormFilters');
-        $this->formFilters->setAttribute('method', 'get');
-
-        foreach ($this->formFilters as $key => $element) {
-            if (preg_match("/hidden/i", $element->getAttribute("type")) && $element->getName() == 'id') {
-                $newElement = new \Zend\Form\Element\Text('id');
-                $this->formFilters->remove($element->getName());
-                $this->formFilters->add($newElement);
-            }
-
-
-            if (preg_match("/textarea/i", $element->getAttribute("type"))) {
-                $name = $element->getName();
-                $newElement = new \Zend\Form\Element\Text($name);
-                $this->formFilters->remove($element->getName());
-                $this->formFilters->add($newElement);
-            }
-
-            if (preg_match("/number/i", $element->getAttribute("type"))) {
-                $name = $element->getName();
-                $newElement = new \Zend\Form\Element\Text($name);
-                $this->formFilters->remove($element->getName());
-                $this->formFilters->add($newElement);
-            }
-
-            if (preg_match("/checkbox/i", $element->getAttribute("type"))) {
-                $name = $element->getName();
-
-                $newElement = new \Zend\Form\Element\Select($name);
-                $newElement->setOptions(array(
-                    'value_options' => array(0 => "false", 1 => "true"),
-                    'empty_option' => $name
-                ));
-
-                $this->formFilters->remove($element->getName());
-                $this->formFilters->add($newElement);
-            }
-        }
-
-
-        foreach ($this->forceFilters as $key => $element) {
-            if ($this->formFilters->has($key)) {
-                $this->formFilters->remove($key);
-            }
-            $this->formFilters->add($element);
-        }
-
-        $this->formFilters->add(array(
-            'name' => 'page',
-            'attributes' => array(
-                'type' => 'hidden',
-                'value' => $this->getPage()
-            )
-        ));
-
-        $this->formFilters->add(array(
-            'name' => 'submit',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Filter'
-            )
-        ));
-
-        $request = $this->getRequest()->getQuery();
-
-        $this->formFilters->setData($request);
+        $this->formFilters = $this->getFormFilterFactory()->create(clone $this->source->getForm(), $this->getPage(), $this->getQuery());
     }
 
-    public function customHelperColumn($columnName, $helperName, $customData = null) {
-        $this->customHelperColumnCollection[$columnName]["helper"] = $helperName;
-        $this->customHelperColumnCollection[$columnName]["customData"] = $customData;
-    }
-
-    protected function processCustomHelperColumn() {
-        foreach ($this->columns as &$column) {
-            if (key_exists($column->getName(), $this->customHelperColumnCollection)) {
-                $column->setHelper($this->customHelperColumnCollection[$column->getName()]["helper"]);
-                $column->setCustomData($this->customHelperColumnCollection[$column->getName()]["customData"]);
-                $column->setType("custom");
-            }
+    function getFormFilterFactory() {
+        if (!isset($this->formFilterFactory)) {
+            $this->setFormFilterFactory(new Factory\FormFilterFactory());
         }
+        return $this->formFilterFactory;
     }
 
-    protected function processData() {
-
-        foreach ($this->data as $record) {
-
-            if (is_array($record)) {
-                $this->row[] = $record;
-            } else if (is_object($record)) {
-
-                if ($record instanceof \stdClass) {
-                    $this->row[] = (array) $record;
-                } else {
-                    foreach ($this->columns as $column) {
-
-                        if (is_a($column, "\CdiDataGrid\DataGrid\Column\ExtraColumn")) {
-                            
-                        }
-
-                        $method = "get" . ucfirst($column->getName());
-                        $item[$column->getName()] = $record->$method();
-                    }
-
-                    foreach ($this->extraColumnCollection as $ExtraColumn) {
-                        $valueExtraColumn = $this->processDataExtraColumn($ExtraColumn, $item);
-                        $item[$ExtraColumn->getName()] = $valueExtraColumn;
-                    }
-
-                    $this->row[] = $item;
-                }
-            }
-        }
+    function setFormFilterFactory(\CdiDataGrid\Factory\FormFilterFactory $formFilterFactory) {
+        $this->formFilterFactory = $formFilterFactory;
     }
 
+    public function getFormFilters() {
+        return $this->formFilters;
+    }
+
+    public function setFormFilters($formFilters) {
+        $this->formFilters = $formFilters;
+    }
+
+    function getFilters() {
+        return $this->filters;
+    }
+
+    function setFilters(type $filters) {
+        $this->filters = $filters;
+    }
+
+    //<--FILTERS
+    //
+    //-->ORDER COLUMNS (REVIEW-CONFIG)
     public function setOrderColumn($column, $order) {
-
-
         $this->OrderColumnCollection[$column] = $order;
     }
 
     public function processOrderColumn() {
-
         asort($this->OrderColumnCollection);
         $newOrder = array();
         foreach ($this->OrderColumnCollection as $key => $order) {
@@ -490,39 +475,57 @@ class Grid {
         $this->columns = array_merge($newOrder, $this->columns);
     }
 
+    //<--ORDER COLUMNS (REVIEW-CONFIG)
+
+    protected function processData() {
+
+        foreach ($this->data as $record) {
+            if (is_array($record)) {
+                $this->row[] = $record;
+            } else if (is_object($record)) {
+                if ($record instanceof \stdClass) {
+                    $this->row[] = (array) $record;
+                } else {
+                    //Process Data Columns
+                    foreach ($this->columns as $column) {
+                        $method = "get" . ucfirst($column->getName());
+                        $item[$column->getName()] = $record->$method();
+                    }
+                    //Process Data ExtraColumns
+                    foreach ($this->extraColumns as $ExtraColumn) {
+                        $item[$ExtraColumn->getName()] = $ExtraColumn->processData($item);
+                    }
+                    $this->row[] = $item;
+                }
+            }
+        }
+    }
+
+    //EXTRA COLUMNS - TO REVIEW
     public function addExtraColumn($name, $originalValue, $side = "left", $filter = false) {
         $column = new ExtraColumn($name, $side);
-
         $column->setOriginalValue($originalValue);
         $column->setFilterActive($filter);
 
+        if ($side != "left" && $side != "right") {
+            throw new Exception("Side must be 'left' or 'right'");
+        }
+
         if ($side == "left") {
-            array_unshift($this->extraColumnCollection, $column);
+            array_unshift($this->extraColumns, $column);
         } else if ($side == "right") {
-            array_push($this->extraColumnCollection, $column);
+            array_push($this->extraColumns, $column);
         }
     }
 
-    protected function processDataExtraColumn(\CdiDataGrid\DataGrid\Column\ExtraColumn $ExtraColumn, $row) {
-
-        $originalValue = $ExtraColumn->getOriginalValue();
-
-        if (preg_match_all($this->expRegData, $originalValue, $matches)) {
-            $result = $originalValue;
-            foreach ($matches[0] as $match) {
-                $fieldName = preg_replace("/\{|\}/", "", $match);
-                $replace = $row[$fieldName];
-                $result = str_replace($match, $replace, $result);
+    protected function mergeExtraColumn() {
+        foreach ($this->extraColumns as $ExtraColumn) {
+            if ($ExtraColumn->getSide() == "left") {
+                array_unshift($this->columns, $ExtraColumn);
+            } else if ($ExtraColumn->getSide() == "right") {
+                array_push($this->columns, $ExtraColumn);
             }
-        } else {
-            $result = $originalValue;
         }
-
-        return $result;
-    }
-
-    public function __toString() {
-        return "toStringGrid";
     }
 
     public function getId() {
@@ -533,60 +536,8 @@ class Grid {
         $this->id = $id;
     }
 
-    public function getRenderOk() {
-        return $this->renderOk;
-    }
-
-    public function getOptions() {
-        return $this->options;
-    }
-
-    public function setOptions(\CdiDataGrid\Options\GridOptionsInterface $options) {
-        $this->options = $options;
-    }
-
-    public function getPage() {
-        if (!$this->page) {
-            $page = $this->getRequest()->getQuery('page');
-            if ($page) {
-                $this->setPage($page);
-            } else {
-                $this->setPage(1);
-            }
-        }
-        return $this->page;
-    }
-
-    public function setPage($page) {
-        $this->page = $page;
-    }
-
-    public function getRecordPerPage() {
-        return $this->recordPerPage;
-    }
-
-    public function setRecordsPerPage($recordsPerPage) {
-        $this->getOptions()->setRecordsPerPage($recordsPerPage);
-    }
-
-    public function getFormFilters() {
-        return $this->formFilters;
-    }
-
-    public function setFormFilters($formFilters) {
-        $this->formFilters = $formFilters;
-    }
-
     public function getRow() {
         return $this->row;
-    }
-
-    public function getLimitQuery() {
-        return $this->limitQuery;
-    }
-
-    public function setLimitQuery($limitQuery) {
-        $this->limitQuery = $limitQuery;
     }
 
     public function getTableClass() {
@@ -595,38 +546,6 @@ class Grid {
 
     public function setTableClass($tableClass) {
         $this->tableClass = $tableClass;
-    }
-
-    function getOptionDelete() {
-        return $this->optionDelete;
-    }
-
-    function getOptionEdit() {
-        return $this->optionEdit;
-    }
-
-    function getOptionAdd() {
-        return $this->optionAdd;
-    }
-
-    function setOptionDelete($optionDelete) {
-        $this->optionDelete = $optionDelete;
-    }
-
-    function setOptionEdit($optionEdit) {
-        $this->optionEdit = $optionEdit;
-    }
-
-    function setOptionAdd($optionAdd) {
-        $this->optionAdd = $optionAdd;
-    }
-
-    function getEditForm() {
-        return $this->editForm;
-    }
-
-    function setEditForm($editForm) {
-        $this->editForm = $editForm;
     }
 
     function getInstanceToRender() {
@@ -670,7 +589,7 @@ class Grid {
     }
 
     function getRecordDetail() {
-        return $this->recordDetail;
+        return $this->crud->getRecord();
     }
 
     function setRecordDetail($recordDetail) {
@@ -699,134 +618,6 @@ class Grid {
         $this->template = $template;
     }
 
-    //TOREVIEW
-    /**
-     * Compatibilidad
-     */
-    public function setFormFilterSelect($key, \Zend\Form\Element\Select $element) {
-        $this->forceFilters[$key] = $element;
-    }
-    
-    protected function verifyCrudActions() {
-        $aData = $this->getPost();
-
-
-        if (isset($aData["crudAction"])) {
-
-            if ($aData["crudAction"] == 'delete') {
-
-                $return = $this->getSource()->delRecord($aData["crudId"]);
-                return $return;
-            }
-
-            if ($aData["crudAction"] == 'view') {
-                $this->setInstanceToRender("detail");
-                $this->recordDetail = $this->getSource()->viewRecord($aData["crudId"]);
-                return true;
-            }
-
-            if ($aData["crudAction"] == 'edit') {
-                $this->getSource()->generateEntityForm($aData["crudId"]);
-                $this->getEntityForm()->add(array(
-                    'name' => 'crudAction',
-                    'type' => 'Zend\Form\Element\Hidden',
-                    'attributes' => array(
-                        'value' => 'submitEdit'
-                    )
-                ));
-                $this->getEntityForm()->add(array(
-                    'name' => 'crudId',
-                    'type' => 'Zend\Form\Element\Hidden',
-                    'attributes' => array(
-                        'value' => $aData["crudId"]
-                    )
-                ));
-                $this->setInstanceToRender("formEntity");
-                return $return;
-            }
-
-
-
-            if ($aData["crudAction"] == 'submitEdit') {
-
-                $result = $this->getSource()->updateRecord($aData["crudId"], $aData);
-
-                $this->getEntityForm()->add(array(
-                    'name' => 'crudAction',
-                    'type' => 'Zend\Form\Element\Hidden',
-                    'attributes' => array(
-                        'value' => 'submitEdit'
-                    )
-                ));
-                $this->getEntityForm()->add(array(
-                    'name' => 'crudId',
-                    'type' => 'Zend\Form\Element\Hidden',
-                    'attributes' => array(
-                        'value' => $aData["crudId"]
-                    )
-                ));
-
-
-                if (!$result) {
-                    $this->setInstanceToRender("formEntity");
-                }
-
-
-                //Maybe a Redirect
-            }
-
-
-            if ($aData["crudAction"] == 'add') {
-                $this->getSource()->generateEntityForm(null);
-                $this->getEntityForm()->add(array(
-                    'name' => 'crudAction',
-                    'type' => 'Zend\Form\Element\Hidden',
-                    'attributes' => array(
-                        'value' => 'submitAdd'
-                    )
-                ));
-
-                $this->setInstanceToRender("formEntity");
-                return $return;
-            }
-
-            if ($aData["crudAction"] == 'submitAdd') {
-
-                $result = $this->getSource()->saveRecord($aData);
-
-                $this->getEntityForm()->add(array(
-                    'name' => 'crudAction',
-                    'type' => 'Zend\Form\Element\Hidden',
-                    'attributes' => array(
-                        'value' => 'submitAdd'
-                    )
-                ));
-
-                if (!$result) {
-                    $this->setInstanceToRender("formEntity");
-                } 
-            }
-        }
-    }
-
-    //OK
-
-    function getRequest() {
-        return $this->request;
-    }
-
-    function setRequest(\Zend\Http\Request $request) {
-        $this->request = $request;
-    }
-
-    function getRouteMatch() {
-        return $this->routeMatch;
-    }
-
-    function setRouteMatch(\Zend\Router\RouteMatch $routeMatch) {
-        $this->routeMatch = $routeMatch;
-    }
-
     function getPaginator() {
         return $this->paginator;
     }
@@ -847,12 +638,24 @@ class Grid {
         return $this->columns;
     }
 
-    function getFilters() {
-        return $this->filters;
+    function getCrudColumn() {
+        return $this->crudColumn;
     }
 
-    function setFilters(type $filters) {
-        $this->filters = $filters;
+    function setCrudColumn($crudColumn) {
+        $this->crudColumn = $crudColumn;
+    }
+
+    //TOREVIEW
+    /**
+     * Compatibilidad
+     */
+    public function setFormFilterSelect($key, \Zend\Form\Element\Select $element) {
+        $this->forceFilters[$key] = $element;
+    }
+
+    public function __toString() {
+        return "toStringGrid";
     }
 
 }

@@ -7,27 +7,24 @@ namespace CdiDataGrid\Column;
  *
  * @author cincarnato
  */
-class DateTimeColumn extends BaseColumn {
+class DateTimeColumn extends AbstractColumn {
 
-        const type = "datetime";
-    
+    const type = "datetime";
+
     /**
      * Format of datetime
      * 
      * @var string
      */
-    protected $dateTimeFormat = "Y-m-d H:i:s";
+    protected $format = "Y-m-d H:i:s";
 
-    function getDateTimeFormat() {
-        return $this->dateTimeFormat;
+    function getFormat() {
+        return $this->format;
     }
 
-    function setDateTimeFormat($dateTimeFormat) {
-        $this->dateTimeFormat = $dateTimeFormat;
+    function setFormat($format) {
+        $this->format = $format;
     }
-
-
-
 
 }
 

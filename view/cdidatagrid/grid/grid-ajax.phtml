@@ -1,13 +1,5 @@
 <div id="<?php echo $this->grid->getId(); ?>" >
 
-    <div class="padding5">
-        <?php if ($this->grid->getOptionAdd()): ?>
-            <?php $addBtn = $this->grid->getAddBtn(); ?>
-            <?php echo $this->CdiGridBtnAdd($addBtn["name"], $addBtn["class"], $addBtn["value"], "cdiAddRecord()"); ?>
-        <?php endif; ?> 
-
-    </div>
-
     <?php
     $form = $this->grid->getFormFilters();
     $form->prepare();

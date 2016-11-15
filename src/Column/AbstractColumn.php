@@ -44,8 +44,32 @@ abstract class AbstractColumn implements ColumnInterface {
         "decimal" => true,
         "date" => true,
         "time" => true,
-        "datetime" => true
+        "datetime" => true,
+        "extra" => true
     );
+
+       /**
+     * Class to apply in td on column
+     * 
+     * @var string
+     */
+    protected $tdClass;
+    
+      
+    /**
+     * ADD HTML TO BEGIN OF THE COLUMN
+     * 
+     * @var string
+     */
+    protected $htmlBegin;
+    
+     /**
+     * ADD HTML TO END OF THE COLUMN
+     * 
+     * @var string
+     */
+    protected $htmlEnd;
+
 
     function __construct($name) {
         $this->setName($name);
@@ -82,6 +106,31 @@ abstract class AbstractColumn implements ColumnInterface {
 
     public function __toString() {
         return $this->displayName;
+    }
+    
+        
+    function getTdClass() {
+        return $this->tdClass;
+    }
+
+    function setTdClass($tdClass) {
+        $this->tdClass = $tdClass;
+    }
+    
+    function getHtmlBegin() {
+        return $this->htmlBegin;
+    }
+
+    function getHtmlEnd() {
+        return $this->htmlEnd;
+    }
+
+    function setHtmlBegin($htmlBegin) {
+        $this->htmlBegin = $htmlBegin;
+    }
+
+    function setHtmlEnd($htmlEnd) {
+        $this->htmlEnd = $htmlEnd;
     }
 
 }

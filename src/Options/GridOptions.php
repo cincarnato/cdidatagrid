@@ -31,6 +31,46 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
     protected $columnOrder = true;
 
     /**
+     * Columns config
+     *
+     * @var Array
+     */
+    protected $columnsConfig = array();
+
+    /**
+     * Source config
+     *
+     * @var Array
+     */
+    protected $sourceConfig = array();
+
+    /**
+     * Crud config
+     *
+     * @var Array
+     */
+    protected $crudConfig = array();
+
+    /**
+     * Custom Options config
+     *
+     * @var Array
+     */
+    protected $customOptions = array();
+
+    public function setCustomOptions(array $customOptions) {
+        $this->customOptions = $customOptions;
+    }
+
+    function getCustomOptions() {
+        return $this->customOptions;
+    }
+
+    function mergeCustomOptionsByKey($customKey) {
+        $this->setFromArray(array_merge($this->toArray(), $this->customOptions[$customKey]));
+    }
+
+    /**
      * @return array
      */
     public function getTemplates() {
@@ -53,7 +93,7 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
     function setRecordsPerPage($recordsPerPage) {
         $this->recordsPerPage = $recordsPerPage;
     }
-    
+
     function getColumnFilter() {
         return $this->columnFilter;
     }
@@ -70,6 +110,28 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
         $this->columnOrder = $columnOrder;
     }
 
+    function getColumnsConfig() {
+        return $this->columnsConfig;
+    }
 
+    function getSourceConfig() {
+        return $this->sourceConfig;
+    }
+
+    function getCrudConfig() {
+        return $this->crudConfig;
+    }
+
+    function setColumnsConfig(Array $columnsConfig) {
+        $this->columnsConfig = $columnsConfig;
+    }
+
+    function setSourceConfig(Array $sourceConfig) {
+        $this->sourceConfig = $sourceConfig;
+    }
+
+    function setCrudConfig(Array $crudConfig) {
+        $this->crudConfig = $crudConfig;
+    }
 
 }

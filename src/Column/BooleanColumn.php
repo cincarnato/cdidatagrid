@@ -7,7 +7,7 @@ namespace CdiDataGrid\Column;
  *
  * @author cincarnato
  */
-class BooleanColumn extends BaseColumn {
+class BooleanColumn extends AbstractColumn {
 
     const type = "boolean";
 

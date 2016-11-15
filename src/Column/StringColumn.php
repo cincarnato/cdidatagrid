@@ -7,7 +7,7 @@ namespace CdiDataGrid\Column;
  *
  * @author cincarnato
  */
-class StringColumn extends BaseColumn {
+class StringColumn extends AbstractColumn {
 
     const type = "string";
 

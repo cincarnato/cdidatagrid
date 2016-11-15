@@ -32,6 +32,13 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
      * @var \Zend\Paginator\Adapter\AdapterInterface
      */
     protected $paginatorAdapter;
+    
+    /**
+     * Description
+     * 
+     * @var \Zend\Log\Logger
+     */
+    protected $log;
 
     function __construct($data) {
         $this->data = $data;
@@ -107,6 +114,16 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
     function setFilters(\CdiDataGrid\Filter\Filters $filters) {
         $this->filters = $filters;
     }
+    
+    function getLog() {
+        return $this->log;
+    }
+
+    function setLog(\Zend\Log\Logger $log) {
+        $this->log = $log;
+    }
+
+
 
 }
 

@@ -71,6 +71,7 @@ return array(
             'CdiGridFieldBoolean' => 'CdiDataGrid\View\Helper\CdiGridFieldBoolean',
             'CdiGridFieldDateTime' => 'CdiDataGrid\View\Helper\CdiGridFieldDateTime',
             'CdiGridFieldExtra' => 'CdiDataGrid\View\Helper\CdiGridFieldExtra',
+            'CdiGridFieldCrud' => 'CdiDataGrid\View\Helper\CdiGridFieldCrud',
             'CdiGridFieldLink' => 'CdiDataGrid\View\Helper\CdiGridFieldLink',
             'CdiGridFieldLongText' => 'CdiDataGrid\View\Helper\CdiGridFieldLongText',
             'CdiGridFieldCustom' => 'CdiDataGrid\View\Helper\CdiGridFieldCustom',

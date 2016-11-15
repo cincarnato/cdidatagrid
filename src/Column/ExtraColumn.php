@@ -7,31 +7,40 @@ namespace CdiDataGrid\Column;
  *
  * @author cincarnato
  */
-class ExtraColumn extends AbstractColumn{
- 
-  
-    
+class ExtraColumn extends AbstractColumn {
+
+    const expRegData = "/\{\{\w*\}\}/";
+    const expRegReplace = "/\{|\}/";
     protected $side;
     protected $originalValue;
-    
     protected $filterActive = true;
-    
     protected $filter;
-    
-    function __construct($name,$side) {
+
+    function __construct($name, $side) {
         $this->name = $name;
-    $this->visualName = $name;
-    $this->type = "extra";
+        $this->displayName = $name;
+        $this->type = "extra";
         $this->setSide($side);
     }
 
-    
- 
-    
-    public function __toString() {
-        return $this->visualName;
+    public function processData($row) {
+        if (preg_match_all(self::expRegData, $this->getOriginalValue(), $matches)) {
+            $result = $this->getOriginalValue();
+            foreach ($matches[0] as $match) {
+                $fieldName = preg_replace(self::expRegReplace, "", $match);
+                $replace = $row[$fieldName];
+                $result = str_replace($match, $replace, $result);
+            }
+            return $result;
+        }else{
+            return $this->getOriginalValue();
+        }
     }
-    
+
+    public function __toString() {
+        return $this->displayName;
+    }
+
     public function getSide() {
         return $this->side;
     }
@@ -43,8 +52,6 @@ class ExtraColumn extends AbstractColumn{
             throw new Exception("The side must be 'left' or 'right'");
         }
     }
-
-
 
     public function getFilterActive() {
         return $this->filterActive;
@@ -70,14 +77,6 @@ class ExtraColumn extends AbstractColumn{
         $this->originalValue = $originalValue;
     }
 
-
-
-
-
-
-
-
-    
 }
 
 ?>

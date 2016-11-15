@@ -28,9 +28,8 @@ class ColumnFactory {
     public function create($name, Array $config) {
         $this->column = null;
         $this->config = $config;
-
         $type = (isset($config['type'])) ? $config['type'] : "string";
-
+        
 
         switch ($type) {
             case "string":
@@ -40,7 +39,19 @@ class ColumnFactory {
                 $this->createBooleanColumn($name);
                 break;
             case "datetime":
-                $this->createBooleanColumn($name);
+                $this->createDateTimeColumn($name);
+                break;
+             case "date":
+                $this->createDateTimeColumn($name);
+                break;
+              case "time":
+                $this->createDateTimeColumn($name);
+                break;
+            case "extra":
+                $this->createExtraColumn($name);
+                break;
+            case "custom":
+                $this->createCustomColumn($name);
                 break;
             default:
                 $this->createStringColumn($name);
@@ -102,6 +113,7 @@ class ColumnFactory {
 
         return $this->column;
     }
+    
 
     /**
      * Create a DateTime Column
@@ -110,11 +122,43 @@ class ColumnFactory {
      * @return \CdiDataGrid\Column\DateTiemColumn
      */
     protected function createDateTimeColumn($name) {
-        $this->column = new Column\DateTiemColumn($name);
+        $this->column = new Column\DateTimeColumn($name);
         $this->baseConfig();
 
-        if (isset($this->config["dateTimeFormat"])) {
-            $this->column->setDateTimeFormat($this->config["dateTimeFormat"]);
+        if (isset($this->config["format"])) {
+            $this->column->setFormat($this->config["format"]);
+        }
+
+        return $this->column;
+    }
+
+    /**
+     * Create a Extra Column
+     *
+     * @param string $name name of the column
+     * @return \CdiDataGrid\Column\ExtraColumn
+     */
+    protected function createExtraColumn($name) {
+        $this->column = new Column\ExtraColumn($name);
+        $this->baseConfig();
+        return $this->column;
+    }
+    
+        /**
+     * Create a Custom Column
+     *
+     * @param string $name name of the column
+     * @return \CdiDataGrid\Column\CustomColumn
+     */
+    protected function createCustomColumn($name) {
+        $this->column = new Column\CustomColumn($name);
+        $this->baseConfig();
+
+        if (isset($this->config["helper"])) {
+            $this->column->setValueWhenTrue($this->config["helper"]);
+        }
+        if (isset($this->config["data"])) {
+            $this->column->setValueWhenFalse($this->config["data"]);
         }
 
         return $this->column;

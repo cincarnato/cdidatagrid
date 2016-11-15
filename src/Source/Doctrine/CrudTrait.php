@@ -2,8 +2,8 @@
 
 namespace CdiDataGrid\Source\Doctrine;
 
-
 use \DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBuilder;
+
 /**
  * Description of Crud
  *
@@ -11,7 +11,7 @@ use \DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBu
  */
 trait CrudTrait {
 
-      /**
+    /**
      * @var \Doctrine\ORM\EntityManager
      */
     protected $em;
@@ -29,8 +29,65 @@ trait CrudTrait {
      * @var \Doctrine\ORM\EntityRepository
      */
     protected $repository;
-    
-  function getEm() {
+
+    /**
+     * Form to add or edit
+     * 
+     * @var type
+     */
+    protected $form;
+
+    /**
+     * Form to add or edit
+     * 
+     * @var type
+     */
+    protected $crudForm;
+
+    function getForm() {
+        if (!isset($this->form)) {
+            $this->buildForm();
+        }
+        return $this->form;
+    }
+
+    function setForm($form) {
+        $this->form = $form;
+    }
+
+    public function buildForm($id = null) {
+        $builder = new DoctrineAnnotationBuilder($this->getEm());
+        $form = $builder->createForm($this->entityName);
+        $form->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEm()));
+        $this->form = $form;
+    }
+
+    public function getCrudForm($id = null) {
+        if (!isset($this->crudForm)) {
+            $this->crudForm = clone $this->getForm();
+      
+        if ($id) {
+            $record = $this->getEm()->getRepository($this->entityName)->find($id);
+        } else {
+            $record = new $this->entityName;
+        }
+
+        $this->crudForm->setObject($record);
+        $this->crudForm->setAttribute('method', 'post');
+        $this->crudForm->add(array(
+            'name' => 'submit',
+            'type' => 'Zend\Form\Element\Submit',
+            'attributes' => array(
+                'value' => 'submit'
+            )
+        ));
+
+        $this->crudForm->bind($record);
+        }
+        return $this->crudForm;
+    }
+
+    function getEm() {
         if (!isset($this->em)) {
             throw new \CdiDataGrid\Exception\EntityManagerNoSetException();
         }
@@ -65,63 +122,39 @@ trait CrudTrait {
         $this->repository = $repository;
         return $this;
     }
-    
-    
-    public function getBasicForm($id = null) {
-        $builder = new DoctrineAnnotationBuilder($this->getEm());
-        $form = $builder->createForm($this->entityName);
-        $form->setHydrator(new \DoctrineORMModule\Stdlib\Hydrator\DoctrineEntity($this->getEm()));
-        return $form;
-    }
-
-    public function generateEntityForm($id = null) {
-
-        $this->entityForm = $this->getBasicForm();
-
-        if ($id) {
-            $record = $this->getEm()->getRepository($this->entity)->find($id);
-        } else {
-            $record = new $this->entityName;
-        }
-
-        $this->entityForm->setObject($record);
-        $this->entityForm->setAttribute('method', 'post');
-        $this->entityForm->add(array(
-            'name' => 'submit',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'submit'
-            )
-        ));
-
-
-        $this->entityForm->bind($record);
-        return $this->entityForm;
-    }
 
     public function delRecord($id) {
-        $record = $this->getEm()->getRepository($this->entity)->find($id);
-        $this->getEm()->remove($record);
-        $this->getEm()->flush();
+        try {
+            $record = $this->getEm()->getRepository($this->entityName)->find($id);
+            $this->getEm()->remove($record);
+            $this->getEm()->flush();
+        } catch (Exception $ex) {
+            return false;
+        }
+        return true;
     }
 
     public function viewRecord($id) {
-        $record = $this->getEm()->getRepository($this->entity)->find($id);
+        $record = $this->getEm()->getRepository($this->entityName)->find($id);
         return $record;
     }
 
-    public function updateRecord($id, $aData) {
-        $this->generateEntityForm($id);
+    public function updateRecord($id, $data) {
+        $crudForm = $this->getCrudForm($id);
 
-        $this->entityForm->setData($aData);
+        $crudForm->setData($data);
 
-        if ($this->entityForm->isValid()) {
-            $record = $this->entityForm->getObject();
+        if ($crudForm->isValid()) {
+            $record = $crudForm->getObject();
             //Aqui deberia crear un evento en forma de escucha
-            $argv = array('record' => $record, 'form' => $this->entityForm, 'data' => $aData);
+            $argv = array('record' => $record, 'form' => $crudForm, 'data' => $data);
             $this->getEventManager()->trigger(__FUNCTION__ . '_before', $this, $argv);
-            $this->getEm()->persist($record);
-            $this->getEm()->flush();
+            try {
+                $this->getEm()->persist($record);
+                $this->getEm()->flush();
+            } catch (Exception $ex) {
+                return false;
+            }
             $this->getEventManager()->trigger(__FUNCTION__ . '_post', $this, $argv);
             return true;
         } else {
@@ -130,13 +163,13 @@ trait CrudTrait {
     }
 
     public function saveRecord($aData) {
-        $this->generateEntityForm();
+        $crudForm = $this->getCrudForm();
 
-        $this->entityForm->setData($aData);
+        $crudForm->setData($aData);
 
-        if ($this->entityForm->isValid()) {
-            $record = $this->entityForm->getObject();
-            $argv = array('record' => $record, 'form' => $this->entityForm, 'data' => $aData);
+        if ($crudForm->isValid()) {
+            $record = $crudForm->getObject();
+            $argv = array('record' => $record, 'form' => $crudForm, 'data' => $aData);
             $this->getEventManager()->trigger(__FUNCTION__ . '_before', $this, $argv);
             $this->getEm()->persist($record);
             $this->getEm()->flush();

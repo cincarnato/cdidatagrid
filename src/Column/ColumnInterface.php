@@ -21,5 +21,12 @@ interface ColumnInterface {
     public function getDisplayName();
 
     public function setDisplayName($name);
+
+    public function getTdClass();
+
+    public function getHtmlBegin();
+
+    public function getHtmlEnd();
+
     //TODO...
 }
