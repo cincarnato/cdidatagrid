@@ -3,6 +3,7 @@
     "description": "Zend Framework 2 Module that provides a datagrid",
     "type": "library",
     "license": "MIT",
+    "version": "3.0.8",
     "keywords": [
         "ZfcDatagrid",
         "datagrid",
@@ -41,7 +42,6 @@
     "require": {
         "php": ">=5.6",
          "zendframework/zend-mvc": "^3.0.1",
-         "doctrine/doctrine-orm-module": "0.9.*",
         "zendframework/zend-view": "~2.2",
         "zendframework/zend-http": "~2.2",
         "zendframework/zend-paginator": "~2.2",
