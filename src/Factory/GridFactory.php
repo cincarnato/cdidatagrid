@@ -70,9 +70,6 @@ class GridFactory implements FactoryInterface {
 
         $source = new \CdiDataGrid\Source\DoctrineSource($em, $entityName, $qb);
         $source->setEm($em);
-
-
-
         $this->grid->setSource($source);
     }
 

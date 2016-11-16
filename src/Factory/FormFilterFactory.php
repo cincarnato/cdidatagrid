@@ -45,8 +45,10 @@ class FormFilterFactory {
                 $newElement = new \Zend\Form\Element\Select($name);
                 $newElement->setOptions(array(
                     'value_options' => array(0 => "false", 1 => "true"),
-                    'empty_option' => $name
+                    'empty_option' => ''
                 ));
+                
+                $newElement->setLabel($name);
 
                 $form->remove($element->getName());
                 $form->add($newElement);
