@@ -11,17 +11,7 @@ use \DoctrineORMModule\Form\Annotation\AnnotationBuilder as DoctrineAnnotationBu
  */
 trait CrudTrait {
 
-    /**
-     * @var \Doctrine\ORM\EntityManager
-     */
-    protected $em;
 
-    /**
-     * Datagrid Entity Name
-     * 
-     * @var string
-     */
-    protected $entityName;
 
     /**
      * Datagrid Entity Name
@@ -87,29 +77,7 @@ trait CrudTrait {
         return $this->crudForm;
     }
 
-    function getEm() {
-        if (!isset($this->em)) {
-            throw new \CdiDataGrid\Exception\EntityManagerNoSetException();
-        }
-        return $this->em;
-    }
 
-    function setEm(\Doctrine\ORM\EntityManager $em) {
-        $this->em = $em;
-        return $this;
-    }
-
-    function getEntityName() {
-        if (!isset($this->entityName)) {
-            throw new \Exception("No EntityName set");
-        }
-        return $this->entityName;
-    }
-
-    function setEntityName($entityName) {
-        $this->entityName = $entityName;
-        return $this;
-    }
 
     function getRepository() {
         if (isset($this->repository)) {

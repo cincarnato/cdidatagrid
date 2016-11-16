@@ -38,13 +38,6 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
     protected $columnsConfig = array();
 
     /**
-     * Source config
-     *
-     * @var Array
-     */
-    protected $sourceConfig = array();
-
-    /**
      * Crud config
      *
      * @var Array
@@ -52,11 +45,11 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
     protected $crudConfig = array();
 
     /**
-     * Custom Options config
+     * Source config
      *
      * @var Array
      */
-    protected $customOptions = array();
+    protected $sourceConfig = array();
 
     public function setCustomOptions(array $customOptions) {
         $this->customOptions = $customOptions;
@@ -66,8 +59,8 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
         return $this->customOptions;
     }
 
-    function mergeCustomOptionsByKey($customKey) {
-        $this->setFromArray(array_merge($this->toArray(), $this->customOptions[$customKey]));
+    function mergeCustomOptions($customOptions) {
+        $this->setFromArray(array_merge($this->toArray(), $customOptions));
     }
 
     /**

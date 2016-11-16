@@ -33,8 +33,7 @@ class Filter {
     public function applyFilter(\CdiDataGrid\Filter\Filter  $filter,$key)
     {
         $qb = $this->getQueryBuilder();
-        $ra = $this->qb->getRootAliases();
-        $ra = $ra[0];
+        $ra = $this->qb->getRootAliases()[0];
         $colname = $filter->getColumn()->getName();
         
         

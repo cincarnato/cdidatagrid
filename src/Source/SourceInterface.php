@@ -4,15 +4,6 @@ namespace CdiDataGrid\Source;
 
 interface SourceInterface {
 
-    /**
-     * Set the data source
-     * - array
-     * - Doctrine2: Doctrine\ORM\QueryBuilder
-     * - ...
-     *
-     * @param mixed $data
-     */
-    public function __construct($data);
 
     /**
      * @return mixed

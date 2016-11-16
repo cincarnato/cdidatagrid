@@ -40,10 +40,6 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
      */
     protected $log;
 
-    function __construct($data) {
-        $this->data = $data;
-    }
-
     function getData() {
         return $this->data;
     }

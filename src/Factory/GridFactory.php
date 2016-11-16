@@ -24,9 +24,19 @@ class GridFactory implements FactoryInterface {
         /* @var $mvcevent \Zend\Mvc\MvcEvent */
         $mvcevent = $application->getMvcEvent();
 
-        //CUSTOM OPTIONS
+        //CUSTOM OPTIONS KEY
         if (isset($options["customOptionsKey"])) {
-            $gridOptions->mergeCustomOptionsByKey($options["customOptionsKey"]);
+            $customOptions = $container->get('config')[$options["customOptionsKey"]];
+            if (is_array($customOptions)) {
+                $gridOptions->mergeCustomOptions($customOptions);
+            } else {
+                throw new \Exception("Can't get a config array by key " . $options["customOptionsKey"] . "' ");
+            }
+        }
+
+        //CUSTOM OPTIONS
+        if (isset($options["customOptions"]) && is_array($options["customOptions"])) {
+            $gridOptions->mergeCustomOptions($options["customOptions"]);
         }
 
         $this->gridOptions = $gridOptions;
@@ -35,32 +45,33 @@ class GridFactory implements FactoryInterface {
         $this->grid = new Grid($mvcevent, $gridOptions);
 
         //SET SOURCE BY REQUEST NAME
-        ($requestedName == "CdiDatagridDoctrine") ? $this->buildDoctrineSource() : null;
+        ($requestedName == "CdiDatagridDoctrine" || (isset($this->gridOptions->getSourceConfig()["type"]) && $this->gridOptions->getSourceConfig()["type"] == "doctrine") ) ? $this->buildDoctrineSource() : null;
 
         return $this->grid;
     }
 
     protected function buildDoctrineSource() {
-        $sourceConfig = $this->gridOptions->getSourceConfig();
-        if (isset($sourceConfig["entityManager"])) {
-            $em = $this->container->get($sourceConfig["entityManager"]);
+        $doctrineOptions = $this->gridOptions->getSourceConfig()["doctrineOptions"];
+        if (isset($doctrineOptions["entityManager"])) {
+            $em = $this->container->get($doctrineOptions["entityManager"]);
         } else {
             $em = $this->container->get('Doctrine\ORM\EntityManager');
         }
 
-        if (isset($sourceConfig["queryBuilder"])) {
-            $qb = $sourceConfig["queryBuilder"];
+        if (isset($doctrineOptions["entityName"])) {
+            $entityName = $doctrineOptions["entityName"];
         } else {
-            $qb = $em->createQueryBuilder('u');
+            throw new Exception("you must define 'entityName' config");
         }
 
-        $source = new \CdiDataGrid\Source\DoctrineSource($qb);
+        $qb = (isset($doctrineOptions["queryBuilder"]) && $doctrineOptions["queryBuilder"] instanceof \Doctrine\ORM\QueryBuilder) ? $doctrineOptions["queryBuilder"] : null;
+
+
+
+        $source = new \CdiDataGrid\Source\DoctrineSource($em, $entityName, $qb);
         $source->setEm($em);
 
-        if (isset($sourceConfig["entityName"])) {
-            $qb->select('u')->from($sourceConfig["entityName"], 'u');
-            $source->setEntityName($sourceConfig["entityName"]);
-        }
+
 
         $this->grid->setSource($source);
     }

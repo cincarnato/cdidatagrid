@@ -204,14 +204,20 @@ class Grid {
         $this->options = $options;
     }
 
-
-
     function getColumnsConfig() {
         return $this->getOptions()->getColumnsConfig();
     }
 
     function setColumnsConfig(Array $columnsConfig) {
         $this->getOptions()->setColumnsConfig($columnsConfig);
+    }
+    
+     function getCrudConfig() {
+        return $this->getOptions()->getCrudConfig();
+    }
+
+    function setCrudConfig(Array $crudConfig) {
+        $this->getOptions()->setCrudConfig($crudConfig);
     }
 
     public function getRecordPerPage() {
@@ -222,7 +228,38 @@ class Grid {
         $this->getOptions()->setRecordsPerPage($recordsPerPage);
     }
 
+// DISABLED - SourceConfig Conflict - set Custom Config only on Factory    
+//    public function setCustomOptions($customOptionsKey) {
+//        $this->getOptions()->mergeCustomOptionsByKey($customOptionsKey);
+//    }
+
     //<--CONFIG
+    //
+    //
+    //-->>SOURCE
+
+    /**
+     * Get Source of grid
+     *
+     * @return \CdiDataGrid\Source\SourceInterface
+     */
+    function getSource() {
+        return $this->source;
+    }
+
+    /**
+     * Set Source of grid
+     *
+     * @param \CdiDataGrid\Source\SourceInterface $source Source of grid
+     * @return \CdiDataGrid\Source\SourceInterface
+     */
+    function setSource(\CdiDataGrid\Source\SourceInterface $source) {
+        $this->source = $source;
+        
+        return $this->source;
+    }
+
+    //<<--SOURCE
     //
     //
     //-->COLUMNS
@@ -266,9 +303,8 @@ class Grid {
         //CRUD - to review 
         $this->processCrudActions();
         //SEE IF CAN RETURN HERE
-        
         //CRUD CONFIGURE
-          $this->crudConfigure();
+        $this->crudConfigure();
 
         //Extract and generate source columns
         $this->buildColumns();
@@ -297,9 +333,8 @@ class Grid {
 
         $this->ready = true;
     }
-    
-    
-      protected function crudConfigure() {
+
+    protected function crudConfigure() {
         if ($this->getOptions()->getCrudConfig()["enable"] === true) {
             $this->addCrudColumn("", "left", $this->getOptions()->getCrudConfig());
         }
@@ -624,14 +659,6 @@ class Grid {
 
     function setPaginator(\Zend\Paginator\Paginator $paginator) {
         $this->paginator = $paginator;
-    }
-
-    function getSource() {
-        return $this->source;
-    }
-
-    function setSource(\CdiDataGrid\Source\SourceInterface $source) {
-        $this->source = $source;
     }
 
     function getColumns() {

@@ -11,6 +11,25 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
     use \CdiDataGrid\Source\Doctrine\CrudTrait;
 
     /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    protected $em;
+
+    /**
+     * Datagrid Entity Name
+     * 
+     * @var string
+     */
+    protected $entityName;
+
+    /**
+     * Entity key
+     * 
+     * @var string
+     */
+    protected $entityKey = 'u';
+
+    /**
      * Description
      * 
      * @var \Doctrine\ORM\QueryBuilder
@@ -34,8 +53,78 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
     protected $orderBy;
     protected $orderDirection;
 
-    public function __construct($qb) {
-        $this->setQb($qb);
+    /**
+     * Doctrine Source Construct
+     *
+     * @param \Doctrine\ORM\EntityManager $em 
+     * @param string $entityName 
+     * @param \Doctrine\ORM\QueryBuilder $qb 
+     */
+    function __construct(\Doctrine\ORM\EntityManager $em, $entityName, $qb = null) {
+        $this->setEm($em);
+        $this->setEntityName($entityName);
+        if (isset($qb)) {
+            $this->setQb($qb);
+        }
+    }
+
+    public function getEm() {
+        if (!isset($this->em)) {
+            throw new \CdiDataGrid\Exception\EntityManagerNoSetException();
+        }
+        return $this->em;
+    }
+
+    public function setEm(\Doctrine\ORM\EntityManager $em) {
+        $this->em = $em;
+        return $this;
+    }
+
+    public function getEntityName() {
+        if (!isset($this->entityName)) {
+            throw new \Exception("No EntityName set");
+        }
+        return $this->entityName;
+    }
+
+    public function setEntityName($entityName) {
+        $this->entityName = $entityName;
+        return $this;
+    }
+
+    protected function createQb() {
+        $this->qb = $this->getEm()->createQueryBuilder()->select($this->getEntityKey())->from($this->getEntityName(), $this->getEntityKey());
+    }
+
+    protected function extractEntityFromQb() {
+        if (isset($this->qb)) {
+            $this->entityName = $this->qb->getRootEntities()[0];
+            $this->entityKey = $this->qb->getRootAliases()[0];
+            return true;
+        }
+        return false;
+    }
+
+    public function getQb() {
+        if (!isset($this->qb)) {
+            $this->createQb();
+        }
+        return $this->qb;
+    }
+
+    public function setQb(\Doctrine\ORM\QueryBuilder $qb) {
+        $this->qb = $qb;
+        if ($this->entityName != $this->getQb()->getRootEntities()[0]) {
+            throw new \Exception("EntityName is diferent to RootEntity in QueryBuilder");
+        }
+    }
+
+    function getEntityKey() {
+        return $this->entityKey;
+    }
+
+    function setEntityKey($entityKey) {
+        $this->entityKey = $entityKey;
     }
 
     public function execute() {
@@ -48,8 +137,7 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
         $this->applyFilters();
 
         //3-Paginator
-//        $this->log->log(5,$this->qb->getDQL());
-//        $this->log->log(5,$this->qb->getParameters());
+
         $this->paginator = new DoctrinePaginatorAdapter(new DoctrinePaginator($this->getQb()));
 
         return $this->paginator;
@@ -60,16 +148,8 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
         return array_keys($rp);
     }
 
-    function getQb() {
-        return $this->qb;
-    }
-
-    function setQb(\Doctrine\ORM\QueryBuilder $qb) {
-        $this->qb = $qb;
-    }
-
     public function applyFilters() {
-        $doctrineFilter = new \CdiDataGrid\Source\Doctrine\Filter($this->qb);
+        $doctrineFilter = new \CdiDataGrid\Source\Doctrine\Filter($this->getQb());
         if (is_a($this->getFilters(), "\CdiDataGrid\Filter\Filters")) {
             foreach ($this->getFilters() as $key => $filter) {
                 $doctrineFilter->applyFilter($filter, $key);
