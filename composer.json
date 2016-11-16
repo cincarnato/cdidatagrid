@@ -47,15 +47,9 @@
         "zendframework/zend-paginator": "~2.2",
          "zendframework/zend-code": "^2.6 || ^3.0"
     },
-    "suggest": {
-        "doctrine/doctrine-orm-module": ">=0.9"
-    },
     "autoload": {
         "psr-4": {
             "CdiDataGrid\\": "src/"
-        },
-        "classmap": [
-            "./Module.php"
-        ]
+        }
     }
 }
