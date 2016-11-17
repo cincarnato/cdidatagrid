@@ -155,10 +155,10 @@ class ColumnFactory {
         $this->baseConfig();
 
         if (isset($this->config["helper"])) {
-            $this->column->setValueWhenTrue($this->config["helper"]);
+            $this->column->setHelper($this->config["helper"]);
         }
         if (isset($this->config["data"])) {
-            $this->column->setValueWhenFalse($this->config["data"]);
+            $this->column->setData($this->config["data"]);
         }
 
         return $this->column;

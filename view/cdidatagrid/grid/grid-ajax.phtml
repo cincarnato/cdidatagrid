@@ -36,7 +36,7 @@
         <table class="table table-bordered <?php echo $this->grid->getTableClass(); ?>">
 
             <tr>
-                <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                <?php foreach ($this->grid->getColumns() as $column): ?>
                     <?php if (!$column->getHidden()): ?>
                         <th style="text-align: center; font-size: 14px;">
                             <?php $name = $column->getName(); ?>
@@ -71,9 +71,9 @@
             <?php if (count($this->grid->getRow())): ?>
                 <?php foreach ($this->grid->getRow() as $data): ?>
                     <tr>
-                        <?php foreach ($this->grid->getColumnCollection() as $column): ?>
+                        <?php foreach ($this->grid->getColumns() as $column): ?>
                             <?php if (!$column->getHidden()): ?>
-                                <td class="<?php echo $this->grid->getClassTdColumn($column->getName()) ?>">
+                                <td class="<?php echo $column->getTdClass() ?>">
                                     <?php echo $column->getHtmlBegin(); ?>
 
                                     <?php echo $this->CdiGridField($column, $data); ?>

@@ -61,7 +61,7 @@ class GridFactory implements FactoryInterface {
         if (isset($doctrineOptions["entityName"])) {
             $entityName = $doctrineOptions["entityName"];
         } else {
-            throw new Exception("you must define 'entityName' config");
+            throw new \Exception("you must define 'entityName' config");
         }
 
         $qb = (isset($doctrineOptions["queryBuilder"]) && $doctrineOptions["queryBuilder"] instanceof \Doctrine\ORM\QueryBuilder) ? $doctrineOptions["queryBuilder"] : null;
