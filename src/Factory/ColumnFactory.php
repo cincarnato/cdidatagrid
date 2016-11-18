@@ -53,6 +53,9 @@ class ColumnFactory {
             case "custom":
                 $this->createCustomColumn($name);
                 break;
+             case "file":
+                $this->createFileColumn($name);
+                break;
             default:
                 $this->createStringColumn($name);
                 break;
@@ -114,6 +117,33 @@ class ColumnFactory {
         return $this->column;
     }
     
+     /**
+     * Create a Boolean Column
+     *
+     * @param string $name name of the column
+     * @return \CdiDataGrid\Column\BooleanColumn
+     */
+    protected function createFileColumn($name) {
+        $this->column = new Column\FileColumn($name);
+        $this->baseConfig();
+
+        if (isset($this->config["webpath"])) {
+            $this->column->setWebpath($this->config["webpath"]);
+        }
+        if (isset($this->config["width"])) {
+            $this->column->setWidth($this->config["width"]);
+        }
+        if (isset($this->config["height"])) {
+            $this->column->setHeight($this->config["height"]);
+        }
+        
+         if (isset($this->config["showFile"])) {
+            $this->column->setShowFile($this->config["showFile"]);
+        }
+
+        return $this->column;
+    }
+    
 
     /**
      * Create a DateTime Column
@@ -155,10 +185,10 @@ class ColumnFactory {
         $this->baseConfig();
 
         if (isset($this->config["helper"])) {
-            $this->column->setHelper($this->config["helper"]);
+            $this->column->setValueWhenTrue($this->config["helper"]);
         }
         if (isset($this->config["data"])) {
-            $this->column->setData($this->config["data"]);
+            $this->column->setValueWhenFalse($this->config["data"]);
         }
 
         return $this->column;

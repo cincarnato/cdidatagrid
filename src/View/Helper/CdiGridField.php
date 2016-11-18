@@ -27,6 +27,7 @@ class CdiGridField extends AbstractHelper {
         'crud' => 'CdiGridFieldCrud',
         'longText' => 'CdiGridFieldLongText',
         'custom' => 'CdiGridFieldCustom',
+        'file' => 'CdiGridFieldFile',
     );
 
     /**
