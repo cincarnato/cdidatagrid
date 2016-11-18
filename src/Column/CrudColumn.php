@@ -10,10 +10,10 @@ namespace CdiDataGrid\Column;
 class CrudColumn extends ExtraColumn {
 
     protected $side;
-    protected $add = ["enable" => true, "class" => "btn btn-primary fa fa-plus", "value" => ""];
-    protected $edit = ["enable" => true, "class" => "btn btn-primary fa fa-edit", "value" => ""];
-    protected $del = ["enable" => true, "class" => "btn btn-danger fa fa-trash", "value" => ""];
-    protected $view = ["enable" => true, "class" => "btn btn-success fa fa-list", "value" => ""];
+    protected $add = ["enable" => true, "class" => "btn btn-primary fa fa-plus", "value" => "", "action"=> "onclick='cdiAddRecord()'"];
+    protected $edit = ["enable" => true, "class" => "btn btn-primary fa fa-edit", "value" => "","action"=> "onclick='cdiEditRecord({{id}})'"];
+    protected $del = ["enable" => true, "class" => "btn btn-danger fa fa-trash", "value" => "","action"=> "onclick='cdiDeleteRecord({{id}})'"];
+    protected $view = ["enable" => true, "class" => "btn btn-success fa fa-list", "value" => "","action"=> "onclick='cdiViewRecord({{id}})'"];
     protected $filterActive = true;
     protected $filter;
 
@@ -30,17 +30,17 @@ class CrudColumn extends ExtraColumn {
 
         
         if ($this->add["enable"]) {
-            $this->displayName = " <i class='" . $this->add["class"] . "' onclick='cdiAddRecord()'>" . $this->add["value"] . "</i>";
+            $this->displayName = " <i class='" . $this->add["class"] . "' ". $this->add["action"]." >" . $this->add["value"] . "</i>";
         }
         
         if ($this->edit["enable"]) {
-            $this->originalValue = " <i class='" . $this->edit["class"] . "' onclick='cdiEditRecord({{id}})'>" . $this->edit["value"] . "</i>";
+            $this->originalValue = " <i class='" . $this->edit["class"] . "' ". $this->edit["action"]." >" . $this->edit["value"] . "</i>";
         }
         if ($this->del["enable"]) {
-            $this->originalValue .= " <i class='" . $this->del["class"] . "' onclick='cdiDeleteRecord({{id}})'>" . $this->del["value"] . "</i>";
+            $this->originalValue .= " <i class='" . $this->del["class"] . "' ". $this->del["action"]." >" . $this->del["value"] . "</i>";
         }
         if ($this->view["enable"]) {
-            $this->originalValue .= " <i class='" . $this->view["class"] . "' onclick='cdiViewRecord({{id}})'>" . $this->view["value"] . "</i>";
+            $this->originalValue .= " <i class='" . $this->view["class"] . "' ". $this->view["action"]." >" . $this->view["value"] . "</i>";
         }
     }
 
