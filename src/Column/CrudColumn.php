@@ -10,14 +10,16 @@ namespace CdiDataGrid\Column;
 class CrudColumn extends ExtraColumn {
 
     protected $side;
-    protected $add = ["enable" => true, "class" => "btn btn-primary fa fa-plus", "value" => "", "action"=> "onclick='cdiAddRecord()'"];
-    protected $edit = ["enable" => true, "class" => "btn btn-primary fa fa-edit", "value" => "","action"=> "onclick='cdiEditRecord({{id}})'"];
-    protected $del = ["enable" => true, "class" => "btn btn-danger fa fa-trash", "value" => "","action"=> "onclick='cdiDeleteRecord({{id}})'"];
-    protected $view = ["enable" => true, "class" => "btn btn-success fa fa-list", "value" => "","action"=> "onclick='cdiViewRecord({{id}})'"];
+    protected $add =  ["enable" => true, "htmltag"=>"a", "class" => "btn btn-primary fa fa-plus", "value" => "", "action" => "onclick='cdiAddRecord()'"];
+    protected $edit = ["enable" => true, "htmltag"=>"a","class" => "btn btn-primary fa fa-edit", "value" => "", "action" => "onclick='cdiEditRecord({{id}})'"];
+    protected $del =  ["enable" => true, "htmltag"=>"a","class" => "btn btn-danger fa fa-trash", "value" => "", "action" => "onclick='cdiDeleteRecord({{id}})'"];
+    protected $view = ["enable" => true, "htmltag"=>"a","class" => "btn btn-success fa fa-list", "value" => "", "action" => "onclick='cdiViewRecord({{id}})'"];
     protected $filterActive = true;
     protected $filter;
 
     function __construct($name, $side, $crudConfig) {
+
+
         $this->name = $name;
         $this->displayName = $name;
         $this->type = "crud";
@@ -28,19 +30,18 @@ class CrudColumn extends ExtraColumn {
         (isset($crudConfig["del"])) ? $this->del = array_merge($this->del, $crudConfig["del"]) : null;
         (isset($crudConfig["view"])) ? $this->view = array_merge($this->view, $crudConfig["view"]) : null;
 
-        
         if ($this->add["enable"]) {
-            $this->displayName = " <i class='" . $this->add["class"] . "' ". $this->add["action"]." >" . $this->add["value"] . "</i>";
+            $this->displayName = " <" . $this->add["htmltag"] . " class='" . $this->add["class"] . "' " . $this->add["action"] . " >" . $this->add["value"] . "</" . $this->add["htmltag"] . ">";
         }
-        
+
         if ($this->edit["enable"]) {
-            $this->originalValue = " <i class='" . $this->edit["class"] . "' ". $this->edit["action"]." >" . $this->edit["value"] . "</i>";
+            $this->originalValue = " <" . $this->edit["htmltag"] . " class='" . $this->edit["class"] . "' " . $this->edit["action"] . " >" . $this->edit["value"] . "</" . $this->edit["htmltag"] . ">";
         }
         if ($this->del["enable"]) {
-            $this->originalValue .= " <i class='" . $this->del["class"] . "' ". $this->del["action"]." >" . $this->del["value"] . "</i>";
+            $this->originalValue .= " <" . $this->del["htmltag"] . " class='" . $this->del["class"] . "' " . $this->del["action"] . " >" . $this->del["value"] . "</" . $this->del["htmltag"] . ">";
         }
         if ($this->view["enable"]) {
-            $this->originalValue .= " <i class='" . $this->view["class"] . "' ". $this->view["action"]." >" . $this->view["value"] . "</i>";
+            $this->originalValue .= " <" . $this->view["htmltag"] . " class='" . $this->view["class"] . "' " . $this->view["action"] . " >" . $this->view["value"] . "</" . $this->view["htmltag"] . ">";
         }
     }
 
@@ -116,8 +117,6 @@ class CrudColumn extends ExtraColumn {
         $this->add = $add;
     }
 
-
-    
 }
 
 ?>
