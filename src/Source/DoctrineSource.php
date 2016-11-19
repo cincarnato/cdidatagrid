@@ -38,7 +38,7 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
 
     /**
      * 
-     * @var \CdiDataGrid\Filter\Filters
+     * @var \CdiDataGrid\Filters
      */
     protected $filters;
 
@@ -50,8 +50,12 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
     protected $paginator;
     //TOREVIEW
 
-    protected $orderBy;
-    protected $orderDirection;
+    /**
+     * Order
+     * 
+     * @var \CdiDataGrid\Sort
+     */
+    protected $sort;
 
     /**
      * Doctrine Source Construct
@@ -129,12 +133,15 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
 
     public function execute() {
 
-        //1-ApplyOrder
-        $this->applyOrder();
 
-
-        //2-ApplyFilters
+        //1-ApplyFilters
         $this->applyFilters();
+
+        //2-ApplyOrder
+        $this->applySort();
+        
+        
+        //echo $this->getQb()->getDQL();
 
         //3-Paginator
 
@@ -150,17 +157,27 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
 
     public function applyFilters() {
         $doctrineFilter = new \CdiDataGrid\Source\Doctrine\Filter($this->getQb());
-        if (is_a($this->getFilters(), "\CdiDataGrid\Filter\Filters")) {
+        if (is_a($this->getFilters(), "\CdiDataGrid\Filters")) {
             foreach ($this->getFilters() as $key => $filter) {
                 $doctrineFilter->applyFilter($filter, $key);
             }
         }
     }
 
-    public function applyOrder() {
-        if ($this->orderBy && ($this->orderDirection == "DESC" || $this->orderDirection == "ASC")) {
-            $ra = $this->qb->getRootAliases();
-            $this->qb->orderBy($ra[0] . $this->orderBy, $this->orderDirection);
+    public function applySort() {
+        if (isset($this->sort) && $this->sort instanceof \CdiDataGrid\Sort) {
+            $ra = $this->getQb()->getRootAliases();
+            $ro = $ra[0] . ".";
+            
+            if($this->sort->getColumn()->getType() == 'relational'){
+                $this->getQb()->leftJoin($ro.$this->sort->getColumn()->getName(), 't');
+                $this->getQb()->orderBy('t.'.$this->sort->getColumn()->getOrderProperty() , $this->sort->getDirection());
+            }else{
+                $this->getQb()->orderBy($ro . $this->sort->getBy(), $this->sort->getDirection());
+            }
+            
+            
+            
         }
     }
 
@@ -168,13 +185,16 @@ class DoctrineSource extends AbstractSource implements SourceInterface {
         return $this->filters;
     }
 
-    public function setFilters(\CdiDataGrid\Filter\Filters $filters) {
+    public function setFilters(\CdiDataGrid\Filters $filters) {
         $this->filters = $filters;
     }
 
-    public function setOrder($orderBy, $direction) {
-        $this->orderBy = $orderBy;
-        $this->orderDirection = $direction;
+    function getSort() {
+        return $this->sort;
+    }
+
+    function setSort(\CdiDataGrid\Sort $sort) {
+        $this->sort = $sort;
     }
 
 }

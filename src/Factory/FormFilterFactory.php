@@ -9,15 +9,20 @@ namespace CdiDataGrid\Factory;
  */
 class FormFilterFactory {
 
-    public function create($form,$page,$data) {
+    public function create($form, $page, $data) {
         $form->setName('GridFormFilters');
         $form->setAttribute('method', 'get');
 
         foreach ($form as $key => $element) {
-            
+
             //TODO - ADD F_
-            
-            
+
+
+            if ($element instanceof \DoctrineModule\Form\Element\ObjectSelect) {
+                $element->setOption("display_empty_item", true);
+                $element->setOption("empty_item_label", "---");
+            }
+
             if (preg_match("/hidden/i", $element->getAttribute("type")) && $element->getName() == 'id') {
                 $newElement = new \Zend\Form\Element\Text('id');
                 $form->remove($element->getName());
@@ -47,7 +52,7 @@ class FormFilterFactory {
                     'value_options' => array(0 => "false", 1 => "true"),
                     'empty_option' => ''
                 ));
-                
+
                 $newElement->setLabel($name);
 
                 $form->remove($element->getName());

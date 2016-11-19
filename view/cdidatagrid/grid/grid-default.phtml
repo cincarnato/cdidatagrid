@@ -1,4 +1,5 @@
-<div >
+<div>
+
     <?php
     $form = $this->grid->getFormFilters();
     $form->prepare();
@@ -9,7 +10,7 @@
     <?php echo $this->form()->openTag($form); ?>
 
     <div class="row container-fluid">
-        <div class="panel panel-default nomargin">
+        <div class="panel panel-info nomargin">
             <div class="panel-heading padding2 text-center">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
                     Filtros
@@ -28,7 +29,7 @@
     <?php echo $this->form()->closeTag($form); ?>
 </div>
 
-<div class="table">
+<div class="">
 
     <!--Page-->
     <?php echo $this->formElement($form->get("page")) ?>
@@ -41,17 +42,17 @@
             <?php foreach ($this->grid->getColumns() as $column): ?>
                 <?php if (!$column->getHidden()): ?>
                     <th style="text-align: center; font-size: 14px;">
-                        <?php $name = $column->getName(); ?>
                         <?php echo $this->translate((string) $column); ?>
-                        <?php if ($column->getType() != "extra"): ?>
-                            <?php if ($this->grid->getOrderBy() == $column->getName()): ?>
-                                <?php if ($this->grid->getOrderDirection() == "DESC"): ?>
-                                    <a class="fa fa-sort-asc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "ASC") + $this->routeParams), true); ?>"></a>
-                                <?php elseif ($this->grid->getOrderDirection() == "ASC"): ?>
-                                    <a class="fa fa-sort-desc" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
+                        <?php if ($column->getType() != "extra" && $column->getType() != "crud"): ?>
+                            <!--SORT-->
+                            <?php if ($this->grid->getSort() && $this->grid->getSort()->getBy() == $column->getName()): ?>
+                                <?php if ($this->grid->getSort()->getDirection() == "DESC"): ?>
+                                    <a class="fa fa-sort-asc" href="<?php echo $this->url($this->route, array(), array('query' => array('sortBy' => $column->getName(), "sortDirection" => "ASC") + $this->routeParams), true); ?>"></a>
+                                <?php elseif ($this->grid->getSort()->getDirection() == "ASC"): ?>
+                                    <a class="fa fa-sort-desc" href="<?php echo $this->url($this->route, array(), array('query' => array('sortBy' => $column->getName(), "sortDirection" => "DESC") + $this->routeParams), true); ?>"></a>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <a class="fa fa-sort" href="<?php echo $this->url($this->route, array(), array('query' => array('orderBy' => $name, "orderDirection" => "DESC") + $this->routeParams), true); ?>"></a>
+                                <a class="fa fa-sort" href="<?php echo $this->url($this->route, array(), array('query' => array('sortBy' => $column->getName(), "sortDirection" => "DESC") + $this->routeParams), true); ?>"></a>
                             <?php endif; ?>
 
                         <?php endif; ?>

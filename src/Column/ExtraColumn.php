@@ -8,7 +8,8 @@ namespace CdiDataGrid\Column;
  * @author cincarnato
  */
 class ExtraColumn extends AbstractColumn {
-
+    
+     const type = "extra";
     const expRegData = "/\{\{\w*\}\}/";
     const expRegReplace = "/\{|\}/";
     protected $side;
@@ -19,7 +20,6 @@ class ExtraColumn extends AbstractColumn {
     function __construct($name, $side) {
         $this->name = $name;
         $this->displayName = $name;
-        $this->type = "extra";
         $this->setSide($side);
     }
 

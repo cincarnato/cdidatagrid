@@ -75,6 +75,8 @@ return array(
             'CdiGridFieldLink' => 'CdiDataGrid\View\Helper\CdiGridFieldLink',
             'CdiGridFieldLongText' => 'CdiDataGrid\View\Helper\CdiGridFieldLongText',
             'CdiGridFieldCustom' => 'CdiDataGrid\View\Helper\CdiGridFieldCustom',
+            'CdiGridFieldFile' => 'CdiDataGrid\View\Helper\CdiGridFieldFile',
+            'CdiGridFieldRelational' => 'CdiDataGrid\View\Helper\CdiGridFieldRelational',
             'CdiGridBtnAdd' => 'CdiDataGrid\View\Helper\CdiGridBtnAdd',
         )
     ),

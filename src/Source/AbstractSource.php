@@ -16,10 +16,12 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
      */
     protected $data;
 
-    /**
-     * @var array
+       /**
+     * Order
+     * 
+     * @var \CdiDataGrid\Sort
      */
-    protected $sortConditions = [];
+    protected $sort;
 
     /**
      * @var CdiDataGrid\Filter\Filters
@@ -65,32 +67,16 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
         $this->columns = $columns;
     }
 
-    /**
-     * Set sort conditions.
-     *
-     * @param \CdiDataGrid\Column\ColumnInterface $column
-     * @param string $sortDirection
-     */
-    public function addSortCondition(\CdiDataGrid\Column\ColumnInterface $column, $sortDirection = 'ASC') {
 
-        if ($sortDirection != 'ASC' && $sortDirection != 'DESC') {
-            throw new \CdiDataGrid\Exception\SortConditionException;
-        }
-
-        $this->sortConditions[] = [
-            'column' => $column,
-            'sortDirection' => $sortDirection,
-        ];
+    function getSort() {
+        return $this->sort;
     }
 
-    function getSortConditions() {
-        return $this->sortConditions;
+    function setSort(\CdiDataGrid\Sort $sort) {
+        $this->sort = $sort;
     }
 
-    function setSortConditions($sortConditions) {
-        $this->sortConditions = $sortConditions;
-    }
-
+        
     public function addFilter(\CdiDataGrid\Filter\Filter $filter) {
         $this->getFilters()->addFilter($filter);
     }
@@ -98,7 +84,7 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
     /**
      * Get Filters
      *
-     * @return \CdiDataGrid\Filter\Filters
+     * @return \CdiDataGrid\Filters
      */
     function getFilters() {
         if (isset($this->filters)) {
@@ -107,7 +93,7 @@ abstract class AbstractSource extends EventProvider implements SourceInterface {
         return $this->filters;
     }
 
-    function setFilters(\CdiDataGrid\Filter\Filters $filters) {
+    function setFilters(\CdiDataGrid\Filters $filters) {
         $this->filters = $filters;
     }
     

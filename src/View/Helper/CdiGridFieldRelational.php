@@ -8,8 +8,7 @@ use CdiDataGrid\Column\ColumnInterface;
 /**
  * @author cincarnato
  */
-class CdiGridFieldExtra extends AbstractHelper {
-
+class CdiGridFieldRelational extends AbstractHelper {
 
     /**
      * Invoke helper
@@ -35,8 +34,7 @@ class CdiGridFieldExtra extends AbstractHelper {
      * @return string
      */
     public function render(ColumnInterface $column, array $data) {
-
-        return $data[$column->getName()];
+        return nl2br($data[$column->getName()]);
     }
 
 }

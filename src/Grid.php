@@ -155,22 +155,18 @@ class Grid {
      * @var type
      */
     protected $ready = false;
+
+    /**
+     * Order
+     * 
+     * @var \CdiDataGrid\Sort
+     */
+    protected $sort;
     //TOREVIEW
 
-    protected $orderBy;
-    protected $orderDirection;
-    protected $columnsName = array();
-    protected $OrderColumnCollection = array();
-    protected $selectFilterCollection = array();
-    protected $renderOk = false;
     protected $formFilters;
     protected $editForm = null;
     protected $tableClass;
-    protected $optionDelete = false;
-    protected $optionEdit = false;
-    protected $optionAdd = false;
-    protected $optionView = false;
-    protected $addBtn = null;
     protected $recordDetail;
     protected $forceFilters = array();
 
@@ -194,6 +190,14 @@ class Grid {
         $this->mvcevent = $mvcevent;
     }
 
+    function getSort() {
+        return $this->sort;
+    }
+
+    function setSort(\CdiDataGrid\Sort $sort) {
+        $this->sort = $sort;
+    }
+
     //-->CONFIG
 
     public function getOptions() {
@@ -211,8 +215,8 @@ class Grid {
     function setColumnsConfig(Array $columnsConfig) {
         $this->getOptions()->setColumnsConfig($columnsConfig);
     }
-    
-     function getCrudConfig() {
+
+    function getCrudConfig() {
         return $this->getOptions()->getCrudConfig();
     }
 
@@ -232,7 +236,6 @@ class Grid {
 //    public function setCustomOptions($customOptionsKey) {
 //        $this->getOptions()->mergeCustomOptionsByKey($customOptionsKey);
 //    }
-
     //<--CONFIG
     //
     //
@@ -255,7 +258,7 @@ class Grid {
      */
     function setSource(\CdiDataGrid\Source\SourceInterface $source) {
         $this->source = $source;
-        
+
         return $this->source;
     }
 
@@ -315,8 +318,7 @@ class Grid {
         $this->getSource()->setFilters($this->getFilters());
 
         //Order (SORT)
-        $this->prepareOrder();
-        $this->getSource()->setOrder($this->orderBy, $this->orderDirection);
+        $this->prepareSort();
 
         //Paginator
         $this->preparePaginator();
@@ -328,8 +330,8 @@ class Grid {
         //Extra Columns (todo)
         $this->mergeExtraColumn();
 
-        //Order again? (To review)
-        $this->processOrderColumn();
+        //Order Columns..Need review to enable
+        //$this->processOrderColumn();
 
         $this->ready = true;
     }
@@ -430,26 +432,30 @@ class Grid {
     //<--MVCEVENT
 
 
-    public function prepareOrder() {
+    public function prepareSort() {
         $query = $this->getQuery();
-        $order = $query["orderBy"];
-        $orderDirection = $query["orderDirection"];
-        if ($order && $orderDirection) {
-            $this->orderBy = $order;
-            $this->orderDirection = $orderDirection;
+        if ($query["sortBy"] && $query["sortDirection"]) {
+
+            $column = $this->columns[$query["sortBy"]];
+
+            $this->sort = new \CdiDataGrid\Sort();
+            $this->sort->setBy($query["sortBy"]);
+            $this->sort->setDirection($query["sortDirection"]);
+            $this->sort->setColumn($column);
+            $this->source->setSort($this->sort);
         }
     }
 
     //-->FILTERS
 
     public function buildFilters() {
-        $this->filters = new \CdiDataGrid\Filter\Filters();
+        $this->filters = new \CdiDataGrid\Filters();
         if (count($this->getQuery())) {
             foreach ($this->getQuery() as $key => $value) {
                 $name = str_replace("f_", "", $key);
                 if ($value != "") {
                     if (key_exists($name, $this->columns)) {
-                        $filter = new \CdiDataGrid\Filter\Filter($this->columns[$name], $value);
+                        $filter = new \CdiDataGrid\Filter($this->columns[$name], $value);
                         $this->filters->addFilter($filter);
                     }
                 }

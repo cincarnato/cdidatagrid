@@ -3,7 +3,7 @@ namespace CdiDataGrid\Source\Doctrine;
 
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr;
-use CdiDataGrid\Filter\Filter as DatagridFilter;
+use CdiDataGrid\Filter as DatagridFilter;
 /**
  * Description of Filter
  *
@@ -30,7 +30,7 @@ class Filter {
         return $this->qb;
     }
     
-    public function applyFilter(\CdiDataGrid\Filter\Filter  $filter,$key)
+    public function applyFilter(\CdiDataGrid\Filter  $filter,$key)
     {
         $qb = $this->getQueryBuilder();
         $ra = $this->qb->getRootAliases()[0];
@@ -43,8 +43,8 @@ class Filter {
         $valueParameterName = ":".$colname.$key;
         
         $value = $filter->getValue();
-
         
+  
          $expr = new Expr();
 
             switch ($filter->getOperator()) {

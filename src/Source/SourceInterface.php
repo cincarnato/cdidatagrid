@@ -27,13 +27,6 @@ interface SourceInterface {
      */
     public function execute();
 
-    /**
-     * Set sort conditions.
-     *
-     * @param Column\AbstractColumn $column
-     * @param string                $sortDirection
-     */
-    public function addSortCondition(\CdiDataGrid\Column\ColumnInterface $column, $sortDirection = 'ASC');
 
     /**
      * @param Filter $filters

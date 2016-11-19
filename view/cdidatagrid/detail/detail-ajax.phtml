@@ -3,7 +3,7 @@
     <a class="btn btn-default" onclick="cdiListRecords()" >
         <?php echo $this->translate('List'); ?>
     </a>
-    <?php if($this->grid->getOptions()->getCrudConfig()["edit"]["enable"]): ?>
+       <?php if($this->grid->getOptions()->getCrudConfig()["edit"]["enable"]): ?>
         <i class='btn btn-danger' onclick='cdiEditRecord(<?php echo $record->getId(); ?>)'><?php echo $this->translate('Edit'); ?></i>
         <?php endif; ?>
 </div>

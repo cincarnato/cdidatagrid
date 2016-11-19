@@ -46,7 +46,8 @@ abstract class AbstractColumn implements ColumnInterface {
         "time" => true,
         "datetime" => true,
         "extra" => true,
-        "file" => true
+        "file" => true,
+        "relational" => true
     );
 
     /**

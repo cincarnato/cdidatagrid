@@ -56,6 +56,9 @@ class ColumnFactory {
              case "file":
                 $this->createFileColumn($name);
                 break;
+             case "relational":
+                $this->createRelationalColumn($name);
+                break;
             default:
                 $this->createStringColumn($name);
                 break;
@@ -96,6 +99,25 @@ class ColumnFactory {
         $this->baseConfig();
         return $this->column;
     }
+    
+        /**
+     * Create a String Column
+     *
+     * @param string $name name of the column
+     * @return \CdiDataGrid\Column\StringColumn
+     */
+    protected function createRelationalColumn($name) {
+        $this->column = new Column\RelationalColumn($name);
+        $this->baseConfig();
+        
+        
+        if (isset($this->config["orderProperty"])) {
+            $this->column->setOrderProperty($this->config["orderProperty"]);
+        }
+        
+        return $this->column;
+    }
+
 
     /**
      * Create a Boolean Column
