@@ -22,22 +22,22 @@ return array(
             "enable" => true,
             "add" => [
                 "enable" => true,
-                "class" => "btn btn-primary fa fa-plus",
+                "class" => " fa fa-plus",
                 "value" => " Agregar"
             ],
             "edit" => [
                 "enable" => true,
-                "class" => "btn btn-primary fa fa-edit",
+                "class" => "fa fa-edit fa-xs",
                 "value" => ""
             ],
             "del" => [
                 "enable" => true,
-                "class" => "btn btn-danger fa fa-trash",
+                "class" => "fa fa-trash",
                 "value" => ""
             ],
             "view" => [
                 "enable" => true,
-                "class" => "btn btn-success fa fa-list",
+                "class" => " fa fa-list",
                 "value" => ""
             ]
         ],

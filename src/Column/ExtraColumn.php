@@ -17,10 +17,9 @@ class ExtraColumn extends AbstractColumn {
     protected $filterActive = true;
     protected $filter;
 
-    function __construct($name, $side) {
+    function __construct($name) {
         $this->name = $name;
         $this->displayName = $name;
-        $this->setSide($side);
     }
 
     public function processData($row) {
@@ -49,7 +48,7 @@ class ExtraColumn extends AbstractColumn {
         if ($side == "left" || $side == "right") {
             $this->side = $side;
         } else {
-            throw new Exception("The side must be 'left' or 'right'");
+            throw new \Exception("The side must be 'left' or 'right'");
         }
     }
 

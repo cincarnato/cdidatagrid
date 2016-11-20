@@ -544,18 +544,28 @@ class Grid {
 
     //EXTRA COLUMNS - TO REVIEW
     public function addExtraColumn($name, $originalValue, $side = "left", $filter = false) {
-        $column = new ExtraColumn($name, $side);
-        $column->setOriginalValue($originalValue);
-        $column->setFilterActive($filter);
+        
+        if (key_exists($name, $this->getColumnsConfig())) {
+            $columnConfig = $this->getColumnsConfig()[$name];
+        } else {
+            $columnConfig = array();
+        }
+        $columnConfig["type"] ="extra";
+        $extraColumn = $this->getColumnFactory()->create($name, $columnConfig);
+        
+        $extraColumn->setOriginalValue($originalValue);
+        $extraColumn->setFilterActive($filter);
 
         if ($side != "left" && $side != "right") {
             throw new Exception("Side must be 'left' or 'right'");
         }
 
         if ($side == "left") {
-            array_unshift($this->extraColumns, $column);
+            $extraColumn->setSide("left");
+            array_unshift($this->extraColumns, $extraColumn);
         } else if ($side == "right") {
-            array_push($this->extraColumns, $column);
+            $extraColumn->setSide("right");
+            array_push($this->extraColumns, $extraColumn);
         }
     }
 
