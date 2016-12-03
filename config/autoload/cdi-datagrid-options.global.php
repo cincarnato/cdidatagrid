@@ -22,22 +22,22 @@ return array(
             "enable" => true,
             "add" => [
                 "enable" => true,
-                "class" => " fa fa-plus",
+                "class" => " fa fa-plus cursor-pointer",
                 "value" => " Agregar"
             ],
             "edit" => [
                 "enable" => true,
-                "class" => "fa fa-edit fa-xs",
+                "class" => "fa fa-edit fa-xs cursor-pointer",
                 "value" => ""
             ],
             "del" => [
                 "enable" => true,
-                "class" => "fa fa-trash",
+                "class" => "fa fa-trash cursor-pointer",
                 "value" => ""
             ],
             "view" => [
                 "enable" => true,
-                "class" => " fa fa-list",
+                "class" => " fa fa-list cursor-pointer",
                 "value" => ""
             ]
         ],
