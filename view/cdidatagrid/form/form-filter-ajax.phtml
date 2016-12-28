@@ -2,6 +2,7 @@
 <?php
 $form = $this->grid->getFormFilters();
 $form->setAttribute('class', 'form-vertical');
+$form->setAttribute("action", "javascript:cdiFilter_" . $this->grid->getId() . "('" . $form->getName() . "')");
 $submit = $form->get("submit");
 $submit->setAttribute('class', 'btn btn-success');
 $form->prepare();
@@ -72,7 +73,6 @@ echo $this->form()->openTag($form);
     <?php endswitch; ?>
 
 <?php endforeach; ?>
-<!--Page-->
 <?php echo $this->formElement($form->get("page")) ?>
 <?php echo $this->form()->closeTag($form); ?>
 

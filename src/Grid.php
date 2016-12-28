@@ -215,6 +215,10 @@ class Grid {
     function setColumnsConfig(Array $columnsConfig) {
         $this->getOptions()->setColumnsConfig($columnsConfig);
     }
+    
+     function mergeColumnsConfig(Array $columnsConfig) {
+        $this->getOptions()->mergeColumnsConfig($columnsConfig);
+    }
 
     function getCrudConfig() {
         return $this->getOptions()->getCrudConfig();
@@ -377,7 +381,7 @@ class Grid {
     }
 
     public function addCrudColumn($name = "", $side = "left", $crudConfig = []) {
-        $column = new CrudColumn($name, $side, $crudConfig);
+        $column = new CrudColumn($name, $side, $crudConfig, $this->id);
         $column->setFilterActive(false);
         if ($side == "left") {
             array_unshift($this->extraColumns, $column);
@@ -469,7 +473,7 @@ class Grid {
 
     function getFormFilterFactory() {
         if (!isset($this->formFilterFactory)) {
-            $this->setFormFilterFactory(new Factory\FormFilterFactory());
+            $this->setFormFilterFactory(new Factory\FormFilterFactory($this->id));
         }
         return $this->formFilterFactory;
     }
@@ -584,7 +588,7 @@ class Grid {
     }
 
     public function setId($id) {
-        $this->id = $id;
+        $this->id = str_replace (' ', '', $id);
     }
 
     public function getRow() {

@@ -18,13 +18,23 @@ class CrudColumn extends ExtraColumn {
     protected $view = ["enable" => true, "htmltag" => "a", "class" => "btn btn-success fa fa-list", "value" => "", "action" => "onclick='cdiViewRecord({{id}})'"];
     protected $filterActive = true;
     protected $filter;
+    protected $gridId = null;
 
-    function __construct($name, $side, $crudConfig) {
+    protected function processDefaultAction() {
+        $this->add["action"] = "onclick='cdiAddRecord_" . $this->gridId . "()'";
+        $this->edit["action"] = "onclick='cdiEditRecord_" . $this->gridId . "({{id}})'";
+        $this->del["action"] = "onclick='cdiDeleteRecord_" . $this->gridId . "({{id}})'";
+        $this->view["action"] = "onclick='cdiViewRecord_" . $this->gridId . "({{id}})'";
+    }
 
+    function __construct($name, $side, $crudConfig, $gridId) {
 
+        $this->gridId = $gridId;
         $this->name = $name;
         $this->displayName = $name;
         $this->setSide($side);
+
+        $this->processDefaultAction();
 
         (isset($crudConfig["add"])) ? $this->add = array_merge($this->add, $crudConfig["add"]) : null;
         (isset($crudConfig["edit"])) ? $this->edit = array_merge($this->edit, $crudConfig["edit"]) : null;

@@ -9,38 +9,36 @@ use Zend\View\Helper\AbstractHelper;
  *
  * @author cincarnato
  */
-class CdiGridCrud extends AbstractHelper  {
+class CdiGridCrud extends AbstractHelper {
 
-
-    public function __invoke() {
+    public function __invoke($gridId) {
 
 
         $view = '  <script>';
 
-        $view .= 'function cdiDeleteRecord(objectId){
+        $view .= 'function cdiDeleteRecord_' . $gridId . '(objectId){
         if(confirm("¿Esta seguro que desea eliminar el registro?")){
-            cdiPost({crudAction: "delete", crudId: objectId});
+            cdiPost_' . $gridId . '({crudAction: "delete", crudId: objectId});
       
         }
     }';
 
-        $view .= 'function cdiEditRecord(objectId){
-            cdiPost({crudAction: "edit", crudId: objectId});
+        $view .= 'function cdiEditRecord_' . $gridId . '(objectId){
+            cdiPost_' . $gridId . '({crudAction: "edit", crudId: objectId});
     }';
-        
-                $view .= 'function cdiViewRecord(objectId){
-            cdiPost({crudAction: "view", crudId: objectId});
-    }';
-        
-        
-           $view .= 'function cdiAddRecord(){
-            cdiPost({crudAction: "add"});
+
+        $view .= 'function cdiViewRecord_' . $gridId . '(objectId){
+            cdiPost_' . $gridId . '({crudAction: "view", crudId: objectId});
     }';
 
 
+        $view .= 'function cdiAddRecord_' . $gridId . '(){
+            cdiPost_' . $gridId . '({crudAction: "add"});
+    }';
 
 
-        $view .= 'function cdiPost(params) {
+
+        $view .= 'function cdiPost_' . $gridId . '(params) {
             var goto = window.location.href;  
     var form = document.createElement("form");
     form.setAttribute("method", "post");

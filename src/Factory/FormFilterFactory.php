@@ -9,8 +9,15 @@ namespace CdiDataGrid\Factory;
  */
 class FormFilterFactory {
 
+    protected $gridId;
+
+    function __construct($gridId) {
+        $this->gridId = $gridId;
+    }
+
     public function create($form, $page, $data) {
-        $form->setName('GridFormFilters');
+        $name = 'cdiGridFormFilters_' . $this->gridId;
+        $form->setName($name);
         $form->setAttribute('method', 'get');
 
         foreach ($form as $key => $element) {
@@ -21,6 +28,7 @@ class FormFilterFactory {
             if ($element instanceof \DoctrineModule\Form\Element\ObjectSelect) {
                 $element->setOption("display_empty_item", true);
                 $element->setOption("empty_item_label", "---");
+                $element->setEmptyOption("---");
             }
 
             if (preg_match("/hidden/i", $element->getAttribute("type")) && $element->getName() == 'id') {
@@ -52,11 +60,15 @@ class FormFilterFactory {
                     'value_options' => array(0 => "false", 1 => "true"),
                     'empty_option' => ''
                 ));
-
                 $newElement->setLabel($name);
 
                 $form->remove($element->getName());
                 $form->add($newElement);
+            }
+
+
+            if (preg_match("/file/i", $element->getAttribute("type"))) {
+                $form->remove($element->getName());
             }
         }
 

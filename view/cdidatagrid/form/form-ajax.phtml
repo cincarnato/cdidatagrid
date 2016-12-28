@@ -1,15 +1,15 @@
 <br>
+  <?php $file = false; ?>
 <div class="row container-fluid">
 
     <div class="panel panel-default">
-        <div class="panel-heading">Edit Record</div>
+        <div class="panel-heading"></div>
         <div class="panel-body">
             <?php
             $form = $this->grid->getCrudForm();
             $form->setAttribute('class', 'form-horizontal');
-            $form->setAttribute("action", "javascript:cdiForm('".$form->getName()."')");
+            $form->setAttribute("action", "javascript:cdiForm_" . $this->grid->getId() . "('" . $form->getName() . "')");
             $form->prepare();
-//$form->setAttribute('action', $this->url('application', array('action' => 'edit')))->prepare();
             echo $this->form()->openTag($form);
             ?>
 
@@ -29,12 +29,14 @@
                                 <div  class="form-group">
                                     <div class="col-lg-3 col-md-3 col-xs-12">
                                         <?php echo $this->formElement($element); ?>
-                                        <a class="btn btn-default" onclick="cdiListRecords()" >Cancel</a>
+                                        <a class="btn btn-default" onclick="cdiListRecords_<?php echo $this->grid->getId(); ?>()" >Cancel</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <?php break; ?>
+                    <?php case "file": ?>
+                        <?php $file = true; ?>
                     <?php default: ?>
 
                         <?php
@@ -82,4 +84,20 @@
     </div>
 </div>
 
-<?php echo $this->CdiGridCrudAjax($this->grid->getId(),$this->url($this->route,array(),array(),true)); ?>
+<?php echo $this->CdiGridCrudAjax($this->grid->getId(), $this->url($this->route, array(), array(), true)); ?>
+
+
+<?php if ($file): ?>
+    <?php
+//Para Imagenes
+    $url = $this->url($this->route, array(), array(), true);
+    ?>
+    <script>
+        $('#<?php echo $form->getName(); ?>').ajaxForm({
+            url: "<?php echo $url; ?>",
+            complete: function (xhr) {
+                $('#<?php echo $this->grid->getId(); ?>').html(xhr.responseText);
+            }
+        });
+    </script>
+<?php endif; ?>

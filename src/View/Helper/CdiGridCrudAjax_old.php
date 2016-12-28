@@ -22,32 +22,32 @@ class CdiGridCrudAjax extends AbstractHelper{
 
         $view = '  <script type="text/javascript">';
 
-        $view .= 'function cdiDeleteRecord_'.$gridId.'(objectId){
+        $view .= 'function cdiDeleteRecord(objectId){
         if(confirm("¿Esta seguro que desea eliminar el registro?")){
-            cdiPost_'.$gridId.'({crudAction: "delete", crudId: objectId});
+            cdiPost({crudAction: "delete", crudId: objectId});
       
         }
     }';
 
-        $view .= 'function cdiEditRecord_'.$gridId.'(objectId){
-                    cdiPost_'.$gridId.'({crudAction: "edit", crudId: objectId});
+        $view .= 'function cdiEditRecord(objectId){
+                    cdiPost({crudAction: "edit", crudId: objectId});
                 }';
 
-        $view .= 'function cdiListRecords_'.$gridId.'(){
-                    cdiPost_'.$gridId.'();
+        $view .= 'function cdiListRecords(){
+                    cdiPost();
                 }'; 
 
-        $view .= 'function cdiViewRecord_'.$gridId.'(objectId){
-                    cdiPost_'.$gridId.'({crudAction: "view", crudId: objectId});
+        $view .= 'function cdiViewRecord(objectId){
+                    cdiPost({crudAction: "view", crudId: objectId});
                 }';
 
 
-        $view .= 'function cdiAddRecord_'.$gridId.'(){
-                    cdiPost_'.$gridId.'({crudAction: "add"});
+        $view .= 'function cdiAddRecord(){
+                    cdiPost({crudAction: "add"});
                 }';
 
 
-        $view .= 'function cdiPagination_'.$gridId.'(url) {
+        $view .= 'function cdiPagination(url) {
                     $.get(url).done(function (data) {
                     $("#'.$gridId.'").html(data);
                     });
@@ -59,20 +59,20 @@ class CdiGridCrudAjax extends AbstractHelper{
                       });
                   }';
         
-          $view .= 'function cdiForm_'.$gridId.'(fname) {
+          $view .= 'function cdiForm(fname) {
                       $.post("' . $url . '", $("#"+fname).serialize()).done(function (data) {
                           $("#'.$gridId.'").html(data);
                       });
                   }';
         
-        $view .= 'function cdiOrder_'.$gridId.'(url) {
+        $view .= 'function cdiOrder(url) {
                       $.get(url).done(function (data) {
                       $("#'.$gridId.'").html(data);
                       });
                   }';
         
         
-        $view .= 'function cdiPost_'.$gridId.'(params) {
+        $view .= 'function cdiPost(params) {
                     var url = "' . $url . '";  
                     $.post(url,params).done(function (data) {
                     $("#'.$gridId.'").html(data);

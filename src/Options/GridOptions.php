@@ -118,6 +118,12 @@ class GridOptions extends AbstractOptions implements GridOptionsInterface {
     function setColumnsConfig(Array $columnsConfig) {
         $this->columnsConfig = $columnsConfig;
     }
+    
+     function mergeColumnsConfig(Array $columnsConfig) {
+        $this->columnsConfig = array_merge_recursive($this->columnsConfig,$columnsConfig);
+    }
+    
+   
 
     function setSourceConfig(Array $sourceConfig) {
         $this->sourceConfig = $sourceConfig;

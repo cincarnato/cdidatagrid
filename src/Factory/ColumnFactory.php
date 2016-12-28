@@ -24,8 +24,14 @@ class ColumnFactory {
      * @var array
      */
     protected $config = array();
+    
+      /**
+     * 
+     * @var \CdiDataGrid\Grid
+     */
+    protected $grid = null;
 
-    public function create($name, Array $config) {
+        public function create($name, Array $config) {
         $this->column = null;
         $this->config = $config;
         $type = (isset($config['type'])) ? $config['type'] : "string";

@@ -1,27 +1,19 @@
 <div>
 
-    <?php
-    $form = $this->grid->getFormFilters();
-    $form->prepare();
-    $submit = $form->get("submit");
-    $submit->setAttribute('class', 'btn btn-success');
-    ?>
-
-    <?php echo $this->form()->openTag($form); ?>
 
     <div class="row container-fluid">
         <div class="panel panel-default nomargin">
             <div class="panel-heading padding5 text-center">
                 <h4 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter" >
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilter_<?php echo $this->grid->getId(); ?>" aria-expanded="true" aria-controls="collapseFilter_<?php echo $this->grid->getId(); ?>" >
                     Filtros
                 </a>      
                 </h4>
               
             </div>
-            <div id="collapseFilter" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
+            <div id="collapseFilter_<?php echo $this->grid->getId(); ?>" class="panel-body panel-collapse collapse"  role="tabpanel" aria-labelledby="headingOne">
                 <div id="adest">
-                    <?php echo $this->partial("cdidatagrid/form/form-filter", array("form" => $form)); ?>
+                    <?php echo $this->partial("cdidatagrid/form/form-filter", array("grid" => $this->grid)); ?>
                 </div>
 
             </div>
@@ -29,16 +21,9 @@
         </div>
     </div>
 
-    <?php echo $this->form()->closeTag($form); ?>
 </div>
 
 <div class="">
-
-    <!--Page-->
-    <?php echo $this->formElement($form->get("page")) ?>
-
-
-
     <table class="table table-bordered  <?php echo $this->grid->getTableClass(); ?>">
         <!--HEADER-->
         <thead>
@@ -96,5 +81,5 @@ echo $this->paginationControl($this->grid->getPaginator(), 'Sliding', $this->par
 ?>
 
 
-<?php echo $this->CdiGridCrud(); ?>
+<?php echo $this->CdiGridCrud($this->grid->getId()); ?>
 
