@@ -16,8 +16,8 @@ class FormFilterFactory {
     }
 
     public function create($form, $page, $data) {
-        $name = 'cdiGridFormFilters_' . $this->gridId;
-        $form->setName($name);
+        $formName = 'cdiGridFormFilters_' . $this->gridId;
+        $form->setName($formName);
         $form->setAttribute('method', 'get');
 
         foreach ($form as $key => $element) {
@@ -88,10 +88,37 @@ class FormFilterFactory {
         ));
 
         $form->add(array(
-            'name' => 'submit',
+            'name' => 'resetbtn',
+            'type' => 'Zend\Form\Element\Button',
+            'options' => [
+                'label' => "Reset"
+            ],
+            'attributes' => array(
+                'value' => 'Reset',
+                'class' => 'btn btn-default',
+                'onclick' => 'resetFormFilter_'.$formName.'(false)'
+            )
+        ));
+        
+           $form->add(array(
+            'name' => 'resetsubmitbtn',
+            'type' => 'Zend\Form\Element\Button',
+            'options' => [
+                'label' => "Reset & Submit"
+            ],
+            'attributes' => array(
+                'value' => 'Reset & Submit',
+                'class' => 'btn btn-default',
+                'onclick' => 'resetFormFilter_'.$formName.'(true)'
+            )
+        ));
+
+        $form->add(array(
+            'name' => 'submitbtn',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
-                'value' => 'Filter'
+                'value' => 'Filtrar',
+                 'class' => 'btn btn-success',
             )
         ));
 
