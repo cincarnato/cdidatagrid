@@ -2,12 +2,13 @@
 <div class="row container-fluid">
 
     <div class="panel panel-default">
-        <div class="panel-heading"></div>
+        <div class="panel-heading">Edit Record</div>
         <div class="panel-body">
             <?php
             $form = $this->grid->getCrudForm();
             $form->setAttribute('class', 'form-horizontal');
             $form->prepare();
+//$form->setAttribute('action', $this->url('application', array('action' => 'edit')))->prepare();
             echo $this->form()->openTag($form);
             ?>
 
@@ -74,7 +75,7 @@
                 <?php endswitch; ?>
 
             <?php endforeach; ?>
-            
+
             <?php echo $this->form()->closeTag($form); ?>
         </div>
     </div>

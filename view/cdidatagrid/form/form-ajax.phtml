@@ -23,17 +23,6 @@
                         <?php echo $this->formElement($element); ?>
                         <?php break; ?>
                     <?php case "submit": ?>
-                        <?php $element->setAttribute('class', 'btn btn-success'); ?>
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-xs-12 ">
-                                <div  class="form-group">
-                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                        <?php echo $this->formElement($element); ?>
-                                        <a class="btn btn-default" onclick="cdiListRecords_<?php echo $this->grid->getId(); ?>()" >Cancel</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <?php break; ?>
                     <?php case "file": ?>
                         <?php $file = true; ?>
@@ -78,7 +67,21 @@
                 <?php endswitch; ?>
 
             <?php endforeach; ?>
-
+            <?php 
+            $element = $form->get("submit");
+            $element->setAttribute('class', 'btn btn-success'); ?>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-xs-12 ">
+                                <div  class="form-group">
+                                    <div class="col-lg-3 col-md-3 col-xs-12">
+                                        <?php echo $this->formElement($element); ?>
+                                        <a class="btn btn-default" href="<?php echo $this->url($this->route, array(), array('query' => $this->routeParams), true); ?>" >Cancel</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                 
+            <?php echo $this->form()->closeTag($form); ?>
             <?php echo $this->form()->closeTag($form); ?>
         </div>
     </div>
