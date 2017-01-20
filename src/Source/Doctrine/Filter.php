@@ -102,7 +102,7 @@ class Filter {
                     $where = $expr->between($colString, $minParameterName, $maxParameterName);
                     $qb->setParameter($minParameterName, $value[0]);
                     $qb->setParameter($maxParameterName, $value[1]);
-                    break 2;
+                    break;
                 default:
                     throw new \InvalidArgumentException('This operator is currently not supported: '.$filter->getOperator());
                     break;
