@@ -41,6 +41,7 @@ class FormFilterFactory {
             if (preg_match("/textarea/i", $element->getAttribute("type"))) {
                 $name = $element->getName();
                 $newElement = new \Zend\Form\Element\Text($name);
+                $newElement->setLabel($name);
                 $form->remove($element->getName());
                 $form->add($newElement);
             }
@@ -48,6 +49,7 @@ class FormFilterFactory {
             if (preg_match("/number/i", $element->getAttribute("type"))) {
                 $name = $element->getName();
                 $newElement = new \Zend\Form\Element\Text($name);
+                $newElement->setLabel($name);
                 $form->remove($element->getName());
                 $form->add($newElement);
             }
