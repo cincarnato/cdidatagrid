@@ -25,9 +25,7 @@ class FormFilterFactory {
             /* @var $element \Zend\Form\Element */
 
             //TODO - ADD F_
-            $element->setOptions(array(
-                'require' => false
-            ));
+           $element->setAttribute("required",false);
 
             if ($element instanceof \DoctrineModule\Form\Element\ObjectSelect) {
                 $element->setOption("display_empty_item", true);
