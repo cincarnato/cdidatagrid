@@ -55,6 +55,14 @@ class FormFilterFactory {
                 $form->remove($element->getName());
                 $form->add($newElement);
             }
+            
+              if (preg_match("/date/i", $element->getAttribute("type"))) {
+                $name = $element->getName();
+                $newElement = new \Zend\Form\Element\Text($name);
+                $newElement->setLabel($name);
+                $form->remove($element->getName());
+                $form->add($newElement);
+            }
 
             if (preg_match("/checkbox/i", $element->getAttribute("type"))) {
                 $name = $element->getName();
