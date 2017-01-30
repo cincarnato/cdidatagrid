@@ -22,8 +22,12 @@ class FormFilterFactory {
 
         foreach ($form as $key => $element) {
 
-            //TODO - ADD F_
+            /* @var $element \Zend\Form\Element */
 
+            //TODO - ADD F_
+            $element->setOptions(array(
+                'require' => false
+            ));
 
             if ($element instanceof \DoctrineModule\Form\Element\ObjectSelect) {
                 $element->setOption("display_empty_item", true);
@@ -98,11 +102,11 @@ class FormFilterFactory {
             'attributes' => array(
                 'value' => 'Reset',
                 'class' => 'btn btn-default',
-                'onclick' => 'resetFormFilter_'.$formName.'(false)'
+                'onclick' => 'resetFormFilter_' . $formName . '(false)'
             )
         ));
-        
-           $form->add(array(
+
+        $form->add(array(
             'name' => 'resetsubmitbtn',
             'type' => 'Zend\Form\Element\Button',
             'options' => [
@@ -111,7 +115,7 @@ class FormFilterFactory {
             'attributes' => array(
                 'value' => 'Reset & Submit',
                 'class' => 'btn btn-default',
-                'onclick' => 'resetFormFilter_'.$formName.'(true)'
+                'onclick' => 'resetFormFilter_' . $formName . '(true)'
             )
         ));
 
@@ -120,7 +124,7 @@ class FormFilterFactory {
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
                 'value' => 'Filtrar',
-                 'class' => 'btn btn-success',
+                'class' => 'btn btn-success',
             )
         ));
 
